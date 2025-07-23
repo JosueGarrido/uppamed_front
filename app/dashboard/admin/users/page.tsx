@@ -14,16 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-
-interface User {
-  id: number;
-  username: string;
-  email?: string;
-  role: string;
-  area?: string;
-  specialty?: string;
-  createdAt?: string;
-}
+import { User, UserRole } from '@/types/auth';
 
 const ROLES = [
   { value: 'Administrador', label: 'Administrador' },
@@ -42,7 +33,7 @@ const AdminUsersPage = () => {
     username: '',
     email: '',
     password: '',
-    role: 'Especialista',
+    role: 'Especialista' as UserRole,
     area: '',
     specialty: '',
   });
@@ -59,7 +50,7 @@ const AdminUsersPage = () => {
     setIsLoading(true);
     try {
       const data = await userService.getUsersByTenant(tenantId);
-      setUsers(Array.isArray(data) ? data : data.users || []);
+      setUsers(data);
       setError(null);
     } catch (error) {
       setError('Error al obtener los usuarios');
@@ -74,7 +65,7 @@ const AdminUsersPage = () => {
       setIsLoading(true);
       try {
         const user = await authService.fetchUserData();
-        setTenantId(user.tenant_id);
+        setTenantId(user.tenant_id ?? null);
         if (user.tenant_id) {
           await fetchUsers(user.tenant_id);
         }
@@ -92,7 +83,7 @@ const AdminUsersPage = () => {
     if (!tenantId) return;
     setCreating(true);
     try {
-      await userService.createUser(tenantId, newUser);
+      await userService.createUser(tenantId, { ...newUser, role: newUser.role as UserRole });
       toast.success('Usuario creado exitosamente');
       setShowCreateModal(false);
       setNewUser({ username: '', email: '', password: '', role: 'Especialista', area: '', specialty: '' });
@@ -114,7 +105,7 @@ const AdminUsersPage = () => {
     if (!editingUser) return;
     setUpdating(true);
     try {
-      await userService.updateUser(editingUser.id, editingUser);
+      await userService.updateUser(editingUser.id, { ...editingUser, role: editingUser.role as UserRole });
       toast.success('Usuario actualizado exitosamente');
       setShowEditModal(false);
       setEditingUser(null);
@@ -276,7 +267,7 @@ const AdminUsersPage = () => {
                 id="role"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
                 value={newUser.role}
-                onChange={e => setNewUser({ ...newUser, role: e.target.value })}
+                onChange={e => setNewUser({ ...newUser, role: e.target.value as UserRole })}
                 required
               >
                 {ROLES.map(role => (
@@ -354,7 +345,7 @@ const AdminUsersPage = () => {
                 id="edit-role"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
                 value={editingUser?.role || ''}
-                onChange={e => setEditingUser(editingUser ? { ...editingUser, role: e.target.value } : null)}
+                onChange={e => setEditingUser(editingUser ? { ...editingUser, role: e.target.value as UserRole } : null)}
                 required
               >
                 {ROLES.map(role => (
