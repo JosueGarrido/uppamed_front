@@ -51,8 +51,8 @@ export default function SuperAdminDashboard() {
           }
         }
       };
-      fetchSummary();
-      fetchActivity();
+      void fetchSummary();
+      void fetchActivity();
     }
   }, [user, isLoading]);
 
