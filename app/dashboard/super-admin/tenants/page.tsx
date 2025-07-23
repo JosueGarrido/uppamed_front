@@ -147,7 +147,7 @@ export default function TenantsPage() {
     setConfigLoading(true);
     try {
       const configs = await tenantService.getTenantConfig(tenantId);
-      setTenantConfig(configs.map((c: any) => ({ key: c.key, value: c.value })));
+      setTenantConfig(configs.map((c: { key: string, value: string }) => ({ key: c.key, value: c.value })));
     } catch {
       setTenantConfig([]);
     } finally {

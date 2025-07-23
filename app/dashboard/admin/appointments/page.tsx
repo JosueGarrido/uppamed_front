@@ -32,12 +32,13 @@ const AdminAppointmentsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [newAppointment, setNewAppointment] = useState<any>({
-    patient_id: '',
-    specialist_id: '',
+  const [newAppointment, setNewAppointment] = useState<Omit<Appointment, 'id' | 'patient' | 'specialist' | 'tenant_id'> & { notes?: string }>({
+    patient_id: 0,
+    specialist_id: 0,
     date: '',
     reason: '',
-    status: 'pendiente',
+    status: 'pendiente' as Appointment['status'],
+    notes: undefined,
   });
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
@@ -105,17 +106,17 @@ const AdminAppointmentsPage = () => {
     try {
       const dateISO = new Date(`${newAppointment.date}T00:00`).toISOString();
       const appointmentPayload = {
-        patient_id: Number(newAppointment.patient_id),
-        specialist_id: Number(newAppointment.specialist_id),
+        patient_id: newAppointment.patient_id,
+        specialist_id: newAppointment.specialist_id,
         date: dateISO,
         reason: newAppointment.reason,
         status: newAppointment.status as Appointment['status'],
-        notes: newAppointment.notes || null
+        ...(newAppointment.notes ? { notes: newAppointment.notes } : {}),
       };
       await appointmentService.createAppointment(appointmentPayload);
       toast.success('Cita creada exitosamente');
       setShowCreateModal(false);
-      setNewAppointment({ patient_id: '', specialist_id: '', date: '', reason: '', status: 'pendiente' });
+      setNewAppointment({ patient_id: 0, specialist_id: 0, date: '', reason: '', status: 'pendiente' as Appointment['status'], notes: undefined });
       await fetchAppointments(tenantId);
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -153,7 +154,7 @@ const AdminAppointmentsPage = () => {
         date: dateISO,
         reason: editingAppointment.reason,
         status: editingAppointment.status as Appointment['status'],
-        notes: editingAppointment.notes || null
+        ...(editingAppointment.notes ? { notes: editingAppointment.notes } : {}),
       };
       await appointmentService.updateAppointment(editingAppointment.id, appointmentPayload);
       toast.success('Cita actualizada exitosamente');
@@ -294,8 +295,8 @@ const AdminAppointmentsPage = () => {
               <select
                 id="patient_id"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
-                value={newAppointment.patient_id}
-                onChange={e => setNewAppointment({ ...newAppointment, patient_id: e.target.value })}
+                value={newAppointment.patient_id || ''}
+                onChange={e => setNewAppointment({ ...newAppointment, patient_id: Number(e.target.value) })}
                 required
               >
                 <option value="">Selecciona un paciente</option>
@@ -309,8 +310,8 @@ const AdminAppointmentsPage = () => {
               <select
                 id="specialist_id"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
-                value={newAppointment.specialist_id}
-                onChange={e => setNewAppointment({ ...newAppointment, specialist_id: e.target.value })}
+                value={newAppointment.specialist_id || ''}
+                onChange={e => setNewAppointment({ ...newAppointment, specialist_id: Number(e.target.value) })}
                 required
               >
                 <option value="">Selecciona un especialista</option>
@@ -345,7 +346,7 @@ const AdminAppointmentsPage = () => {
                 id="status"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
                 value={newAppointment.status}
-                onChange={e => setNewAppointment({ ...newAppointment, status: e.target.value })}
+                onChange={e => setNewAppointment({ ...newAppointment, status: e.target.value as Appointment['status'] })}
                 required
               >
                 {STATUS_OPTIONS.map(opt => (

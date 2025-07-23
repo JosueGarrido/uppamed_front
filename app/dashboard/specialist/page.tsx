@@ -13,6 +13,13 @@ import { CalendarIcon, ClipboardList } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SpecialistDashboard() {
+  // Tipar todos los datos y estados, nunca usar any
+  // Eliminar destructuración insegura de arrays/objetos provenientes de any
+  // Usar await, .catch o void en todas las promesas
+  // Corregir handlers de eventos para que no retornen promesas
+  // Corregir comillas en JSX
+  // Eliminar variables no usadas
+  // Tipar correctamente los datos de backend (User, Specialist, etc.)
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
   const [todayAppointments, setTodayAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);

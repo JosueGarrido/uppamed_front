@@ -6,13 +6,34 @@ import { useRouter } from 'next/navigation';
 import { dashboardService } from '@/services/dashboard.service';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts';
 
+interface SuperAdminSummary {
+  kpis: {
+    totalTenants: number;
+    totalUsers: number;
+    totalEspecialistas: number;
+    totalPacientes: number;
+    totalCitas: number;
+  };
+  ultimosTenants: { id: string; name: string }[];
+  ultimosUsuarios: { id: string; username: string; role: string }[];
+  ultimasCitas: { id: string; date: string }[];
+}
+
+interface TenantActivity {
+  tenantName: string;
+  citas: number;
+  users: number;
+  especialistas: number;
+  pacientes: number;
+}
+
 export default function SuperAdminDashboard() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
-  const [summary, setSummary] = useState<any>(null);
+  const [summary, setSummary] = useState<SuperAdminSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [tenantsActivity, setTenantsActivity] = useState<any[]>([]);
+  const [tenantsActivity, setTenantsActivity] = useState<TenantActivity[]>([]);
 
   useEffect(() => {
     if (!isLoading && user && user.role !== 'Super Admin') {
@@ -29,8 +50,12 @@ export default function SuperAdminDashboard() {
           const data = await dashboardService.getSuperAdminSummary();
           setSummary(data);
           setError(null);
-        } catch (err: any) {
-          setError('Error al cargar el dashboard');
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            setError('Error al cargar el dashboard: ' + err.message);
+          } else {
+            setError('Error desconocido al cargar el dashboard');
+          }
         } finally {
           setLoading(false);
         }
@@ -39,7 +64,13 @@ export default function SuperAdminDashboard() {
         try {
           const data = await dashboardService.getTenantsActivity();
           setTenantsActivity(data);
-        } catch {}
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            console.error('Error al cargar actividad por tenant:', err.message);
+          } else {
+            console.error('Error desconocido al cargar actividad por tenant');
+          }
+        }
       };
       fetchSummary();
       fetchActivity();
@@ -57,23 +88,23 @@ export default function SuperAdminDashboard() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary.kpis.totalTenants}</div>
+          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalTenants}</div>
           <div className="text-gray-600 dark:text-gray-300">Tenants</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary.kpis.totalUsers}</div>
+          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalUsers}</div>
           <div className="text-gray-600 dark:text-gray-300">Usuarios</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary.kpis.totalEspecialistas}</div>
+          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalEspecialistas}</div>
           <div className="text-gray-600 dark:text-gray-300">Especialistas</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary.kpis.totalPacientes}</div>
+          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalPacientes}</div>
           <div className="text-gray-600 dark:text-gray-300">Pacientes</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary.kpis.totalCitas}</div>
+          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalCitas}</div>
           <div className="text-gray-600 dark:text-gray-300">Citas</div>
         </div>
       </div>
@@ -82,7 +113,7 @@ export default function SuperAdminDashboard() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Últimos Tenants</h2>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {summary.ultimosTenants.map((t: any) => (
+            {summary?.ultimosTenants.map((t) => (
               <li key={t.id} className="py-2">{t.name}</li>
             ))}
           </ul>
@@ -90,7 +121,7 @@ export default function SuperAdminDashboard() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Últimos Usuarios</h2>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {summary.ultimosUsuarios.map((u: any) => (
+            {summary?.ultimosUsuarios.map((u) => (
               <li key={u.id} className="py-2">{u.username} <span className="text-xs text-gray-500">({u.role})</span></li>
             ))}
           </ul>
@@ -98,7 +129,7 @@ export default function SuperAdminDashboard() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Últimas Citas</h2>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {summary.ultimasCitas.map((c: any) => (
+            {summary?.ultimasCitas.map((c) => (
               <li key={c.id} className="py-2">{new Date(c.date).toLocaleString()}</li>
             ))}
           </ul>

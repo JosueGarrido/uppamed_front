@@ -7,6 +7,13 @@ import { medicalExamService } from '@/services/medicalExam.service';
 import { MedicalExam } from '@/types/medicalExam';
 
 export default function MedicalExamsPage() {
+  // Tipar todos los datos y estados, nunca usar any
+  // Eliminar destructuración insegura de arrays/objetos provenientes de any
+  // Usar await, .catch o void en todas las promesas
+  // Corregir handlers de eventos para que no retornen promesas
+  // Corregir comillas en JSX
+  // Eliminar variables no usadas
+  // Tipar correctamente los datos de backend (MedicalExam, etc.)
   const [exams, setExams] = useState<MedicalExam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

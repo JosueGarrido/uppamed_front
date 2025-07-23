@@ -5,7 +5,7 @@ import { authService } from '@/services/auth.service';
 import { toast } from 'sonner';
 
 export default function ImpersonationBanner() {
-  const [isImpersonating, setIsImpersonating] = useState(false);
+  const [isImpersonating, setIsImpersonating] = useState<boolean>(false);
 
   useEffect(() => {
     const checkImpersonation = () => {
