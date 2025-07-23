@@ -54,7 +54,7 @@ export default function MedicalExamsPage() {
         columns={columns}
         data={exams}
         title="Lista de Exámenes"
-        onRowClick={(row) => console.log('Examen seleccionado:', row)}
+        onRowClick={(row) => void(console.log('Examen seleccionado:', row))}
       />
     </>
   );

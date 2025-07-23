@@ -59,10 +59,11 @@ export default function TenantsPage() {
       const data = await tenantService.getAllTenants();
       setTenants(data);
       setError(null);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      setError(errorMessage);
-      toast.error(errorMessage);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+        toast.error(error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -81,10 +82,11 @@ export default function TenantsPage() {
       setNewTenant({ name: '', address: '' });
       setError(null);
       toast.success('Tenant creado exitosamente');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      setError(errorMessage);
-      toast.error('Error al crear el tenant');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+        toast.error('Error al crear el tenant');
+      }
     }
   };
 
@@ -102,10 +104,11 @@ export default function TenantsPage() {
       setEditingTenant(null);
       setError(null);
       toast.success('Tenant actualizado exitosamente');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      setError(errorMessage);
-      toast.error('Error al actualizar el tenant');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+        toast.error('Error al actualizar el tenant');
+      }
     }
   };
 
@@ -119,9 +122,10 @@ export default function TenantsPage() {
       const detailedTenant = await tenantService.getTenantById(tenant.id);
       setSelectedTenant(detailedTenant);
       setShowDetailModal(true);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      toast.error(errorMessage);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -133,9 +137,10 @@ export default function TenantsPage() {
       toast.success('Tenant eliminado exitosamente');
       setTenantToDelete(null);
       await fetchTenants();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      toast.error(errorMessage);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -148,8 +153,10 @@ export default function TenantsPage() {
     try {
       const configs = await tenantService.getTenantConfig(tenantId);
       setTenantConfig(configs.map((c: { key: string, value: string }) => ({ key: c.key, value: c.value })));
-    } catch {
-      setTenantConfig([]);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setTenantConfig([]);
+      }
     } finally {
       setConfigLoading(false);
     }
@@ -169,8 +176,10 @@ export default function TenantsPage() {
       await tenantService.updateTenantConfig(configTenantId, tenantConfig.filter(c => c.key));
       toast.success('Configuración guardada');
       setShowConfigModal(false);
-    } catch {
-      toast.error('Error al guardar la configuración');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error('Error al guardar la configuración');
+      }
     } finally {
       setConfigSaving(false);
     }
@@ -185,8 +194,10 @@ export default function TenantsPage() {
       setImpersonating(true);
       setImpersonatedTenant(tenant.name);
       window.location.reload();
-    } catch (err: any) {
-      toast.error(err.message || 'Error al impersonar');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al impersonar');
+      }
     }
   };
 
