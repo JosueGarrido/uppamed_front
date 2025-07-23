@@ -2,14 +2,18 @@ export type UserRole = 'Super Admin' | 'Administrador' | 'Especialista' | 'Pacie
 
 export interface User {
   id: number;
-  email: string;
-  username?: string;
-  name?: string;
+  username: string;
+  password?: string;
   role: UserRole;
-  tenant_id: number | null;
+  email: string;
+  identification_number?: string;
   area?: string;
   specialty?: string;
-  identification_number?: string;
+  tenant_id?: number | null;
+  createdAt?: string;
+  updatedAt?: string;
+  name?: string;
+  especialidad?: string;
 }
 
 export interface AuthResponse {
