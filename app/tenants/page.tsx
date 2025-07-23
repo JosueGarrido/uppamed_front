@@ -1,7 +1,7 @@
 'use client';
 
 import PageHeader from '@/components/PageHeader';
-import Table from '@/components/Table';
+import Table, { Column } from '@/components/Table';
 import Link from 'next/link';
 
 export default function TenantsPage() {
@@ -10,8 +10,8 @@ export default function TenantsPage() {
     { id: 2, name: 'Clínica Norte' },
   ];
 
-  const columns = [
-    { key: 'name', header: 'Nombre' },
+  const columns: Column<{ id: number; name: string }>[] = [
+    { key: 'name', header: 'Nombre' }
   ];
 
   return (
