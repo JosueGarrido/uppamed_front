@@ -37,7 +37,7 @@ const ROLES = [
   { value: 'Paciente', label: 'Paciente' },
 ];
 
-const TenantUsersPage = ({ params }: PageProps) => {
+export default function Page({ params }: PageProps) {
   const { tenantId } = params;
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -459,6 +459,4 @@ const TenantUsersPage = ({ params }: PageProps) => {
       </Dialog>
     </div>
   );
-};
-
-export default TenantUsersPage; 
+}; 
