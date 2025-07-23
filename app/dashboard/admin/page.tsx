@@ -24,7 +24,7 @@ export default function AdminDashboard() {
       else if (user.role === 'Especialista') router.replace('/dashboard/specialist');
       else if (user.role === 'Paciente') router.replace('/dashboard/paciente');
     }
-  }, [user, isLoading]);
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     if (!isLoading && user && user.role === 'Administrador') {
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
           setLoading(false);
         }
       };
-      fetchData();
+      void fetchData();
     }
   }, [user, isLoading]);
 

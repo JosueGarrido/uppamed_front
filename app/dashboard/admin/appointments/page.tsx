@@ -90,13 +90,13 @@ const AdminAppointmentsPage = () => {
           await fetchAppointments(user.tenant_id);
           await fetchPatientsAndSpecialists(user.tenant_id);
         }
-      } catch (e) {
+      } catch {
         setError('No se pudo obtener el tenant');
       } finally {
         setIsLoading(false);
       }
     };
-    getTenantId();
+    void getTenantId();
   }, []);
 
   const handleCreateAppointment = async (e: React.FormEvent) => {
@@ -110,13 +110,13 @@ const AdminAppointmentsPage = () => {
         specialist_id: newAppointment.specialist_id,
         date: dateISO,
         reason: newAppointment.reason,
-        status: newAppointment.status as Appointment['status'],
+        status: newAppointment.status,
         ...(newAppointment.notes ? { notes: newAppointment.notes } : {}),
       };
       await appointmentService.createAppointment(appointmentPayload);
       toast.success('Cita creada exitosamente');
       setShowCreateModal(false);
-      setNewAppointment({ patient_id: 0, specialist_id: 0, date: '', reason: '', status: 'pendiente' as Appointment['status'], notes: undefined });
+      setNewAppointment({ patient_id: 0, specialist_id: 0, date: '', reason: '', status: 'pendiente', notes: undefined });
       await fetchAppointments(tenantId);
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -153,7 +153,7 @@ const AdminAppointmentsPage = () => {
         specialist_id: Number(editingSpecialistId),
         date: dateISO,
         reason: editingAppointment.reason,
-        status: editingAppointment.status as Appointment['status'],
+        status: editingAppointment.status,
         ...(editingAppointment.notes ? { notes: editingAppointment.notes } : {}),
       };
       await appointmentService.updateAppointment(editingAppointment.id, appointmentPayload);
