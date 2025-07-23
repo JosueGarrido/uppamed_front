@@ -3,29 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { dashboardService } from '@/services/dashboard.service';
+import { dashboardService, SuperAdminSummary, TenantActivity } from '@/services/dashboard.service';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts';
-
-interface SuperAdminSummary {
-  kpis: {
-    totalTenants: number;
-    totalUsers: number;
-    totalEspecialistas: number;
-    totalPacientes: number;
-    totalCitas: number;
-  };
-  ultimosTenants: { id: string; name: string }[];
-  ultimosUsuarios: { id: string; username: string; role: string }[];
-  ultimasCitas: { id: string; date: string }[];
-}
-
-interface TenantActivity {
-  tenantName: string;
-  citas: number;
-  users: number;
-  especialistas: number;
-  pacientes: number;
-}
 
 export default function SuperAdminDashboard() {
   const { user, isLoading } = useAuth();
@@ -87,26 +66,12 @@ export default function SuperAdminDashboard() {
       <h1 className="text-2xl font-bold mb-4">Dashboard Super Admin</h1>
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalTenants}</div>
-          <div className="text-gray-600 dark:text-gray-300">Tenants</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalUsers}</div>
-          <div className="text-gray-600 dark:text-gray-300">Usuarios</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalEspecialistas}</div>
-          <div className="text-gray-600 dark:text-gray-300">Especialistas</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalPacientes}</div>
-          <div className="text-gray-600 dark:text-gray-300">Pacientes</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="text-3xl font-bold text-indigo-600">{summary?.kpis.totalCitas}</div>
-          <div className="text-gray-600 dark:text-gray-300">Citas</div>
-        </div>
+        {summary?.kpis.map((kpi) => (
+          <div key={kpi.label} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="text-3xl font-bold text-indigo-600">{kpi.value}</div>
+            <div className="text-gray-600 dark:text-gray-300">{kpi.label}</div>
+          </div>
+        ))}
       </div>
       {/* Últimos registros */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">

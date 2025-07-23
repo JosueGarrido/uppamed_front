@@ -13,13 +13,6 @@ import { CalendarIcon, ClipboardList } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SpecialistDashboard() {
-  // Tipar todos los datos y estados, nunca usar any
-  // Eliminar destructuración insegura de arrays/objetos provenientes de any
-  // Usar await, .catch o void en todas las promesas
-  // Corregir handlers de eventos para que no retornen promesas
-  // Corregir comillas en JSX
-  // Eliminar variables no usadas
-  // Tipar correctamente los datos de backend (User, Specialist, etc.)
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
   const [todayAppointments, setTodayAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,21 +22,15 @@ export default function SpecialistDashboard() {
   useEffect(() => {
     const loadAppointments = async () => {
       try {
-        console.log('🔄 Iniciando carga de citas...');
-        console.log('👤 Usuario actual:', user);
-        
         if (!user?.id) {
-          console.log('⚠️ No hay usuario autenticado');
           setError('No hay usuario autenticado');
           setLoading(false);
           return;
         }
 
         const today = new Date();
-        console.log('📅 Fecha actual:', today.toISOString());
         
         const appointments = await appointmentService.getSpecialistAppointments();
-        console.log('📋 Citas obtenidas del servicio:', appointments);
         
         const today_appointments = appointments.filter(app => {
           const appDate = new Date(app.date);
@@ -55,14 +42,10 @@ export default function SpecialistDashboard() {
           return appDate > today;
         }).slice(0, 5);
 
-        console.log('📅 Citas de hoy:', today_appointments.length);
-        console.log('📅 Próximas citas:', upcoming.length);
-
         setTodayAppointments(today_appointments);
         setUpcomingAppointments(upcoming);
         setLoading(false);
       } catch (error) {
-        console.error('❌ Error loading appointments:', error);
         setError('Error al cargar las citas');
         setLoading(false);
       }

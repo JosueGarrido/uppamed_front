@@ -269,7 +269,7 @@ const AdminAppointmentsPage = () => {
                     <div className="mt-4 flex-shrink-0 sm:mt-0">
                       <div className="flex space-x-4">
                         <Button variant="outline" onClick={() => openEditModal(appointment)}>Editar</Button>
-                        <Button variant="ghost" onClick={() => openDetailModal(appointment)}>Ver detalles</Button>
+                        <Button variant="ghost" onClick={() => void openDetailModal(appointment)}>Ver detalles</Button>
                         <Button variant="destructive" onClick={() => openDeleteModal(appointment)}>Eliminar</Button>
                       </div>
                     </div>

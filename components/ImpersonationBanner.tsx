@@ -45,7 +45,7 @@ export default function ImpersonationBanner() {
           variant="destructive"
           size="sm"
           className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
-          onClick={handleRestore}
+          onClick={() => void handleRestore()}
         >
           Volver a ser Super Admin
         </Button>
