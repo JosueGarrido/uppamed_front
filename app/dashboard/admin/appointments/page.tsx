@@ -184,7 +184,7 @@ const AdminAppointmentsPage = () => {
   const openDetailModal = async (appointment: Appointment) => {
     setLoadingDetail(true);
     try {
-      const data = await appointmentService.getAppointmentById(appointment.id);
+      const data = await appointmentService.getAppointmentById(String(appointment.id));
       setDetailAppointment(data);
       setShowDetailModal(true);
     } catch (error: any) {
