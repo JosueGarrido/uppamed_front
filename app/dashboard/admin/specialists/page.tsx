@@ -14,16 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-
-interface User {
-  id: number;
-  username: string;
-  email?: string;
-  role: string;
-  area?: string;
-  specialty?: string;
-  createdAt?: string;
-}
+import { User, UserRole } from '@/types/auth';
 
 const AdminSpecialistsPage = () => {
   const [tenantId, setTenantId] = useState<string | number | null>(null);
@@ -36,7 +27,7 @@ const AdminSpecialistsPage = () => {
     username: '',
     email: '',
     password: '',
-    role: 'Especialista',
+    role: 'Especialista' as UserRole,
     area: '',
     specialty: '',
   });
@@ -53,7 +44,7 @@ const AdminSpecialistsPage = () => {
     setIsLoading(true);
     try {
       const data = await userService.getUsersByTenant(tenantId);
-      const filtered = (Array.isArray(data) ? data : data.users || []).filter((u: User) => u.role === 'Especialista');
+      const filtered = data.filter((u: User) => u.role === 'Especialista');
       setSpecialists(filtered);
       setError(null);
     } catch (error) {
@@ -69,7 +60,7 @@ const AdminSpecialistsPage = () => {
       setIsLoading(true);
       try {
         const user = await authService.fetchUserData();
-        setTenantId(user.tenant_id);
+        setTenantId(user.tenant_id ?? null);
         if (user.tenant_id) {
           await fetchSpecialists(user.tenant_id);
         }
@@ -87,10 +78,10 @@ const AdminSpecialistsPage = () => {
     if (!tenantId) return;
     setCreating(true);
     try {
-      await userService.createUser(tenantId, newSpecialist);
+      await userService.createUser(tenantId, { ...newSpecialist, role: newSpecialist.role as UserRole });
       toast.success('Especialista creado exitosamente');
       setShowCreateModal(false);
-      setNewSpecialist({ username: '', email: '', password: '', role: 'Especialista', area: '', specialty: '' });
+      setNewSpecialist({ username: '', email: '', password: '', role: 'Especialista' as UserRole, area: '', specialty: '' });
       await fetchSpecialists(tenantId);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Error al crear el especialista');
@@ -109,7 +100,9 @@ const AdminSpecialistsPage = () => {
     if (!editingSpecialist) return;
     setUpdating(true);
     try {
-      await userService.updateUser(editingSpecialist.id, editingSpecialist);
+      if (editingSpecialist) {
+        await userService.updateUser(editingSpecialist.id, { ...editingSpecialist, role: editingSpecialist.role as UserRole });
+      }
       toast.success('Especialista actualizado exitosamente');
       setShowEditModal(false);
       setEditingSpecialist(null);
