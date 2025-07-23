@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PageHeader from '@/components/PageHeader';
-import Table from '@/components/Table';
+import Table, { Column } from '@/components/Table';
 import { medicalRecordService } from '@/services/medicalRecord.service';
 import { useAuth } from '@/context/AuthContext';
 import { MedicalRecord } from '@/types/medicalRecord';
@@ -27,7 +27,7 @@ export default function MedicalRecordsPage() {
     if (user?.role) fetchRecords();
   }, [user]);
 
-  const columns = [
+  const columns: Column<MedicalRecord>[] = [
     { key: 'date', header: 'Fecha' },
     { key: 'diagnosis', header: 'Diagnóstico' }
   ];

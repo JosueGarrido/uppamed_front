@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Appointment } from '@/types/appointment';
 import { User } from '@/types/auth';
+import Table, { Column } from '@/components/Table';
 
 const STATUS_OPTIONS = [
   { value: 'pendiente', label: 'Pendiente' },

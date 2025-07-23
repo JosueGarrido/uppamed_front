@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PageHeader from '@/components/PageHeader';
-import Table from '@/components/Table';
+import Table, { Column } from '@/components/Table';
 import { medicalExamService } from '@/services/medicalExam.service';
 import { MedicalExam } from '@/types/medicalExam';
 
@@ -25,7 +25,7 @@ export default function MedicalExamsPage() {
     fetchExams();
   }, []);
 
-  const columns = [
+  const columns: Column<MedicalExam>[] = [
     { key: 'date', header: 'Fecha' },
     { key: 'type', header: 'Tipo de Examen' }
   ];
