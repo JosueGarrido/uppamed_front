@@ -1,0 +1,15 @@
+{
+  // Indica a ESLint dónde está tu configuración
+  "eslint.configFile": "eslint.config.mjs",
+
+  // Usa Prettier como formateador por defecto
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Formatea al guardar
+  "editor.formatOnSave": true,
+
+  // (Opcional) Si también quieres que ESLint auto–arregle al guardar:
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
