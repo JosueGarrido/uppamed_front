@@ -82,7 +82,7 @@ const AdminAppointmentsPage = () => {
       setIsLoading(true);
       try {
         const user = await authService.fetchUserData();
-        setTenantId(user.tenant_id);
+        setTenantId(user.tenant_id ?? null);
         if (user.tenant_id) {
           await fetchAppointments(user.tenant_id);
           await fetchPatientsAndSpecialists(user.tenant_id);
