@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 
-interface Column {
-  key: string;
+interface Column<T> {
+  key: keyof T;
   header: string;
   width?: string;
 }
 
 interface TableProps<T> {
-  columns: Column[];
+  columns: Column<T>[];
   data: T[];
   onRowClick?: (row: T) => void;
   actions?: (row: T) => React.ReactElement | null;
@@ -24,7 +24,7 @@ export default function Table<T>({ columns, data, onRowClick, actions, pageSize 
   // Filtrar datos basado en el término de búsqueda
   const filteredData = data.filter((row) =>
     columns.some((column) => {
-      const value = (row as any)[column.key];
+      const value = row[column.key];
       return value?.toString().toLowerCase().includes(searchTerm.toLowerCase());
     })
   );
@@ -65,7 +65,7 @@ export default function Table<T>({ columns, data, onRowClick, actions, pageSize 
             <tr>
               {columns.map((column) => (
                 <th
-                  key={column.key}
+                  key={String(column.key)}
                   scope="col"
                   className={`px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${
                     column.width || ''
@@ -89,10 +89,10 @@ export default function Table<T>({ columns, data, onRowClick, actions, pageSize 
               >
                 {columns.map((column) => (
                   <td
-                    key={column.key}
+                    key={String(column.key)}
                     className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300"
                   >
-                    {String((row as any)[column.key] ?? '')}
+                    {String(row[column.key] ?? '')}
                   </td>
                 ))}
                 {actions && (
