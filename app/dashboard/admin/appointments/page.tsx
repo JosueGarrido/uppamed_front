@@ -15,19 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-
-interface Appointment {
-  id: number;
-  patient_id: number;
-  specialist_id: number;
-  date: string;
-  time: string;
-  reason: string;
-  status: string;
-  createdAt?: string;
-  patient?: any;
-  specialist?: any;
-}
+import { Appointment } from '@/types/appointment';
 
 const STATUS_OPTIONS = [
   { value: 'pendiente', label: 'Pendiente' },
@@ -47,7 +35,6 @@ const AdminAppointmentsPage = () => {
     patient_id: '',
     specialist_id: '',
     date: '',
-    time: '',
     reason: '',
     status: 'pendiente',
   });
@@ -61,12 +48,14 @@ const AdminAppointmentsPage = () => {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [patients, setPatients] = useState<any[]>([]);
   const [specialists, setSpecialists] = useState<any[]>([]);
+  const [editingPatientId, setEditingPatientId] = useState<string>('');
+  const [editingSpecialistId, setEditingSpecialistId] = useState<string>('');
 
   const fetchAppointments = async (tenantId: string | number) => {
     setIsLoading(true);
     try {
       const data = await appointmentService.getAppointmentsByTenant(tenantId);
-      setAppointments(Array.isArray(data) ? data : data.appointments || []);
+      setAppointments(data);
       setError(null);
     } catch (error) {
       setError('Error al obtener las citas');
@@ -111,19 +100,19 @@ const AdminAppointmentsPage = () => {
     if (!tenantId) return;
     setCreating(true);
     try {
-      const dateISO = new Date(`${newAppointment.date}T${newAppointment.time || '00:00'}`).toISOString();
+      const dateISO = new Date(`${newAppointment.date}T00:00`).toISOString();
       const appointmentPayload = {
         patient_id: Number(newAppointment.patient_id),
         specialist_id: Number(newAppointment.specialist_id),
         date: dateISO,
         reason: newAppointment.reason,
-        status: newAppointment.status,
+        status: newAppointment.status as Appointment['status'],
         notes: newAppointment.notes || null
       };
       await appointmentService.createAppointment(appointmentPayload);
       toast.success('Cita creada exitosamente');
       setShowCreateModal(false);
-      setNewAppointment({ patient_id: '', specialist_id: '', date: '', time: '', reason: '', status: 'pendiente' });
+      setNewAppointment({ patient_id: '', specialist_id: '', date: '', reason: '', status: 'pendiente' });
       await fetchAppointments(tenantId);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Error al crear la cita');
@@ -134,18 +123,16 @@ const AdminAppointmentsPage = () => {
 
   const openEditModal = (appointment: Appointment) => {
     let date = '';
-    let time = '';
     if (appointment.date) {
-      const dateObj = new Date(appointment.date);
-      date = dateObj.toISOString().slice(0, 10);
-      time = dateObj.toTimeString().slice(0, 5);
+      date = new Date(appointment.date).toISOString().slice(0, 10);
     }
     setEditingAppointment({
       ...appointment,
       date: date || appointment.date || '',
-      time: appointment.time || time || '',
       reason: appointment.reason || '',
     });
+    setEditingPatientId(String(appointment.patient_id));
+    setEditingSpecialistId(String(appointment.specialist_id));
     setShowEditModal(true);
   };
 
@@ -154,13 +141,13 @@ const AdminAppointmentsPage = () => {
     if (!editingAppointment) return;
     setUpdating(true);
     try {
-      const dateISO = new Date(`${editingAppointment.date}T${editingAppointment.time || '00:00'}`).toISOString();
+      const dateISO = new Date(`${editingAppointment.date}T00:00`).toISOString();
       const appointmentPayload = {
-        patient_id: Number(editingAppointment.patient_id),
-        specialist_id: Number(editingAppointment.specialist_id),
+        patient_id: Number(editingPatientId),
+        specialist_id: Number(editingSpecialistId),
         date: dateISO,
         reason: editingAppointment.reason,
-        status: editingAppointment.status,
+        status: editingAppointment.status as Appointment['status'],
         notes: editingAppointment.notes || null
       };
       await appointmentService.updateAppointment(editingAppointment.id, appointmentPayload);
@@ -332,16 +319,6 @@ const AdminAppointmentsPage = () => {
               />
             </div>
             <div>
-              <Label htmlFor="time">Hora</Label>
-              <Input
-                id="time"
-                type="time"
-                required
-                value={newAppointment.time}
-                onChange={e => setNewAppointment({ ...newAppointment, time: e.target.value })}
-              />
-            </div>
-            <div>
               <Label htmlFor="reason">Motivo</Label>
               <Input
                 id="reason"
@@ -390,8 +367,8 @@ const AdminAppointmentsPage = () => {
               <select
                 id="edit-patient_id"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
-                value={editingAppointment?.patient_id || ''}
-                onChange={e => setEditingAppointment(editingAppointment ? { ...editingAppointment, patient_id: Number(e.target.value) } : null)}
+                value={editingPatientId}
+                onChange={e => setEditingPatientId(e.target.value)}
                 required
               >
                 <option value="">Selecciona un paciente</option>
@@ -405,8 +382,8 @@ const AdminAppointmentsPage = () => {
               <select
                 id="edit-specialist_id"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
-                value={editingAppointment?.specialist_id || ''}
-                onChange={e => setEditingAppointment(editingAppointment ? { ...editingAppointment, specialist_id: Number(e.target.value) } : null)}
+                value={editingSpecialistId}
+                onChange={e => setEditingSpecialistId(e.target.value)}
                 required
               >
                 <option value="">Selecciona un especialista</option>
@@ -426,16 +403,6 @@ const AdminAppointmentsPage = () => {
               />
             </div>
             <div>
-              <Label htmlFor="edit-time">Hora</Label>
-              <Input
-                id="edit-time"
-                type="time"
-                required
-                value={editingAppointment?.time || ''}
-                onChange={e => setEditingAppointment(editingAppointment ? { ...editingAppointment, time: e.target.value } : null)}
-              />
-            </div>
-            <div>
               <Label htmlFor="edit-reason">Motivo</Label>
               <Input
                 id="edit-reason"
@@ -451,7 +418,7 @@ const AdminAppointmentsPage = () => {
                 id="edit-status"
                 className="form-select w-full rounded border-gray-300 dark:bg-gray-700 dark:text-gray-100"
                 value={editingAppointment?.status || ''}
-                onChange={e => setEditingAppointment(editingAppointment ? { ...editingAppointment, status: e.target.value } : null)}
+                onChange={e => setEditingAppointment(editingAppointment ? { ...editingAppointment, status: e.target.value as Appointment['status'] } : null)}
                 required
               >
                 {STATUS_OPTIONS.map(opt => (
@@ -519,11 +486,6 @@ const AdminAppointmentsPage = () => {
               <div>
                 <span className="font-semibold">Estado:</span> {detailAppointment.status}
               </div>
-              {detailAppointment.createdAt && (
-                <div>
-                  <span className="font-semibold">Creado:</span> {new Date(detailAppointment.createdAt).toLocaleString()}
-                </div>
-              )}
             </div>
           )}
         </DialogContent>
