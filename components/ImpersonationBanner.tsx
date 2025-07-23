@@ -3,11 +3,9 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { authService } from '@/services/auth.service';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 
 export default function ImpersonationBanner() {
   const [isImpersonating, setIsImpersonating] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const checkImpersonation = () => {

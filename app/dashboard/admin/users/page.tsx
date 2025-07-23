@@ -52,8 +52,10 @@ const AdminUsersPage = () => {
       const data = await userService.getUsersByTenant(tenantId);
       setUsers(data);
       setError(null);
-    } catch (error) {
-      setError('Error al obtener los usuarios');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError('Error al obtener los usuarios');
+      }
       setUsers([]);
     } finally {
       setIsLoading(false);
@@ -69,8 +71,10 @@ const AdminUsersPage = () => {
         if (user.tenant_id) {
           await fetchUsers(user.tenant_id);
         }
-      } catch (e) {
-        setError('No se pudo obtener el tenant');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError('No se pudo obtener el tenant');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -88,8 +92,10 @@ const AdminUsersPage = () => {
       setShowCreateModal(false);
       setNewUser({ username: '', email: '', password: '', role: 'Especialista', area: '', specialty: '' });
       await fetchUsers(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al crear el usuario');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al crear el usuario');
+      }
     } finally {
       setCreating(false);
     }
@@ -110,8 +116,10 @@ const AdminUsersPage = () => {
       setShowEditModal(false);
       setEditingUser(null);
       if (tenantId) await fetchUsers(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al actualizar el usuario');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al actualizar el usuario');
+      }
     } finally {
       setUpdating(false);
     }
@@ -129,8 +137,10 @@ const AdminUsersPage = () => {
       toast.success('Usuario eliminado exitosamente');
       setUserToDelete(null);
       await fetchUsers(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al eliminar el usuario');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al eliminar el usuario');
+      }
     } finally {
       setDeleting(false);
     }
@@ -142,8 +152,10 @@ const AdminUsersPage = () => {
       const data = await userService.getUserById(user.id);
       setDetailUser(data);
       setShowDetailModal(true);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al obtener detalles del usuario');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al obtener detalles del usuario');
+      }
     } finally {
       setLoadingDetail(false);
     }

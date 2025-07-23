@@ -17,7 +17,6 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Appointment } from '@/types/appointment';
 import { User } from '@/types/auth';
-import Table, { Column } from '@/components/Table';
 
 const STATUS_OPTIONS = [
   { value: 'pendiente', label: 'Pendiente' },
@@ -59,8 +58,10 @@ const AdminAppointmentsPage = () => {
       const data = await appointmentService.getAppointmentsByTenant(tenantId);
       setAppointments(data);
       setError(null);
-    } catch (error) {
-      setError('Error al obtener las citas');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError('Error al obtener las citas');
+      }
       setAppointments([]);
     } finally {
       setIsLoading(false);
@@ -116,8 +117,10 @@ const AdminAppointmentsPage = () => {
       setShowCreateModal(false);
       setNewAppointment({ patient_id: '', specialist_id: '', date: '', reason: '', status: 'pendiente' });
       await fetchAppointments(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al crear la cita');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al crear la cita');
+      }
     } finally {
       setCreating(false);
     }
@@ -157,8 +160,10 @@ const AdminAppointmentsPage = () => {
       setShowEditModal(false);
       setEditingAppointment(null);
       if (tenantId) await fetchAppointments(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al actualizar la cita');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al actualizar la cita');
+      }
     } finally {
       setUpdating(false);
     }
@@ -176,8 +181,10 @@ const AdminAppointmentsPage = () => {
       toast.success('Cita eliminada exitosamente');
       setAppointmentToDelete(null);
       await fetchAppointments(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al eliminar la cita');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al eliminar la cita');
+      }
     } finally {
       setDeleting(false);
     }
@@ -189,8 +196,10 @@ const AdminAppointmentsPage = () => {
       const data = await appointmentService.getAppointmentById(String(appointment.id));
       setDetailAppointment(data);
       setShowDetailModal(true);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al obtener detalles de la cita');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al obtener detalles de la cita');
+      }
     } finally {
       setLoadingDetail(false);
     }

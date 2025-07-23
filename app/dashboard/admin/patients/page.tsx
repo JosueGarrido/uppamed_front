@@ -46,8 +46,10 @@ const AdminPatientsPage = () => {
       const filtered = data.filter((u: User) => u.role === 'Paciente');
       setPatients(filtered);
       setError(null);
-    } catch (error) {
-      setError('Error al obtener los pacientes');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError('Error al obtener los pacientes');
+      }
       setPatients([]);
     } finally {
       setIsLoading(false);
@@ -63,8 +65,10 @@ const AdminPatientsPage = () => {
         if (user.tenant_id) {
           await fetchPatients(user.tenant_id);
         }
-      } catch (e) {
-        setError('No se pudo obtener el tenant');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError('No se pudo obtener el tenant');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -82,8 +86,10 @@ const AdminPatientsPage = () => {
       setShowCreateModal(false);
       setNewPatient({ username: '', email: '', password: '', role: 'Paciente' as UserRole, identification_number: '' });
       await fetchPatients(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al crear el paciente');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al crear el paciente');
+      }
     } finally {
       setCreating(false);
     }
@@ -104,8 +110,10 @@ const AdminPatientsPage = () => {
       setShowEditModal(false);
       setEditingPatient(null);
       if (tenantId) await fetchPatients(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al actualizar el paciente');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al actualizar el paciente');
+      }
     } finally {
       setUpdating(false);
     }
@@ -123,8 +131,10 @@ const AdminPatientsPage = () => {
       toast.success('Paciente eliminado exitosamente');
       setPatientToDelete(null);
       await fetchPatients(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al eliminar el paciente');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al eliminar el paciente');
+      }
     } finally {
       setDeleting(false);
     }
@@ -136,8 +146,10 @@ const AdminPatientsPage = () => {
       const data = await userService.getUserById(patient.id);
       setDetailPatient(data);
       setShowDetailModal(true);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al obtener detalles del paciente');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al obtener detalles del paciente');
+      }
     } finally {
       setLoadingDetail(false);
     }

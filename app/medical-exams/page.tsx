@@ -16,8 +16,12 @@ export default function MedicalExamsPage() {
       try {
         const data = await medicalExamService.getMyMedicalExams();
         setExams(data);
-      } catch (err) {
-        setError('Error al obtener los exámenes médicos');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError('Error al obtener los exámenes médicos: ' + err.message);
+        } else {
+          setError('Error desconocido al obtener los exámenes médicos');
+        }
       } finally {
         setLoading(false);
       }

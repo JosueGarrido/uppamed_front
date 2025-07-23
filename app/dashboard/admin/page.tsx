@@ -7,12 +7,10 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types/auth';
 import { Appointment } from '@/types/appointment';
-import Table, { Column } from '@/components/Table';
 
 export default function AdminDashboard() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
-  const [tenantId, setTenantId] = useState<number | null>(null);
   const [usuarios, setUsuarios] = useState<User[]>([]);
   const [especialistas, setEspecialistas] = useState<User[]>([]);
   const [pacientes, setPacientes] = useState<User[]>([]);
@@ -35,7 +33,6 @@ export default function AdminDashboard() {
         try {
           const userData = await authService.fetchUserData();
           if (!userData.tenant_id) throw new Error('No se encontró tenant_id');
-          setTenantId(userData.tenant_id);
           const allUsers = await userService.getUsersByTenant(userData.tenant_id);
           setUsuarios(allUsers);
           setEspecialistas(allUsers.filter((u: User) => u.role === 'Especialista'));
@@ -43,8 +40,8 @@ export default function AdminDashboard() {
           const allCitas = await dashboardService.getAppointmentsForTenant(userData.tenant_id);
           setCitas(allCitas);
           setError(null);
-        } catch (err) {
-          setError('Error al cargar el dashboard');
+        } catch (err: unknown) {
+          if (err instanceof Error) setError('Error al cargar el dashboard');
         } finally {
           setLoading(false);
         }

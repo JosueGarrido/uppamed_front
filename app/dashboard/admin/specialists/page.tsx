@@ -47,8 +47,10 @@ const AdminSpecialistsPage = () => {
       const filtered = data.filter((u: User) => u.role === 'Especialista');
       setSpecialists(filtered);
       setError(null);
-    } catch (error) {
-      setError('Error al obtener los especialistas');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError('Error al obtener los especialistas');
+      }
       setSpecialists([]);
     } finally {
       setIsLoading(false);
@@ -64,8 +66,10 @@ const AdminSpecialistsPage = () => {
         if (user.tenant_id) {
           await fetchSpecialists(user.tenant_id);
         }
-      } catch (e) {
-        setError('No se pudo obtener el tenant');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError('No se pudo obtener el tenant');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -83,8 +87,10 @@ const AdminSpecialistsPage = () => {
       setShowCreateModal(false);
       setNewSpecialist({ username: '', email: '', password: '', role: 'Especialista' as UserRole, area: '', specialty: '' });
       await fetchSpecialists(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al crear el especialista');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al crear el especialista');
+      }
     } finally {
       setCreating(false);
     }
@@ -107,8 +113,10 @@ const AdminSpecialistsPage = () => {
       setShowEditModal(false);
       setEditingSpecialist(null);
       if (tenantId) await fetchSpecialists(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al actualizar el especialista');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al actualizar el especialista');
+      }
     } finally {
       setUpdating(false);
     }
@@ -126,8 +134,10 @@ const AdminSpecialistsPage = () => {
       toast.success('Especialista eliminado exitosamente');
       setSpecialistToDelete(null);
       await fetchSpecialists(tenantId);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al eliminar el especialista');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al eliminar el especialista');
+      }
     } finally {
       setDeleting(false);
     }
@@ -139,8 +149,10 @@ const AdminSpecialistsPage = () => {
       const data = await userService.getUserById(specialist.id);
       setDetailSpecialist(data);
       setShowDetailModal(true);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Error al obtener detalles del especialista');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || 'Error al obtener detalles del especialista');
+      }
     } finally {
       setLoadingDetail(false);
     }

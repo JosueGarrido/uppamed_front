@@ -18,8 +18,10 @@ export default function MedicalRecordsPage() {
       try {
         const data = await medicalRecordService.getMyMedicalRecords(user?.role);
         setRecords(data);
-      } catch (err) {
-        setError('Error al obtener los registros médicos');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError('Error al obtener los registros médicos');
+        }
       } finally {
         setLoading(false);
       }
