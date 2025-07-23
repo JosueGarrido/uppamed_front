@@ -17,15 +17,16 @@ interface TableProps<T> {
   title?: string;
 }
 
-export default function Table<T extends { [key: string]: unknown }>({ columns, data, onRowClick, actions, pageSize = 10, title }: TableProps<T>) {
+export default function Table<T>({ columns, data, onRowClick, actions, pageSize = 10, title }: TableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filtrar datos basado en el término de búsqueda
   const filteredData = data.filter((row) =>
-    Object.values(row).some((value) =>
-      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    columns.some((column) => {
+      const value = (row as any)[column.key];
+      return value?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    })
   );
 
   // Calcular paginación
@@ -91,7 +92,7 @@ export default function Table<T extends { [key: string]: unknown }>({ columns, d
                     key={column.key}
                     className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300"
                   >
-                    {String(row[column.key])}
+                    {String((row as any)[column.key] ?? '')}
                   </td>
                 ))}
                 {actions && (
