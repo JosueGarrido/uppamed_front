@@ -14,15 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-
-interface User {
-  id: number;
-  username: string;
-  email?: string;
-  role: string;
-  identification_number?: string;
-  createdAt?: string;
-}
+import { User, UserRole } from '@/types/auth';
 
 const AdminPatientsPage = () => {
   const [tenantId, setTenantId] = useState<string | number | null>(null);
@@ -35,7 +27,7 @@ const AdminPatientsPage = () => {
     username: '',
     email: '',
     password: '',
-    role: 'Paciente',
+    role: 'Paciente' as UserRole,
     identification_number: '',
   });
   const [showEditModal, setShowEditModal] = useState(false);
@@ -67,7 +59,7 @@ const AdminPatientsPage = () => {
       setIsLoading(true);
       try {
         const user = await authService.fetchUserData();
-        setTenantId(user.tenant_id);
+        setTenantId(user.tenant_id ?? null);
         if (user.tenant_id) {
           await fetchPatients(user.tenant_id);
         }
@@ -85,10 +77,10 @@ const AdminPatientsPage = () => {
     if (!tenantId) return;
     setCreating(true);
     try {
-      await userService.createUser(tenantId, newPatient);
+      await userService.createUser(tenantId, { ...newPatient, role: newPatient.role as UserRole });
       toast.success('Paciente creado exitosamente');
       setShowCreateModal(false);
-      setNewPatient({ username: '', email: '', password: '', role: 'Paciente', identification_number: '' });
+      setNewPatient({ username: '', email: '', password: '', role: 'Paciente' as UserRole, identification_number: '' });
       await fetchPatients(tenantId);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Error al crear el paciente');
@@ -107,7 +99,7 @@ const AdminPatientsPage = () => {
     if (!editingPatient) return;
     setUpdating(true);
     try {
-      await userService.updateUser(editingPatient.id, editingPatient);
+      await userService.updateUser(editingPatient.id, { ...editingPatient, role: editingPatient.role as UserRole });
       toast.success('Paciente actualizado exitosamente');
       setShowEditModal(false);
       setEditingPatient(null);
