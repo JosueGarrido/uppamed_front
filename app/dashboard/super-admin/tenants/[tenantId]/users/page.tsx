@@ -17,10 +17,6 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { use } from 'react';
 
-interface PageProps {
-  params: { tenantId: string };
-}
-
 interface User {
   id: number;
   username: string;
@@ -37,7 +33,7 @@ const ROLES = [
   { value: 'Paciente', label: 'Paciente' },
 ];
 
-export default function Page({ params }: PageProps) {
+export default function Page({ params }: { params: { tenantId: string } }) {
   const { tenantId } = params;
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
