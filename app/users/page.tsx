@@ -1,7 +1,7 @@
 'use client';
 
 import PageHeader from '@/components/PageHeader';
-import Table from '@/components/Table';
+import Table, { Column } from '@/components/Table';
 
 export default function UsersPage() {
   const users = [
@@ -10,7 +10,7 @@ export default function UsersPage() {
     { id: 3, username: 'juanp', role: 'Paciente' },
   ];
 
-  const columns = [
+  const columns: Column<{ id: number; username: string; role: string }>[] = [
     { key: 'username', header: 'Usuario' },
     { key: 'role', header: 'Rol' }
   ];
