@@ -51,7 +51,7 @@ const AdminPatientsPage = () => {
     setIsLoading(true);
     try {
       const data = await userService.getUsersByTenant(tenantId);
-      const filtered = (Array.isArray(data) ? data : data.users || []).filter((u: User) => u.role === 'Paciente');
+      const filtered = data.filter((u: User) => u.role === 'Paciente');
       setPatients(filtered);
       setError(null);
     } catch (error) {
