@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-interface Column<T> {
+export interface Column<T> {
   key: keyof T;
   header: string;
   width?: string;

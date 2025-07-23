@@ -1,7 +1,7 @@
 'use client';
 
 import PageHeader from '@/components/PageHeader';
-import Table from '@/components/Table';
+import Table, { Column } from '@/components/Table';
 
 export default function AppointmentsPage() {
   const appointments = [
@@ -9,7 +9,7 @@ export default function AppointmentsPage() {
     { id: 2, date: '2025-05-16', specialist: 'Dra. Ruiz', patient: 'Juan López' },
   ];
 
-  const columns = [
+  const columns: Column<{ id: number; date: string; specialist: string; patient: string; }>[] = [
     { key: 'date', header: 'Fecha' },
     { key: 'specialist', header: 'Especialista' },
     { key: 'patient', header: 'Paciente' }
