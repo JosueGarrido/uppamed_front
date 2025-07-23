@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { authService } from './auth.service';
+import { MedicalExam } from '@/types/medicalExam';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://uppamed.vercel.app';
 
@@ -15,9 +16,9 @@ api.interceptors.request.use((config) => {
 });
 
 class MedicalExamService {
-  async getMyMedicalExams() {
+  async getMyMedicalExams(): Promise<MedicalExam[]> {
     try {
-      const response = await api.get('/medical-exams');
+      const response = await api.get<MedicalExam[]>('/medical-exams');
       return response.data;
     } catch (error) {
       console.error('Error obteniendo exámenes médicos:', error);

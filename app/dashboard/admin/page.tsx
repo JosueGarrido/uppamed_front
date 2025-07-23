@@ -5,15 +5,17 @@ import { userService } from '@/services/user.service';
 import { dashboardService } from '@/services/dashboard.service';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { User } from '@/types/auth';
+import { Appointment } from '@/types/appointment';
 
 export default function AdminDashboard() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const [tenantId, setTenantId] = useState<number | null>(null);
-  const [usuarios, setUsuarios] = useState<any[]>([]);
-  const [especialistas, setEspecialistas] = useState<any[]>([]);
-  const [pacientes, setPacientes] = useState<any[]>([]);
-  const [citas, setCitas] = useState<any[]>([]);
+  const [usuarios, setUsuarios] = useState<User[]>([]);
+  const [especialistas, setEspecialistas] = useState<User[]>([]);
+  const [pacientes, setPacientes] = useState<User[]>([]);
+  const [citas, setCitas] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,8 +37,8 @@ export default function AdminDashboard() {
           setTenantId(userData.tenant_id);
           const allUsers = await userService.getUsersByTenant(userData.tenant_id);
           setUsuarios(allUsers);
-          setEspecialistas(allUsers.filter((u: any) => u.role === 'Especialista'));
-          setPacientes(allUsers.filter((u: any) => u.role === 'Paciente'));
+          setEspecialistas(allUsers.filter((u: User) => u.role === 'Especialista'));
+          setPacientes(allUsers.filter((u: User) => u.role === 'Paciente'));
           const allCitas = await dashboardService.getAppointmentsForTenant(userData.tenant_id);
           setCitas(allCitas);
           setError(null);
@@ -82,7 +84,7 @@ export default function AdminDashboard() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Últimos Usuarios</h2>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {usuarios.slice(0, 5).map((u: any) => (
+            {usuarios.slice(0, 5).map((u: User) => (
               <li key={u.id} className="py-2">{u.username} <span className="text-xs text-gray-500">({u.role})</span></li>
             ))}
           </ul>
@@ -90,7 +92,7 @@ export default function AdminDashboard() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Últimos Especialistas</h2>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {especialistas.slice(0, 5).map((e: any) => (
+            {especialistas.slice(0, 5).map((e: User) => (
               <li key={e.id} className="py-2">{e.username} <span className="text-xs text-gray-500">({e.specialty || e.especialidad})</span></li>
             ))}
           </ul>
@@ -98,7 +100,7 @@ export default function AdminDashboard() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Últimos Pacientes</h2>
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {pacientes.slice(0, 5).map((p: any) => (
+            {pacientes.slice(0, 5).map((p: User) => (
               <li key={p.id} className="py-2">{p.username} <span className="text-xs text-gray-500">({p.identification_number})</span></li>
             ))}
           </ul>
@@ -108,7 +110,7 @@ export default function AdminDashboard() {
       <div className="mt-8">
         <h2 className="text-lg font-semibold mb-2">Últimas Citas</h2>
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-          {citas.slice(0, 5).map((c: any) => (
+          {citas.slice(0, 5).map((c: Appointment) => (
             <li key={c.id} className="py-2">
               {c.patient?.username || c.patient_id} con {c.specialist?.username || c.specialist_id} - {new Date(c.date).toLocaleString()} <span className="text-xs text-gray-500">({c.status})</span>
             </li>

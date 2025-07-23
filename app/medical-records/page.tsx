@@ -5,9 +5,10 @@ import PageHeader from '@/components/PageHeader';
 import Table from '@/components/Table';
 import { medicalRecordService } from '@/services/medicalRecord.service';
 import { useAuth } from '@/context/AuthContext';
+import { MedicalRecord } from '@/types/medicalRecord';
 
 export default function MedicalRecordsPage() {
-  const [records, setRecords] = useState<any[]>([]);
+  const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();

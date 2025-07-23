@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Appointment } from '@/types/appointment';
+import { User } from '@/types/auth';
 
 const STATUS_OPTIONS = [
   { value: 'pendiente', label: 'Pendiente' },
@@ -46,8 +47,8 @@ const AdminAppointmentsPage = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailAppointment, setDetailAppointment] = useState<Appointment | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const [patients, setPatients] = useState<any[]>([]);
-  const [specialists, setSpecialists] = useState<any[]>([]);
+  const [patients, setPatients] = useState<User[]>([]);
+  const [specialists, setSpecialists] = useState<User[]>([]);
   const [editingPatientId, setEditingPatientId] = useState<string>('');
   const [editingSpecialistId, setEditingSpecialistId] = useState<string>('');
 
@@ -68,8 +69,8 @@ const AdminAppointmentsPage = () => {
   const fetchPatientsAndSpecialists = async (tenantId: string | number) => {
     try {
       const users = await userService.getUsersByTenant(tenantId);
-      setPatients(users.filter((u: any) => u.role === 'Paciente'));
-      setSpecialists(users.filter((u: any) => u.role === 'Especialista'));
+      setPatients(users.filter((u: User) => u.role === 'Paciente'));
+      setSpecialists(users.filter((u: User) => u.role === 'Especialista'));
     } catch {
       setPatients([]);
       setSpecialists([]);

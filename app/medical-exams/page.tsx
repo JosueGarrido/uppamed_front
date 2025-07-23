@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import PageHeader from '@/components/PageHeader';
 import Table from '@/components/Table';
 import { medicalExamService } from '@/services/medicalExam.service';
+import { MedicalExam } from '@/types/medicalExam';
 
 export default function MedicalExamsPage() {
-  const [exams, setExams] = useState<any[]>([]);
+  const [exams, setExams] = useState<MedicalExam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

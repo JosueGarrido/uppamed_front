@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { authService } from './auth.service';
+import { MedicalRecord } from '@/types/medicalRecord';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://uppamed.vercel.app';
 
@@ -15,13 +16,12 @@ api.interceptors.request.use((config) => {
 });
 
 class MedicalRecordService {
-  async getMyMedicalRecords(userRole?: string) {
+  async getMyMedicalRecords(userRole?: string): Promise<MedicalRecord[]> {
     try {
-      // Si el usuario es especialista, usa la ruta /medical-records/specialist
       const endpoint = userRole === 'Especialista'
         ? '/medical-records/specialist'
         : '/medical-records';
-      const response = await api.get(endpoint);
+      const response = await api.get<MedicalRecord[]>(endpoint);
       return response.data;
     } catch (error) {
       console.error('Error obteniendo registros médicos:', error);
