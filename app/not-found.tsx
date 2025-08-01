@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Heart, Home, ArrowLeft } from 'lucide-react';
 
@@ -72,51 +74,45 @@ export default function NotFound() {
           justifyContent: 'center',
           flexWrap: 'wrap'
         }}>
-          <Link href="/" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 24px',
-            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '8px',
-            fontWeight: '600',
-            transition: 'all 0.2s ease',
-            boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
-          }} onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 6px 8px -1px rgba(59, 130, 246, 0.4)';
-          }} onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.3)';
-          }}>
+          <Link 
+            href="/" 
+            className="not-found-link-primary"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
+            }}
+          >
             <Home style={{ width: '18px', height: '18px' }} />
             Ir al Inicio
           </Link>
 
-          <button onClick={() => window.history.back()} style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 24px',
-            background: 'white',
-            color: '#374151',
-            border: '1px solid #d1d5db',
-            borderRadius: '8px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }} onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#f9fafb';
-            e.currentTarget.style.borderColor = '#9ca3af';
-          }} onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'white';
-            e.currentTarget.style.borderColor = '#d1d5db';
-          }}>
+          <Link 
+            href="/login" 
+            className="not-found-link-secondary"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              background: 'white',
+              color: '#374151',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              fontWeight: '600',
+              textDecoration: 'none'
+            }}
+          >
             <ArrowLeft style={{ width: '18px', height: '18px' }} />
-            Volver Atrás
-          </button>
+            Ir al Login
+          </Link>
         </div>
 
         {/* Información adicional */}

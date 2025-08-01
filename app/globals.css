@@ -35,3 +35,22 @@ html {
 .border-border {
   border-color: #e2e8f0 !important;
 }
+
+/* Estilos hover para la página 404 */
+.not-found-link-primary {
+  transition: all 0.2s ease;
+}
+
+.not-found-link-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4);
+}
+
+.not-found-link-secondary {
+  transition: all 0.2s ease;
+}
+
+.not-found-link-secondary:hover {
+  background: #f9fafb !important;
+  border-color: #9ca3af !important;
+}
