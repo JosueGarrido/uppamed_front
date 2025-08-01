@@ -22,11 +22,11 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     // Configuración específica para el servidor
     if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        'react': 'react',
-        'react-dom': 'react-dom',
-      });
+      // Asegurar que React esté disponible
+      config.resolve = config.resolve || {};
+      config.resolve.alias = config.resolve.alias || {};
+      config.resolve.alias.react = require.resolve('react');
+      config.resolve.alias['react-dom'] = require.resolve('react-dom');
     }
     
     return config;

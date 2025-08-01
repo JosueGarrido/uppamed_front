@@ -10,6 +10,7 @@ out/
 
 # Archivos de dependencias
 node_modules/
+.npm-cache/
 
 # Archivos de logs
 npm-debug.log*
@@ -28,4 +29,8 @@ Thumbs.db
 
 # Archivos temporales
 *.tmp
-*.temp 
+*.temp
+
+# Archivos de caché
+.cache/
+.parcel-cache/ 
