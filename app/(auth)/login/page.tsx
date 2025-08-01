@@ -33,7 +33,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Panel izquierdo - Información médica */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 relative overflow-hidden">
         {/* Patrón de fondo */}
@@ -99,8 +99,8 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Panel derecho - Formulario de login - HTML PURO SIN COMPONENTES */}
-      <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col justify-center p-8 lg:p-12 xl:p-16">
+      {/* Panel derecho - Formulario de login - PANTALLA COMPLETA REAL */}
+      <div className="flex-1 flex flex-col justify-center p-8 lg:p-12 xl:p-16">
         {/* Logo móvil */}
         <div className="lg:hidden text-center mb-8">
           <div className="flex items-center justify-center mb-4">
@@ -112,7 +112,7 @@ export default function LoginPage() {
           <p className="text-gray-600">Sistema de Gestión Médica</p>
         </div>
 
-        {/* Formulario de login - HTML PURO SIN FONDOS */}
+        {/* Formulario de login - PANTALLA COMPLETA SIN RESTRICCIONES */}
         <div className="w-full">
           {/* Header del formulario */}
           <div className="text-center mb-8">
@@ -127,7 +127,7 @@ export default function LoginPage() {
             </p>
           </div>
           
-          {/* Formulario - HTML PURO SIN SOMBRAS NI FONDOS */}
+          {/* Formulario - OCUPA TODO EL ANCHO DISPONIBLE */}
           <div className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Campo Email */}
@@ -175,14 +175,14 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Error - HTML PURO SIN FONDOS */}
+              {/* Error */}
               {error && (
                 <div className="p-3 border border-red-200 rounded-md text-red-700 text-sm">
                   {error}
                 </div>
               )}
 
-              {/* Botón de login - HTML PURO SIN SOMBRAS */}
+              {/* Botón de login */}
               <button 
                 type="submit" 
                 className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-md transition-all duration-200 border-0 flex items-center justify-center"
