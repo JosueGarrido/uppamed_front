@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Heart, 
   Stethoscope, 
@@ -118,21 +117,23 @@ export default function LoginPage() {
             <p className="text-gray-600">Sistema de Gestión Médica</p>
           </div>
 
-          {/* Card de login */}
-          <Card className="shadow-2xl border-2 border-blue-100 bg-white/95 backdrop-blur-sm">
-            <CardHeader className="text-center pb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg border-b border-blue-200">
+          {/* Formulario de login sin card */}
+          <div className="w-full">
+            {/* Header del formulario */}
+            <div className="text-center mb-8">
               <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
                 <Shield className="h-8 w-8 text-white" />
               </div>
-              <CardTitle className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Bienvenido de vuelta
-              </CardTitle>
-              <CardDescription className="text-gray-600">
+              </h2>
+              <p className="text-gray-600">
                 Ingresa tus credenciales para acceder al sistema
-              </CardDescription>
-            </CardHeader>
+              </p>
+            </div>
             
-            <CardContent className="space-y-6 p-8">
+            {/* Formulario */}
+            <div className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Campo Email */}
                 <div className="space-y-2">
@@ -147,7 +148,7 @@ export default function LoginPage() {
                       placeholder="tucorreo@dominio.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white"
+                      className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
                       required
                     />
                   </div>
@@ -166,7 +167,7 @@ export default function LoginPage() {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white"
+                      className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
                       required
                     />
                     <button
@@ -214,15 +215,15 @@ export default function LoginPage() {
                   ¿Necesitas ayuda? Contacta al administrador del sistema
                 </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Información de seguridad */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500 flex items-center justify-center">
-              <Shield className="h-3 w-3 mr-1" />
-              Tus datos están protegidos con encriptación de nivel bancario
-            </p>
+            {/* Información de seguridad */}
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-500 flex items-center justify-center">
+                <Shield className="h-3 w-3 mr-1" />
+                Tus datos están protegidos con encriptación de nivel bancario
+              </p>
+            </div>
           </div>
         </div>
       </div>
