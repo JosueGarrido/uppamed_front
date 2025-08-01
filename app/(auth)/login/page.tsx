@@ -104,126 +104,124 @@ export default function LoginPage() {
       </div>
 
       {/* Panel derecho - Formulario de login */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="w-full max-w-md">
-          {/* Logo móvil */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <div className="p-2 bg-blue-600 rounded-full mr-3">
-                <Heart className="h-8 w-8 text-white" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900">UppaMed</h1>
+      <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
+        {/* Logo móvil */}
+        <div className="lg:hidden text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <div className="p-2 bg-blue-600 rounded-full mr-3">
+              <Heart className="h-8 w-8 text-white" />
             </div>
-            <p className="text-gray-600">Sistema de Gestión Médica</p>
+            <h1 className="text-3xl font-bold text-gray-900">UppaMed</h1>
+          </div>
+          <p className="text-gray-600">Sistema de Gestión Médica</p>
+        </div>
+
+        {/* Formulario de login - Ocupa todo el ancho disponible */}
+        <div className="w-full">
+          {/* Header del formulario */}
+          <div className="text-center mb-8">
+            <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
+              <Shield className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Bienvenido de vuelta
+            </h2>
+            <p className="text-gray-600">
+              Ingresa tus credenciales para acceder al sistema
+            </p>
+          </div>
+          
+          {/* Formulario */}
+          <div className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Campo Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                  Correo Electrónico
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="tucorreo@dominio.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Campo Contraseña */}
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                  Contraseña
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <Alert variant="destructive" className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-red-700">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Botón de login */}
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Iniciando sesión...
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <Stethoscope className="mr-2 h-5 w-5" />
+                    Iniciar Sesión
+                  </div>
+                )}
+              </Button>
+            </form>
+
+            {/* Información adicional */}
+            <div className="text-center pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-600">
+                ¿Necesitas ayuda? Contacta al administrador del sistema
+              </p>
+            </div>
           </div>
 
-          {/* Formulario de login sin card */}
-          <div className="w-full">
-            {/* Header del formulario */}
-            <div className="text-center mb-8">
-              <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Bienvenido de vuelta
-              </h2>
-              <p className="text-gray-600">
-                Ingresa tus credenciales para acceder al sistema
-              </p>
-            </div>
-            
-            {/* Formulario */}
-            <div className="space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Campo Email */}
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Correo Electrónico
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="tucorreo@dominio.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Campo Contraseña */}
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Contraseña
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Error */}
-                {error && (
-                  <Alert variant="destructive" className="border-red-200 bg-red-50">
-                    <AlertDescription className="text-red-700">
-                      {error}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {/* Botón de login */}
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Iniciando sesión...
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <Stethoscope className="mr-2 h-5 w-5" />
-                      Iniciar Sesión
-                    </div>
-                  )}
-                </Button>
-              </form>
-
-              {/* Información adicional */}
-              <div className="text-center pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600">
-                  ¿Necesitas ayuda? Contacta al administrador del sistema
-                </p>
-              </div>
-            </div>
-
-            {/* Información de seguridad */}
-            <div className="mt-6 text-center">
-              <p className="text-xs text-gray-500 flex items-center justify-center">
-                <Shield className="h-3 w-3 mr-1" />
-                Tus datos están protegidos con encriptación de nivel bancario
-              </p>
-            </div>
+          {/* Información de seguridad */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-gray-500 flex items-center justify-center">
+              <Shield className="h-3 w-3 mr-1" />
+              Tus datos están protegidos con encriptación de nivel bancario
+            </p>
           </div>
         </div>
       </div>
