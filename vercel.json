@@ -2,7 +2,7 @@
   "buildCommand": "npm run build:skip-validation",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "npm ci --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps",
   "devCommand": "npm run dev",
   "regions": ["iad1"],
   "functions": {
