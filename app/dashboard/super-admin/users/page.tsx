@@ -19,6 +19,7 @@ import {
   Eye
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function GlobalUsers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -28,6 +29,7 @@ export default function GlobalUsers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -68,6 +70,14 @@ export default function GlobalUsers() {
 
     setFilteredUsers(filtered);
   }, [users, searchTerm, roleFilter]);
+
+  const handleViewUser = (userId: number) => {
+    router.push(`/dashboard/super-admin/users/${userId}`);
+  };
+
+  const handleEditUser = (userId: number) => {
+    router.push(`/dashboard/super-admin/users/${userId}/edit`);
+  };
 
   const handleDeleteUser = async (userId: number) => {
     if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
@@ -200,10 +210,20 @@ export default function GlobalUsers() {
                   </td>
                   <td className="p-2">
                     <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewUser(user.id)}
+                        title="Ver usuario"
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleEditUser(user.id)}
+                        title="Editar usuario"
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button 
@@ -211,6 +231,7 @@ export default function GlobalUsers() {
                         size="sm"
                         onClick={() => handleDeleteUser(user.id)}
                         className="text-red-600 hover:text-red-800"
+                        title="Eliminar usuario"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
