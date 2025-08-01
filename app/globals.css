@@ -2,10 +2,10 @@
 
 @layer base {
   * {
-    @apply border-medical-200;
+    @apply border-gray-200;
   }
   body {
-    @apply bg-white text-medical-900;
+    @apply bg-white text-gray-900;
   }
 }
 
