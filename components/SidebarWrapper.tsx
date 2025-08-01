@@ -69,8 +69,8 @@ const SidebarWrapper = () => {
                 href={item.href}
                 className={`flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 ${
                   pathname === item.href
-                    ? 'bg-medical-500 text-white shadow-lg border-l-4 border-medical-600 font-semibold'
-                    : 'text-medical-700 hover:bg-medical-50 hover:text-medical-900 hover:shadow-md'
+                    ? 'bg-blue-600 text-white shadow-lg border-l-4 border-blue-800 font-semibold'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 hover:shadow-md'
                 }`}
               >
                 <span className="mr-3">{item.icon}</span>
@@ -78,10 +78,10 @@ const SidebarWrapper = () => {
               </Link>
             </li>
           ))}
-          <li className="mt-6 pt-4 border-t border-medical-200">
+          <li className="mt-6 pt-4 border-t border-gray-200">
             <button
               onClick={logout}
-              className="flex w-full items-center p-3 text-base font-normal text-medical-700 rounded-lg hover:bg-red-50 hover:text-red-700 transition-all duration-200 hover:shadow-md"
+              className="flex w-full items-center p-3 text-base font-normal text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-700 transition-all duration-200 hover:shadow-md"
             >
               <LogOut className="h-5 w-5 mr-3" />
               <span>Cerrar Sesión</span>

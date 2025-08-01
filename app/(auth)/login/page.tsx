@@ -187,7 +187,7 @@ export default function LoginPage() {
                 {/* Botón de login */}
                 <Button 
                   type="submit" 
-                  className="w-full h-12 text-lg font-semibold bg-medical-500 hover:bg-medical-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
+                  className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
                   disabled={isLoading}
                 >
                   {isLoading ? (

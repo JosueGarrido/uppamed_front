@@ -667,7 +667,7 @@ export default function GlobalUsers() {
             </div>
 
             {/* Botones de acción */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-border">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
               <Button 
                 type="button" 
                 variant="outline" 
@@ -678,7 +678,7 @@ export default function GlobalUsers() {
               </Button>
               <Button 
                 type="submit" 
-                variant="medical"
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                 disabled={saving}
               >
                 <Save className="mr-2 h-4 w-4" />
@@ -810,7 +810,7 @@ export default function GlobalUsers() {
             </div>
 
             {/* Botones de acción */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-border">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
               <Button 
                 type="button" 
                 variant="outline" 
@@ -821,7 +821,7 @@ export default function GlobalUsers() {
               </Button>
               <Button 
                 type="submit" 
-                variant="medical"
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                 disabled={creating}
               >
                 <Plus className="mr-2 h-4 w-4" />
