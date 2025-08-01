@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:skip-validation",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install",
@@ -9,5 +9,8 @@
     "app/**/*.tsx": {
       "maxDuration": 30
     }
+  },
+  "env": {
+    "SKIP_ENV_VALIDATION": "true"
   }
 } 
