@@ -5,6 +5,19 @@ import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserRole } from '@/types/auth';
+import { 
+  BarChart3, 
+  Building2, 
+  Users, 
+  Settings, 
+  UserCheck, 
+  User, 
+  Calendar, 
+  FileText, 
+  Microscope, 
+  ClipboardList, 
+  LogOut 
+} from 'lucide-react';
 
 const SidebarWrapper = () => {
   const { user, logout } = useAuth();
@@ -12,52 +25,52 @@ const SidebarWrapper = () => {
 
   if (!user) return null;
 
-  const menuItems: Record<UserRole, Array<{ name: string; href: string; icon: string }>> = {
+  const menuItems: Record<UserRole, Array<{ name: string; href: string; icon: React.ReactNode }>> = {
     'Super Admin': [
-      { name: 'Dashboard', href: '/dashboard/super-admin', icon: '📊' },
-      { name: 'Gestión de Tenants', href: '/dashboard/super-admin/tenants', icon: '🏢' },
-      { name: 'Gestión de Usuarios', href: '/dashboard/super-admin/users', icon: '👥' },
-      { name: 'Configuración', href: '/dashboard/super-admin/settings', icon: '⚙️' },
+      { name: 'Dashboard', href: '/dashboard/super-admin', icon: <BarChart3 className="h-5 w-5" /> },
+      { name: 'Gestión de Tenants', href: '/dashboard/super-admin/tenants', icon: <Building2 className="h-5 w-5" /> },
+      { name: 'Gestión de Usuarios', href: '/dashboard/super-admin/users', icon: <Users className="h-5 w-5" /> },
+      { name: 'Configuración', href: '/dashboard/super-admin/settings', icon: <Settings className="h-5 w-5" /> },
     ],
     'Administrador': [
-      { name: 'Dashboard', href: '/dashboard/admin', icon: '📊' },
-      { name: 'Usuarios', href: '/dashboard/admin/users', icon: '👥' },
-      { name: 'Especialistas', href: '/dashboard/admin/specialists', icon: '👨‍⚕️' },
-      { name: 'Pacientes', href: '/dashboard/admin/patients', icon: '🏥' },
-      { name: 'Citas', href: '/dashboard/admin/appointments', icon: '📅' },
+      { name: 'Dashboard', href: '/dashboard/admin', icon: <BarChart3 className="h-5 w-5" /> },
+      { name: 'Usuarios', href: '/dashboard/admin/users', icon: <Users className="h-5 w-5" /> },
+      { name: 'Especialistas', href: '/dashboard/admin/specialists', icon: <UserCheck className="h-5 w-5" /> },
+      { name: 'Pacientes', href: '/dashboard/admin/patients', icon: <User className="h-5 w-5" /> },
+      { name: 'Citas', href: '/dashboard/admin/appointments', icon: <Calendar className="h-5 w-5" /> },
     ],
     'Especialista': [
-      { name: 'Dashboard', href: '/dashboard/specialist', icon: '📊' },
-      { name: 'Mis Citas', href: '/appointments', icon: '📅' },
-      { name: 'Registros Médicos', href: '/medical-records', icon: '📝' },
-      { name: 'Exámenes', href: '/medical-exams', icon: '🔬' },
+      { name: 'Dashboard', href: '/dashboard/specialist', icon: <BarChart3 className="h-5 w-5" /> },
+      { name: 'Mis Citas', href: '/appointments', icon: <Calendar className="h-5 w-5" /> },
+      { name: 'Registros Médicos', href: '/medical-records', icon: <FileText className="h-5 w-5" /> },
+      { name: 'Exámenes', href: '/medical-exams', icon: <Microscope className="h-5 w-5" /> },
     ],
     'Paciente': [
-      { name: 'Dashboard', href: '/dashboard/paciente', icon: '📊' },
-      { name: 'Mis Citas', href: '/appointments', icon: '📅' },
-      { name: 'Historial Médico', href: '/medical-records', icon: '📋' },
-      { name: 'Mis Exámenes', href: '/medical-exams', icon: '🔬' },
+      { name: 'Dashboard', href: '/dashboard/paciente', icon: <BarChart3 className="h-5 w-5" /> },
+      { name: 'Mis Citas', href: '/appointments', icon: <Calendar className="h-5 w-5" /> },
+      { name: 'Historial Médico', href: '/medical-records', icon: <ClipboardList className="h-5 w-5" /> },
+      { name: 'Mis Exámenes', href: '/medical-exams', icon: <Microscope className="h-5 w-5" /> },
     ],
   };
 
   const currentUserMenu = menuItems[user.role] || [];
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg">
+    <aside className="w-64 bg-white shadow-lg border-r border-medical-200">
       <div className="h-full px-3 py-4 overflow-y-auto">
-        <div className="mb-5 p-4">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">{user.name}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{user.role}</p>
+        <div className="mb-5 p-4 bg-medical-gradient-light rounded-lg">
+          <h2 className="text-lg font-semibold text-medical-900">{user.name}</h2>
+          <p className="text-sm text-medical-600">{user.role}</p>
         </div>
         <ul className="space-y-2">
           {currentUserMenu.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                className={`flex items-center p-3 text-base font-normal rounded-lg transition-colors duration-200 ${
                   pathname === item.href
-                    ? 'bg-gray-100 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400'
-                    : 'text-gray-900 dark:text-white'
+                    ? 'bg-medical-gradient text-white shadow-soft'
+                    : 'text-medical-700 hover:bg-medical-50 hover:text-medical-900'
                 }`}
               >
                 <span className="mr-3">{item.icon}</span>
@@ -65,12 +78,12 @@ const SidebarWrapper = () => {
               </Link>
             </li>
           ))}
-          <li>
+          <li className="mt-6 pt-4 border-t border-medical-200">
             <button
               onClick={logout}
-              className="flex w-full items-center p-2 text-base font-normal text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex w-full items-center p-3 text-base font-normal text-medical-700 rounded-lg hover:bg-medical-50 hover:text-medical-900 transition-colors duration-200"
             >
-              <span className="mr-3">🚪</span>
+              <LogOut className="h-5 w-5 mr-3" />
               <span>Cerrar Sesión</span>
             </button>
           </li>

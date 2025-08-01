@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
 import SidebarWrapper from '@/components/SidebarWrapper';
 import { Toaster } from 'sonner';
 import ImpersonationBanner from '@/components/ImpersonationBanner';
@@ -17,22 +16,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className="h-full">
-      <body className={`${inter.className} h-full`}>
+      <body className={`${inter.className} h-full bg-white`}>
         <AuthProvider>
-          <ThemeProvider>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-              <ImpersonationBanner />
-              <div className="flex min-h-screen">
-                <SidebarWrapper />
-                <main className="flex-1 p-6">
-                  <div className="max-w-7xl mx-auto">
-                    {children}
-                  </div>
-                </main>
-              </div>
+          <div className="min-h-screen bg-medical-50">
+            <ImpersonationBanner />
+            <div className="flex min-h-screen">
+              <SidebarWrapper />
+              <main className="flex-1 p-6">
+                <div className="max-w-7xl mx-auto">
+                  {children}
+                </div>
+              </main>
             </div>
-            <Toaster richColors position="top-right" />
-          </ThemeProvider>
+          </div>
+          <Toaster richColors position="top-right" />
         </AuthProvider>
       </body>
     </html>

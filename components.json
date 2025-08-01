@@ -6,8 +6,8 @@
   "tailwind": {
     "config": "tailwind.config.ts",
     "css": "app/globals.css",
-    "baseColor": "neutral",
-    "cssVariables": true,
+    "baseColor": "medical",
+    "cssVariables": false,
     "prefix": ""
   },
   "aliases": {
