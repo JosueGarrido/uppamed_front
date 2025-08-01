@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --no-lint --output=export",
-    "build:static": "next build --no-lint --output=export",
-    "build:skip-validation": "SKIP_ENV_VALIDATION=true next build --no-lint --output=export",
+    "build": "next build --no-lint",
+    "build:static": "next build --no-lint",
+    "build:skip-validation": "SKIP_ENV_VALIDATION=true next build --no-lint",
     "start": "next start",
     "lint": "next lint"
   },
