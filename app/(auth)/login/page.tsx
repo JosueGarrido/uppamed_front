@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/ui/button';
 import { 
   Heart, 
   Stethoscope, 
@@ -100,7 +99,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Panel derecho - Formulario de login - PANTALLA COMPLETA REAL */}
+      {/* Panel derecho - Formulario de login - HTML PURO SIN COMPONENTES */}
       <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col justify-center p-8 lg:p-12 xl:p-16">
         {/* Logo móvil */}
         <div className="lg:hidden text-center mb-8">
@@ -113,11 +112,11 @@ export default function LoginPage() {
           <p className="text-gray-600">Sistema de Gestión Médica</p>
         </div>
 
-        {/* Formulario de login - SIN FONDOS BLANCOS */}
+        {/* Formulario de login - HTML PURO SIN FONDOS */}
         <div className="w-full">
           {/* Header del formulario */}
           <div className="text-center mb-8">
-            <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
+            <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center">
               <Shield className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -128,7 +127,7 @@ export default function LoginPage() {
             </p>
           </div>
           
-          {/* Formulario - ELEMENTOS HTML NATIVOS SIN FONDOS */}
+          {/* Formulario - HTML PURO SIN SOMBRAS NI FONDOS */}
           <div className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Campo Email */}
@@ -176,17 +175,17 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Error - SIN FONDO BLANCO */}
+              {/* Error - HTML PURO SIN FONDOS */}
               {error && (
                 <div className="p-3 border border-red-200 rounded-md text-red-700 text-sm">
                   {error}
                 </div>
               )}
 
-              {/* Botón de login */}
-              <Button 
+              {/* Botón de login - HTML PURO SIN SOMBRAS */}
+              <button 
                 type="submit" 
-                className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
+                className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-md transition-all duration-200 border-0 flex items-center justify-center"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -200,7 +199,7 @@ export default function LoginPage() {
                     Iniciar Sesión
                   </div>
                 )}
-              </Button>
+              </button>
             </form>
 
             {/* Información adicional */}
