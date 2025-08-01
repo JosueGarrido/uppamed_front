@@ -2,9 +2,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Heart, 
   Stethoscope, 
@@ -103,8 +100,8 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Panel derecho - Formulario de login - PANTALLA COMPLETA */}
-      <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 p-8 lg:p-12 xl:p-16">
+      {/* Panel derecho - Formulario de login - PANTALLA COMPLETA REAL */}
+      <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col justify-center p-8 lg:p-12 xl:p-16">
         {/* Logo móvil */}
         <div className="lg:hidden text-center mb-8">
           <div className="flex items-center justify-center mb-4">
@@ -116,8 +113,8 @@ export default function LoginPage() {
           <p className="text-gray-600">Sistema de Gestión Médica</p>
         </div>
 
-        {/* Formulario de login - PANTALLA COMPLETA SIN RESTRICCIONES */}
-        <div className="h-full flex flex-col justify-center">
+        {/* Formulario de login - SIN FONDOS BLANCOS */}
+        <div className="w-full">
           {/* Header del formulario */}
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
@@ -131,23 +128,23 @@ export default function LoginPage() {
             </p>
           </div>
           
-          {/* Formulario - OCUPA TODO EL ANCHO DISPONIBLE */}
+          {/* Formulario - ELEMENTOS HTML NATIVOS SIN FONDOS */}
           <div className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Campo Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Correo Electrónico
-                </Label>
+                </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
+                  <input
                     id="email"
                     type="email"
                     placeholder="tucorreo@dominio.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
+                    className="w-full h-10 pl-10 pr-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                     required
                   />
                 </div>
@@ -155,18 +152,18 @@ export default function LoginPage() {
 
               {/* Campo Contraseña */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Contraseña
-                </Label>
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
+                  <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white shadow-sm"
+                    className="w-full h-10 pl-10 pr-10 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                     required
                   />
                   <button
@@ -179,13 +176,11 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Error */}
+              {/* Error - SIN FONDO BLANCO */}
               {error && (
-                <Alert variant="destructive" className="border-red-200 bg-red-50">
-                  <AlertDescription className="text-red-700">
-                    {error}
-                  </AlertDescription>
-                </Alert>
+                <div className="p-3 border border-red-200 rounded-md text-red-700 text-sm">
+                  {error}
+                </div>
               )}
 
               {/* Botón de login */}
