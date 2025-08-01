@@ -99,25 +99,26 @@ export default function LoginPage() {
           width: '40%',
           background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          borderRadius: '0 20px 20px 0'
         }} className="hidden lg:flex lg:w-2/5">
           {/* Formas orgánicas de fondo */}
           <div style={{
             position: 'absolute',
-            top: '10%',
-            right: '-20%',
-            width: '300px',
-            height: '300px',
+            top: '15%',
+            right: '-10%',
+            width: '200px',
+            height: '200px',
             background: 'rgba(255, 255, 255, 0.1)',
             borderRadius: '50%',
             animation: 'float 8s ease-in-out infinite'
           }}></div>
           <div style={{
             position: 'absolute',
-            bottom: '20%',
-            left: '-15%',
-            width: '200px',
-            height: '200px',
+            bottom: '25%',
+            left: '-8%',
+            width: '150px',
+            height: '150px',
             background: 'rgba(255, 255, 255, 0.08)',
             borderRadius: '50%',
             animation: 'float 12s ease-in-out infinite 2s'
@@ -125,9 +126,9 @@ export default function LoginPage() {
           <div style={{
             position: 'absolute',
             top: '60%',
-            right: '10%',
-            width: '150px',
-            height: '150px',
+            right: '15%',
+            width: '100px',
+            height: '100px',
             background: 'rgba(255, 255, 255, 0.06)',
             borderRadius: '50%',
             animation: 'float 10s ease-in-out infinite 1s'
@@ -143,95 +144,97 @@ export default function LoginPage() {
             alignItems: 'center',
             padding: '0 40px',
             color: 'white',
-            textAlign: 'center'
+            textAlign: 'center',
+            height: '100%'
           }}>
-            {/* Logo y branding */}
+            {/* Logo UppaMed */}
             <div style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              marginBottom: '40px'
+              marginBottom: '60px'
             }}>
               <div style={{
-                width: '60px',
-                height: '60px',
+                width: '80px',
+                height: '80px',
                 background: 'rgba(255, 255, 255, 0.2)',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: '16px',
+                marginBottom: '20px',
                 backdropFilter: 'blur(10px)',
                 border: '1px solid rgba(255, 255, 255, 0.3)'
               }}>
-                <Heart style={{ width: '32px', height: '32px', color: 'white' }} />
+                <Heart style={{ width: '40px', height: '40px', color: 'white' }} />
               </div>
               <h1 style={{
-                fontSize: '32px',
+                fontSize: '36px',
                 fontWeight: '700',
                 color: 'white',
-                letterSpacing: '-0.02em'
+                letterSpacing: '-0.02em',
+                marginBottom: '8px'
               }}>UppaMed</h1>
+              <p style={{
+                fontSize: '16px',
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontWeight: '400'
+              }}>Sistema de Gestión Médica</p>
             </div>
             
-            <h2 style={{
-              fontSize: '28px',
-              fontWeight: '600',
-              color: 'white',
-              marginBottom: '12px'
-            }}>Sistema de Gestión Médica</h2>
-            
+            {/* Descripción */}
             <p style={{
-              fontSize: '16px',
+              fontSize: '18px',
               color: 'rgba(255, 255, 255, 0.9)',
               lineHeight: '1.6',
-              maxWidth: '300px'
+              maxWidth: '280px',
+              marginBottom: '40px'
             }}>La plataforma más avanzada para administrar citas médicas y gestionar centros de salud de manera eficiente y profesional.</p>
             
             {/* Características destacadas */}
             <div style={{
-              marginTop: '40px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
+              gap: '16px',
               width: '100%',
               maxWidth: '280px'
             }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '12px',
+                padding: '12px 16px',
                 background: 'rgba(255, 255, 255, 0.1)',
                 borderRadius: '12px',
                 backdropFilter: 'blur(10px)',
                 border: '1px solid rgba(255, 255, 255, 0.2)'
               }}>
-                <Calendar style={{ width: '20px', height: '20px', color: 'white', marginRight: '12px' }} />
+                <Calendar style={{ width: '18px', height: '18px', color: 'white', marginRight: '12px' }} />
                 <span style={{ fontSize: '14px', color: 'white' }}>Gestión inteligente de citas</span>
               </div>
               
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '12px',
+                padding: '12px 16px',
                 background: 'rgba(255, 255, 255, 0.1)',
                 borderRadius: '12px',
                 backdropFilter: 'blur(10px)',
                 border: '1px solid rgba(255, 255, 255, 0.2)'
               }}>
-                <Users style={{ width: '20px', height: '20px', color: 'white', marginRight: '12px' }} />
+                <Users style={{ width: '18px', height: '18px', color: 'white', marginRight: '12px' }} />
                 <span style={{ fontSize: '14px', color: 'white' }}>Pacientes y especialistas</span>
               </div>
               
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '12px',
+                padding: '12px 16px',
                 background: 'rgba(255, 255, 255, 0.1)',
                 borderRadius: '12px',
                 backdropFilter: 'blur(10px)',
                 border: '1px solid rgba(255, 255, 255, 0.2)'
               }}>
-                <Zap style={{ width: '20px', height: '20px', color: 'white', marginRight: '12px' }} />
+                <Zap style={{ width: '18px', height: '18px', color: 'white', marginRight: '12px' }} />
                 <span style={{ fontSize: '14px', color: 'white' }}>Optimización automática</span>
               </div>
             </div>
