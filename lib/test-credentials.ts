@@ -1,35 +1,38 @@
-// Credenciales de prueba para desarrollo
-export const testCredentials = {
+export interface TestCredentials {
+  email: string;
+  password: string;
+  role: string;
+  description: string;
+}
+
+export const testCredentials: Record<string, TestCredentials> = {
   superAdmin: {
-    email: 'admin@test.com',
-    password: 'password123'
+    email: 'superadmin@sistema.com',
+    password: 'password',
+    role: 'Super Admin',
+    description: 'Super Administrador del sistema'
   },
   admin: {
     email: 'admin@hospital.com',
-    password: 'password123'
+    password: 'password',
+    role: 'Administrador',
+    description: 'Administrador del hospital'
   },
   specialist: {
     email: 'doctor@hospital.com',
-    password: 'password123'
+    password: 'password',
+    role: 'Especialista',
+    description: 'Médico especialista'
   },
   patient: {
     email: 'paciente@email.com',
-    password: 'password123'
+    password: 'password',
+    role: 'Paciente',
+    description: 'Paciente del hospital'
   }
 };
 
-// Función helper para obtener credenciales por rol
-export const getCredentialsByRole = (role: string) => {
-  switch (role.toLowerCase()) {
-    case 'super admin':
-      return testCredentials.superAdmin;
-    case 'administrador':
-      return testCredentials.admin;
-    case 'especialista':
-      return testCredentials.specialist;
-    case 'paciente':
-      return testCredentials.patient;
-    default:
-      return testCredentials.superAdmin;
-  }
+export const getCredentialsByRole = (role: string): TestCredentials | null => {
+  const entry = Object.entries(testCredentials).find(([_, creds]) => creds.role === role);
+  return entry ? entry[1] : null;
 }; 

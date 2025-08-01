@@ -1,41 +1,55 @@
-import axios from 'axios';
 import { authService } from './auth.service';
+import { buildApiUrl, createAuthHeaders } from '@/lib/config';
 import { MedicalRecord } from '@/types/medicalRecord';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://uppamed.vercel.app';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-api.interceptors.request.use((config) => {
-  const token = authService.getToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
 
 class MedicalRecordService {
   async getMyMedicalRecords(userRole?: string): Promise<MedicalRecord[]> {
     try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
       const endpoint = userRole === 'Especialista'
         ? '/medical-records/specialist'
         : '/medical-records';
-      const response = await api.get<MedicalRecord[]>(endpoint);
-      return response.data;
+      
+      const response = await fetch(buildApiUrl(endpoint), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener los registros médicos');
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error obteniendo registros médicos:', error);
-      throw new Error('Error al obtener los registros médicos');
+      throw error;
     }
   }
 
   async createMedicalRecord(recordData: Partial<MedicalRecord>): Promise<MedicalRecord> {
     try {
-      const response = await api.post<MedicalRecord>('/medical-records', recordData);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/medical-records'), {
+        method: 'POST',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(recordData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear el registro médico');
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error creando registro médico:', error);
-      throw new Error('Error al crear el registro médico');
+      throw error;
     }
   }
 }

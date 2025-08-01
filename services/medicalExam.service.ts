@@ -1,38 +1,51 @@
-import axios from 'axios';
 import { authService } from './auth.service';
+import { buildApiUrl, createAuthHeaders } from '@/lib/config';
 import { MedicalExam } from '@/types/medicalExam';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://uppamed.vercel.app';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-api.interceptors.request.use((config) => {
-  const token = authService.getToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
 
 class MedicalExamService {
   async getMyMedicalExams(): Promise<MedicalExam[]> {
     try {
-      const response = await api.get<MedicalExam[]>('/medical-exams');
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/medical-exams'), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener los exámenes médicos');
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error obteniendo exámenes médicos:', error);
-      throw new Error('Error al obtener los exámenes médicos');
+      throw error;
     }
   }
 
   async createMedicalExam(examData: Partial<MedicalExam>): Promise<MedicalExam> {
     try {
-      const response = await api.post<MedicalExam>('/medical-exams', examData);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/medical-exams'), {
+        method: 'POST',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(examData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear el examen médico');
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error creando examen médico:', error);
-      throw new Error('Error al crear el examen médico');
+      throw error;
     }
   }
 }

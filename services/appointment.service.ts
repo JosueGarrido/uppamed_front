@@ -1,83 +1,74 @@
 import { Appointment } from '@/types/appointment';
-import axios from 'axios';
 import { authService } from '@/services/auth.service';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://uppamed.vercel.app';
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Interceptor para agregar el token de autenticación
-api.interceptors.request.use((config) => {
-  const token = authService.getToken(); // Usar el servicio de auth para obtener el token
-  console.log('🔍 Verificando token para petición:', {
-    url: config.url,
-    method: config.method,
-    hasToken: !!token
-  });
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    console.log('✅ Token agregado al header');
-  } else {
-    console.warn('⚠️ No se encontró token de autenticación');
-  }
-  return config;
-});
-
-// Interceptor para manejar errores
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.error('❌ Error de autenticación:', error.response.data);
-      // Si el token es inválido, cerrar sesión
-      authService.logout();
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
+import { buildApiUrl, createAuthHeaders } from '@/lib/config';
 
 class AppointmentService {
   async getSpecialistAppointments(): Promise<Appointment[]> {
     try {
       console.log('🚀 Iniciando getSpecialistAppointments');
-      const response = await api.get('/appointments');
-      console.log('✅ Citas obtenidas:', response.data.length);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/appointments'), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener las citas');
+      }
+
+      const data = await response.json();
+      console.log('✅ Citas obtenidas:', data.length);
+      return data;
     } catch (error) {
       console.error('❌ Error obteniendo citas del especialista:', error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data.message || 'Error al obtener las citas');
-      }
-      throw new Error('Error al conectar con el servidor');
+      throw error;
     }
   }
 
   async getPatientAppointments(): Promise<Appointment[]> {
     try {
       console.log('🚀 Iniciando getPatientAppointments');
-      const response = await api.get('/appointments/patient');
-      console.log('✅ Citas del paciente obtenidas:', response.data.length);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/appointments/patient'), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener las citas del paciente');
+      }
+
+      const data = await response.json();
+      console.log('✅ Citas del paciente obtenidas:', data.length);
+      return data;
     } catch (error) {
       console.error('❌ Error obteniendo citas del paciente:', error);
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data.message || 'Error al obtener las citas');
-      }
-      throw new Error('Error al conectar con el servidor');
+      throw error;
     }
   }
 
   async getAppointmentById(appointmentId: string): Promise<Appointment | null> {
     try {
-      const response = await api.get(`/appointments/appointments/${appointmentId}`);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/appointments/appointments/${appointmentId}`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error fetching appointment:', error);
       return null;
@@ -89,8 +80,18 @@ class AppointmentService {
     status: Appointment['status']
   ): Promise<boolean> {
     try {
-      await api.put(`/appointments/appointments/${appointmentId}`, { status });
-      return true;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/appointments/appointments/${appointmentId}`), {
+        method: 'PUT',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify({ status })
+      });
+
+      return response.ok;
     } catch (error) {
       console.error('Error updating appointment status:', error);
       return false;
@@ -99,20 +100,45 @@ class AppointmentService {
 
   async createAppointment(appointmentData: Partial<Appointment>): Promise<Appointment | null> {
     try {
-      // Necesitamos el tenantId para crear la cita
-      const tenantId = localStorage.getItem('tenantId') || '1'; // Por defecto
-      const response = await api.post(`/appointments/${tenantId}/appointments`, appointmentData);
-      return response.data.appointment;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/appointments'), {
+        method: 'POST',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(appointmentData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear la cita');
+      }
+
+      const data = await response.json();
+      return data.appointment || data;
     } catch (error) {
       console.error('Error creating appointment:', error);
-      return null;
+      throw error;
     }
   }
 
   async getAppointmentsByTenant(tenantId: string | number): Promise<Appointment[]> {
     try {
-      const response = await api.get(`/appointments/${tenantId}/all`);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/appointments/${tenantId}/all`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener las citas del tenant');
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error obteniendo citas del tenant:', error);
       throw error;
@@ -121,8 +147,22 @@ class AppointmentService {
 
   async updateAppointment(appointmentId: string | number, data: any): Promise<any> {
     try {
-      const response = await api.put(`/appointments/appointments/${appointmentId}`, data);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/appointments/appointments/${appointmentId}`), {
+        method: 'PUT',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar la cita');
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error actualizando cita:', error);
       throw error;
@@ -131,8 +171,21 @@ class AppointmentService {
 
   async deleteAppointment(appointmentId: string | number): Promise<any> {
     try {
-      const response = await api.delete(`/appointments/appointments/${appointmentId}`);
-      return response.data;
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/appointments/appointments/${appointmentId}`), {
+        method: 'DELETE',
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar la cita');
+      }
+
+      return response.json();
     } catch (error) {
       console.error('Error eliminando cita:', error);
       throw error;

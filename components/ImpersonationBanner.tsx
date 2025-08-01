@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { authService } from '@/services/auth.service';
 import { toast } from 'sonner';
 
 export default function ImpersonationBanner() {
   const [isImpersonating, setIsImpersonating] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     const checkImpersonation = () => {
@@ -22,16 +24,21 @@ export default function ImpersonationBanner() {
 
   const handleRestore = async () => {
     try {
+      console.log('🔄 Iniciando restauración de sesión...');
       await authService.restoreImpersonation();
-      localStorage.removeItem('isImpersonating');
-      // Espera a que el usuario en el backend sea Super Admin antes de redirigir
-      const user = await authService.fetchUserData();
-      if (user.role === 'Super Admin') {
-        window.location.href = '/dashboard/super-admin';
+      
+      // Verificar que el usuario sea Super Admin
+      const user = authService.getCurrentUser();
+      if (user && user.role === 'Super Admin') {
+        console.log('✅ Sesión restaurada correctamente, redirigiendo...');
+        toast.success('Sesión de Super Admin restaurada');
+        router.push('/dashboard/super-admin');
       } else {
-        toast.error('No se pudo restaurar la sesión de Super Admin. Intenta cerrar sesión y volver a entrar.');
+        console.error('❌ Error: Usuario no es Super Admin después de la restauración');
+        toast.error('No se pudo restaurar la sesión de Super Admin');
       }
     } catch (err) {
+      console.error('❌ Error restaurando sesión:', err);
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
       toast.error(`Error al restaurar sesión: ${errorMessage}`);
     }

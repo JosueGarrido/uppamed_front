@@ -16,6 +16,8 @@ const SidebarWrapper = () => {
     'Super Admin': [
       { name: 'Dashboard', href: '/dashboard/super-admin', icon: '📊' },
       { name: 'Gestión de Tenants', href: '/dashboard/super-admin/tenants', icon: '🏢' },
+      { name: 'Gestión de Usuarios', href: '/dashboard/super-admin/users', icon: '👥' },
+      { name: 'Configuración', href: '/dashboard/super-admin/settings', icon: '⚙️' },
     ],
     'Administrador': [
       { name: 'Dashboard', href: '/dashboard/admin', icon: '📊' },
@@ -27,15 +29,14 @@ const SidebarWrapper = () => {
     'Especialista': [
       { name: 'Dashboard', href: '/dashboard/specialist', icon: '📊' },
       { name: 'Mis Citas', href: '/appointments', icon: '📅' },
-      { name: 'Pacientes', href: '/users', icon: '👥' },
       { name: 'Registros Médicos', href: '/medical-records', icon: '📝' },
       { name: 'Exámenes', href: '/medical-exams', icon: '🔬' },
     ],
     'Paciente': [
       { name: 'Dashboard', href: '/dashboard/paciente', icon: '📊' },
-      { name: 'Mis Citas', href: '/dashboard/paciente/appointments', icon: '📅' },
-      { name: 'Mi Historia', href: '/dashboard/paciente/history', icon: '📋' },
-      { name: 'Mis Exámenes', href: '/dashboard/paciente/exams', icon: '🔬' },
+      { name: 'Mis Citas', href: '/appointments', icon: '📅' },
+      { name: 'Historial Médico', href: '/medical-records', icon: '📋' },
+      { name: 'Mis Exámenes', href: '/medical-exams', icon: '🔬' },
     ],
   };
 
