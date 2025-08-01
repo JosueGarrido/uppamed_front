@@ -1,0 +1,58 @@
+0 verbose cli /usr/local/Cellar/node/23.6.1/bin/node /usr/local/bin/npm
+1 info using npm@10.9.2
+2 info using node@v23.6.1
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/.npmrc
+5 silly config load:file:/Users/josuegarrido/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install
+8 verbose argv "install"
+9 verbose logfile logs-max:10 dir:/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/.npm-cache/_logs/2025-08-01T15_16_07_716Z-
+10 verbose logfile /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/.npm-cache/_logs/2025-08-01T15_16_07_716Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 silly idealTree buildDeps
+14 silly reify moves {}
+15 verbose reify failed optional dependency /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-win32-x64-msvc
+16 silly reify mark deleted [
+16 silly reify   '/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-win32-x64-msvc'
+16 silly reify ]
+17 verbose reify failed optional dependency /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-win32-arm64-msvc
+18 silly reify mark deleted [
+18 silly reify   '/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-win32-arm64-msvc'
+18 silly reify ]
+19 verbose reify failed optional dependency /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-x64-musl
+20 silly reify mark deleted [
+20 silly reify   '/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-x64-musl'
+20 silly reify ]
+21 verbose reify failed optional dependency /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-x64-gnu
+22 silly reify mark deleted [
+22 silly reify   '/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-x64-gnu'
+22 silly reify ]
+23 verbose reify failed optional dependency /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-arm64-musl
+24 silly reify mark deleted [
+24 silly reify   '/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-arm64-musl'
+24 silly reify ]
+25 verbose reify failed optional dependency /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-arm64-gnu
+26 silly reify mark deleted [
+26 silly reify   '/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-linux-arm64-gnu'
+26 silly reify ]
+27 verbose reify failed optional dependency /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-darwin-arm64
+28 silly reify mark deleted [
+28 silly reify   '/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/node_modules/@next/swc-darwin-arm64'
+28 silly reify ]
+29 http cache fsevents@https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz 0ms (cache hit)
+30 silly ADD
+31 silly ADD
+32 silly ADD
+33 silly ADD
+34 silly ADD
+35 silly ADD
+36 silly ADD
+37 silly ADD node_modules/fsevents
+38 verbose cwd /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend
+39 verbose os Darwin 24.4.0
+40 verbose node v23.6.1
+41 verbose npm  v10.9.2
+42 verbose exit 0
+43 info ok
