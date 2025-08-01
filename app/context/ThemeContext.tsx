@@ -11,27 +11,50 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Verificar preferencia del sistema
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setIsDarkMode(prefersDark);
+    setIsMounted(true);
+    
+    // Solo ejecutar en el cliente
+    if (typeof window !== 'undefined') {
+      // Verificar preferencia del sistema
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      // Verificar si hay un tema guardado en localStorage
+      const savedTheme = localStorage.getItem('theme');
+      const initialTheme = savedTheme ? savedTheme === 'dark' : prefersDark;
+      
+      setIsDarkMode(initialTheme);
 
-    // Escuchar cambios en la preferencia del sistema
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
-    mediaQuery.addEventListener('change', handler);
+      // Escuchar cambios en la preferencia del sistema
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handler = (e: MediaQueryListEvent) => {
+        if (!localStorage.getItem('theme')) {
+          setIsDarkMode(e.matches);
+        }
+      };
+      mediaQuery.addEventListener('change', handler);
 
-    return () => mediaQuery.removeEventListener('change', handler);
+      return () => mediaQuery.removeEventListener('change', handler);
+    }
   }, []);
 
   useEffect(() => {
-    // Aplicar clases al documento
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
+    // Solo aplicar clases al documento si está montado
+    if (isMounted && typeof window !== 'undefined') {
+      document.documentElement.classList.toggle('dark', isDarkMode);
+    }
+  }, [isDarkMode, isMounted]);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(prev => !prev);
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    
+    // Guardar en localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newDarkMode ? 'dark' : 'light');
+    }
   };
 
   return (
