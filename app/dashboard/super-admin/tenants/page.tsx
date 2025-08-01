@@ -26,6 +26,9 @@ import {
 import Link from 'next/link';
 import { authService } from '@/services/auth.service';
 import Cookies from 'js-cookie';
+import { DashboardHeader } from '@/components/dashboard/header';
+import { DashboardShell } from '@/components/dashboard/shell';
+import { Plus, Building2, Edit, Eye, Trash2, Users, Settings, UserCheck } from 'lucide-react';
 
 interface Tenant {
   id: number;
@@ -219,16 +222,16 @@ export default function TenantsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-          Gestión de Tenants
-        </h1>
+    <DashboardShell>
+      <DashboardHeader
+        heading="Gestión de Tenants"
+        text="Administra los centros médicos y hospitales del sistema"
+      >
         <Button onClick={() => setShowCreateModal(true)}>
-          <span className="mr-2">➕</span>
+          <Plus className="mr-2 h-4 w-4" />
           Nuevo Tenant
         </Button>
-      </div>
+      </DashboardHeader>
 
       {error && (
         <div className="rounded-md bg-red-50 p-4">
@@ -247,174 +250,238 @@ export default function TenantsPage() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
-        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-          {tenants.map((tenant) => (
-            <li key={tenant.id}>
-              <div className="px-4 py-4 flex items-center sm:px-6">
-                <div className="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
-                  <div>
-                    <div className="flex text-sm">
-                      <p className="font-medium text-indigo-600 dark:text-indigo-400 truncate">
-                        {tenant.name}
-                      </p>
-                    </div>
-                    <div className="mt-2 flex">
-                      <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <span className="mr-2">🏢</span>
-                        {tenant.address}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex-shrink-0 sm:mt-0">
-                    <div className="flex space-x-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => startEditing(tenant)}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => void viewDetails(tenant)}
-                      >
-                        Ver detalles
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={() => setTenantToDelete(tenant)}
-                      >
-                        Eliminar
-                      </Button>
-                      <Link href={`/dashboard/super-admin/tenants/${tenant.id}/users`} className="ml-2 text-blue-600 hover:underline">
-                        Ver usuarios
-                      </Link>
-                      <Button variant="secondary" size="sm" className="ml-2" onClick={() => openConfigModal(tenant.id)}>Configurar</Button>
-                      <Button variant="outline" size="sm" className="ml-2" onClick={() => handleImpersonate(tenant)}>Impersonar</Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Crear Nuevo Tenant</DialogTitle>
-            <DialogDescription>
-              Ingresa los datos del nuevo tenant. Todos los campos son requeridos.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={(e) => void handleCreateTenant(e)}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Nombre</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  required
-                  value={newTenant.name}
-                  onChange={(e) => setNewTenant({ ...newTenant, name: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="address">Dirección</Label>
-                <Input
-                  id="address"
-                  type="text"
-                  required
-                  value={newTenant.address}
-                  onChange={(e) => setNewTenant({ ...newTenant, address: e.target.value })}
-                />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Building2 className="mr-2 h-5 w-5" />
+            Centros Médicos Registrados
+          </CardTitle>
+          <CardDescription>
+            Lista de todos los tenants (centros médicos) en el sistema
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {tenants.length === 0 ? (
+            <div className="text-center py-8">
+              <Building2 className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No hay tenants</h3>
+              <p className="mt-1 text-sm text-gray-500">Comienza creando el primer centro médico.</p>
+              <div className="mt-6">
+                <Button onClick={() => setShowCreateModal(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Crear Primer Tenant
+                </Button>
               </div>
             </div>
-            <DialogFooter>
+          ) : (
+            <div className="space-y-4">
+              {tenants.map((tenant) => (
+                <div key={tenant.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Building2 className="h-5 w-5 text-blue-600" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900">{tenant.name}</h3>
+                      <p className="text-sm text-gray-500">{tenant.address}</p>
+                      <p className="text-xs text-gray-400">
+                        Creado el {format(new Date(tenant.createdAt), "d 'de' MMMM 'de' yyyy", { locale: es })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => startEditing(tenant)}
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Editar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => void viewDetails(tenant)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Ver detalles
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openConfigModal(tenant.id)}
+                    >
+                      <Settings className="h-4 w-4 mr-1" />
+                      Configurar
+                    </Button>
+                    <Link href={`/dashboard/super-admin/tenants/${tenant.id}/users`}>
+                      <Button variant="outline" size="sm">
+                        <Users className="h-4 w-4 mr-1" />
+                        Ver usuarios
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleImpersonate(tenant)}
+                    >
+                      <UserCheck className="h-4 w-4 mr-1" />
+                      Impersonar
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setTenantToDelete(tenant)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Eliminar
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Modal de Crear Nuevo Tenant - Mejorado */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Plus className="mr-2 h-5 w-5" />
+              Crear Nuevo Tenant
+            </DialogTitle>
+            <DialogDescription>
+              Ingresa los datos del nuevo centro médico. Todos los campos son requeridos.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={(e) => void handleCreateTenant(e)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nombre del Centro Médico *</Label>
+              <Input
+                id="name"
+                type="text"
+                required
+                placeholder="Ej: Hospital Central"
+                value={newTenant.name}
+                onChange={(e) => setNewTenant({ ...newTenant, name: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="address">Dirección *</Label>
+              <Input
+                id="address"
+                type="text"
+                required
+                placeholder="Ej: Av. Principal 123, Ciudad"
+                value={newTenant.address}
+                onChange={(e) => setNewTenant({ ...newTenant, address: e.target.value })}
+              />
+            </div>
+            <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>
                 Cancelar
               </Button>
-              <Button type="submit">Crear</Button>
+              <Button type="submit">
+                <Plus className="mr-2 h-4 w-4" />
+                Crear Tenant
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
+      {/* Modal de Editar Tenant - Mejorado */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Editar Tenant</DialogTitle>
+            <DialogTitle className="flex items-center">
+              <Edit className="mr-2 h-5 w-5" />
+              Editar Tenant
+            </DialogTitle>
             <DialogDescription>
-              Modifica los datos del tenant. Todos los campos son requeridos.
+              Modifica los datos del centro médico. Todos los campos son requeridos.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={(e) => void handleEditTenant(e)}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-name">Nombre</Label>
-                <Input
-                  id="edit-name"
-                  type="text"
-                  required
-                  value={editingTenant?.name || ''}
-                  onChange={(e) => setEditingTenant(editingTenant ? { ...editingTenant, name: e.target.value } : null)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-address">Dirección</Label>
-                <Input
-                  id="edit-address"
-                  type="text"
-                  required
-                  value={editingTenant?.address || ''}
-                  onChange={(e) => setEditingTenant(editingTenant ? { ...editingTenant, address: e.target.value } : null)}
-                />
-              </div>
+          <form onSubmit={(e) => void handleEditTenant(e)} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nombre del Centro Médico *</Label>
+              <Input
+                id="edit-name"
+                type="text"
+                required
+                placeholder="Ej: Hospital Central"
+                value={editingTenant?.name || ''}
+                onChange={(e) => setEditingTenant(editingTenant ? { ...editingTenant, name: e.target.value } : null)}
+              />
             </div>
-            <DialogFooter>
+            <div className="space-y-2">
+              <Label htmlFor="edit-address">Dirección *</Label>
+              <Input
+                id="edit-address"
+                type="text"
+                required
+                placeholder="Ej: Av. Principal 123, Ciudad"
+                value={editingTenant?.address || ''}
+                onChange={(e) => setEditingTenant(editingTenant ? { ...editingTenant, address: e.target.value } : null)}
+              />
+            </div>
+            <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => {
                 setShowEditModal(false);
                 setEditingTenant(null);
               }}>
                 Cancelar
               </Button>
-              <Button type="submit">Guardar Cambios</Button>
+              <Button type="submit">
+                <Edit className="mr-2 h-4 w-4" />
+                Guardar Cambios
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
+      {/* Modal de Detalles del Tenant - Mejorado */}
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
-            <DialogTitle>Detalles del Tenant</DialogTitle>
+            <DialogTitle className="flex items-center">
+              <Eye className="mr-2 h-5 w-5" />
+              Detalles del Tenant
+            </DialogTitle>
           </DialogHeader>
           {selectedTenant && (
-            <div className="grid gap-6">
+            <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl">{selectedTenant.name}</CardTitle>
-                  <CardDescription>Información General</CardDescription>
+                  <CardTitle className="text-xl flex items-center">
+                    <Building2 className="mr-2 h-5 w-5" />
+                    {selectedTenant.name}
+                  </CardTitle>
+                  <CardDescription>Información General del Centro Médico</CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-4">
+                <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>ID</Label>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <Label className="text-sm font-medium">ID del Tenant</Label>
+                      <p className="text-sm text-gray-600 mt-1">
                         {selectedTenant.id}
                       </p>
                     </div>
                     <div>
-                      <Label>Fecha de Creación</Label>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <Label className="text-sm font-medium">Fecha de Creación</Label>
+                      <p className="text-sm text-gray-600 mt-1">
                         {format(new Date(selectedTenant.createdAt), "d 'de' MMMM 'de' yyyy", { locale: es })}
                       </p>
                     </div>
                   </div>
                   <div>
-                    <Label>Dirección</Label>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <Label className="text-sm font-medium">Dirección</Label>
+                    <p className="text-sm text-gray-600 mt-1">
                       {selectedTenant.address}
                     </p>
                   </div>
@@ -423,17 +490,23 @@ export default function TenantsPage() {
             </div>
           )}
           <DialogFooter>
-            <Button onClick={() => setShowDetailModal(false)}>Cerrar</Button>
+            <Button onClick={() => setShowDetailModal(false)}>
+              Cerrar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
+      {/* Modal de Eliminar Tenant - Mejorado */}
       <Dialog open={!!tenantToDelete} onOpenChange={(open) => !open && setTenantToDelete(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Eliminar Tenant</DialogTitle>
+            <DialogTitle className="flex items-center text-red-600">
+              <Trash2 className="mr-2 h-5 w-5" />
+              Eliminar Tenant
+            </DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas eliminar el tenant "{tenantToDelete?.name}"? Esta acción no se puede deshacer.
+              ¿Estás seguro que deseas eliminar el centro médico "{tenantToDelete?.name}"? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -441,25 +514,36 @@ export default function TenantsPage() {
               Cancelar
             </Button>
             <Button variant="destructive" onClick={handleDeleteTenant} disabled={isDeleting}>
+              <Trash2 className="mr-2 h-4 w-4" />
               {isDeleting ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
+      {/* Modal de Configuración - Mejorado */}
       <Dialog open={showConfigModal} onOpenChange={setShowConfigModal}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Configuración avanzada del Tenant</DialogTitle>
+            <DialogTitle className="flex items-center">
+              <Settings className="mr-2 h-5 w-5" />
+              Configuración Avanzada del Tenant
+            </DialogTitle>
+            <DialogDescription>
+              Configura parámetros avanzados para este centro médico.
+            </DialogDescription>
           </DialogHeader>
           {configLoading ? (
-            <div className="p-4 text-center">Cargando configuración...</div>
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-2">Cargando configuración...</span>
+            </div>
           ) : (
             <div className="space-y-4">
               {tenantConfig.map((cfg, idx) => (
                 <div key={idx} className="flex gap-2 items-center">
                   <Input
-                    placeholder="Clave"
+                    placeholder="Clave de configuración"
                     value={cfg.key}
                     onChange={e => handleConfigChange(idx, 'key', e.target.value)}
                   />
@@ -468,18 +552,28 @@ export default function TenantsPage() {
                     value={cfg.value}
                     onChange={e => handleConfigChange(idx, 'value', e.target.value)}
                   />
-                  <Button variant="destructive" size="icon" onClick={() => removeConfigRow(idx)}>-</Button>
+                  <Button variant="destructive" size="icon" onClick={() => removeConfigRow(idx)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               ))}
-              <Button variant="outline" onClick={addConfigRow}>Agregar clave</Button>
+              <Button variant="outline" onClick={addConfigRow}>
+                <Plus className="mr-2 h-4 w-4" />
+                Agregar configuración
+              </Button>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfigModal(false)}>Cancelar</Button>
-            <Button onClick={saveConfig} disabled={configSaving}>{configSaving ? 'Guardando...' : 'Guardar'}</Button>
+            <Button variant="outline" onClick={() => setShowConfigModal(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={saveConfig} disabled={configSaving}>
+              <Settings className="mr-2 h-4 w-4" />
+              {configSaving ? 'Guardando...' : 'Guardar Configuración'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardShell>
   );
 } 
