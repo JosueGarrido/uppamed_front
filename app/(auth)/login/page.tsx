@@ -40,7 +40,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Panel izquierdo - Información médica */}
-      <div className="hidden lg:flex lg:w-1/2 bg-medical-gradient relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 relative overflow-hidden">
         {/* Patrón de fondo */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-20 h-20 bg-white rounded-full"></div>
@@ -53,7 +53,9 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center px-12 text-white">
           <div className="mb-8">
             <div className="flex items-center mb-6">
-              <Heart className="h-12 w-12 mr-4 text-white" />
+              <div className="p-3 bg-white/20 rounded-full mr-4">
+                <Heart className="h-12 w-12 text-white" />
+              </div>
               <h1 className="text-4xl font-bold text-white">UppaMed</h1>
             </div>
             <p className="text-xl text-white mb-2 font-semibold">Sistema de Gestión Médica</p>
@@ -103,47 +105,49 @@ export default function LoginPage() {
       </div>
 
       {/* Panel derecho - Formulario de login */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-medical-gradient-soft">
+      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="w-full max-w-md">
           {/* Logo móvil */}
           <div className="lg:hidden text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <Heart className="h-10 w-10 mr-3 text-medical-600" />
-              <h1 className="text-3xl font-bold text-medical-900">UppaMed</h1>
+              <div className="p-2 bg-blue-600 rounded-full mr-3">
+                <Heart className="h-8 w-8 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900">UppaMed</h1>
             </div>
-            <p className="text-medical-700">Sistema de Gestión Médica</p>
+            <p className="text-gray-600">Sistema de Gestión Médica</p>
           </div>
 
           {/* Card de login */}
-          <Card className="shadow-soft-lg border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center pb-6">
-              <div className="mx-auto mb-4 p-3 bg-medical-gradient rounded-full w-16 h-16 flex items-center justify-center">
+          <Card className="shadow-2xl border-2 border-blue-100 bg-white/95 backdrop-blur-sm">
+            <CardHeader className="text-center pb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg border-b border-blue-200">
+              <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
                 <Shield className="h-8 w-8 text-white" />
               </div>
-              <CardTitle className="text-2xl font-bold text-medical-900">
+              <CardTitle className="text-2xl font-bold text-gray-900">
                 Bienvenido de vuelta
               </CardTitle>
-              <CardDescription className="text-medical-600">
+              <CardDescription className="text-gray-600">
                 Ingresa tus credenciales para acceder al sistema
               </CardDescription>
             </CardHeader>
             
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-8">
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Campo Email */}
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium text-medical-700">
+                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                     Correo Electrónico
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-medical-400" />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="tucorreo@dominio.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 border-medical-200 focus:border-medical-500 focus:ring-medical-500"
+                      className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white"
                       required
                     />
                   </div>
@@ -151,24 +155,24 @@ export default function LoginPage() {
 
                 {/* Campo Contraseña */}
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium text-medical-700">
+                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                     Contraseña
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-medical-400" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 border-medical-200 focus:border-medical-500 focus:ring-medical-500"
+                      className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-medical-400 hover:text-medical-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -177,8 +181,8 @@ export default function LoginPage() {
 
                 {/* Error */}
                 {error && (
-                  <Alert variant="destructive" className="border-danger-200 bg-danger-50">
-                    <AlertDescription className="text-danger-700">
+                  <Alert variant="destructive" className="border-red-200 bg-red-50">
+                    <AlertDescription className="text-red-700">
                       {error}
                     </AlertDescription>
                   </Alert>
@@ -187,7 +191,7 @@ export default function LoginPage() {
                 {/* Botón de login */}
                 <Button 
                   type="submit" 
-                  className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
+                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -205,8 +209,8 @@ export default function LoginPage() {
               </form>
 
               {/* Información adicional */}
-              <div className="text-center pt-4 border-t border-medical-100">
-                <p className="text-sm text-medical-600">
+              <div className="text-center pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600">
                   ¿Necesitas ayuda? Contacta al administrador del sistema
                 </p>
               </div>
@@ -215,8 +219,9 @@ export default function LoginPage() {
 
           {/* Información de seguridad */}
           <div className="mt-6 text-center">
-            <p className="text-xs text-medical-500">
-              🔒 Tus datos están protegidos con encriptación de nivel bancario
+            <p className="text-xs text-gray-500 flex items-center justify-center">
+              <Shield className="h-3 w-3 mr-1" />
+              Tus datos están protegidos con encriptación de nivel bancario
             </p>
           </div>
         </div>
