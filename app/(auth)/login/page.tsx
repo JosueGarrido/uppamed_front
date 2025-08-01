@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { 
   Heart, 
@@ -19,7 +19,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isDesktop, setIsDesktop] = useState(false);
   const { login, isLoading } = useAuth();
+
+  // Detectar si es desktop
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +90,8 @@ export default function LoginPage() {
           padding: 0 !important;
         }
       `}</style>
+      
+      {/* Contenedor principal responsive */}
       <div style={{
         minHeight: '100vh',
         display: 'flex',
@@ -89,226 +104,209 @@ export default function LoginPage() {
         bottom: 0,
         overflow: 'hidden'
       }}>
-        {/* Panel izquierdo - Fondo azul con burbujas */}
-        <div style={{
-          width: '33.33%',
-          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
-          position: 'relative',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '40px'
-        }} className="hidden lg:flex">
-          {/* Burbujas de fondo */}
+        {/* Panel izquierdo - Solo visible en desktop y tablet */}
+        {isDesktop && (
           <div style={{
-            position: 'absolute',
-            top: '20%',
-            right: '-5%',
-            width: '120px',
-            height: '120px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '50%',
-            animation: 'float 6s ease-in-out infinite'
-          }}></div>
-          <div style={{
-            position: 'absolute',
-            bottom: '30%',
-            left: '-3%',
-            width: '80px',
-            height: '80px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '50%',
-            animation: 'float 8s ease-in-out infinite 1s'
-          }}></div>
-          <div style={{
-            position: 'absolute',
-            top: '60%',
-            right: '10%',
-            width: '60px',
-            height: '60px',
-            background: 'rgba(255, 255, 255, 0.06)',
-            borderRadius: '50%',
-            animation: 'float 7s ease-in-out infinite 2s'
-          }}></div>
-          
-          {/* Logo UppaMed */}
-          <div style={{
+            width: '33.33%',
+            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
+            position: 'relative',
+            overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: '40px',
-            zIndex: 10
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '20px'
-            }}>
-              <Heart style={{ 
-                width: '32px', 
-                height: '32px', 
-                color: 'white',
-                strokeWidth: 2,
-                marginRight: '8px'
-              }} />
-              <h1 style={{
-                fontSize: '28px',
-                fontWeight: '700',
-                color: 'white',
-                letterSpacing: '-0.02em'
-              }}>UppaMed</h1>
-            </div>
-          </div>
-          
-          {/* Título principal */}
-          <h2 style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            color: 'white',
-            textAlign: 'center',
-            marginBottom: '16px',
-            lineHeight: '1.2',
-            zIndex: 10
-          }}>Sistema de Gestión Médica</h2>
-          
-          {/* Descripción */}
-          <p style={{
-            fontSize: '16px',
-            color: 'rgba(255, 255, 255, 0.9)',
-            textAlign: 'center',
-            marginBottom: '40px',
-            lineHeight: '1.5',
-            maxWidth: '280px',
-            zIndex: 10
-          }}>Administra centros médicos de manera eficiente y profesional</p>
-          
-          {/* Características */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            width: '100%',
-            maxWidth: '280px',
-            zIndex: 10
-          }}>
-            {/* Gestión de Centros */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '16px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '12px',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
-            }}>
-              <Building2 style={{ 
-                width: '24px', 
-                height: '24px', 
-                color: 'white', 
-                marginRight: '16px',
-                flexShrink: 0
-              }} />
-              <div>
-                <div style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: 'white',
-                  marginBottom: '4px'
-                }}>Gestión de Centros</div>
-                <div style={{
-                  fontSize: '12px',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  lineHeight: '1.4'
-                }}>Administra múltiples centros médicos desde una sola plataforma</div>
-              </div>
-            </div>
-            
-            {/* Usuarios Multirol */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '16px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '12px',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
-            }}>
-              <Users style={{ 
-                width: '24px', 
-                height: '24px', 
-                color: 'white', 
-                marginRight: '16px',
-                flexShrink: 0
-              }} />
-              <div>
-                <div style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: 'white',
-                  marginBottom: '4px'
-                }}>Usuarios Multirol</div>
-                <div style={{
-                  fontSize: '12px',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  lineHeight: '1.4'
-                }}>Super Admin, Administradores, Especialistas y Pacientes</div>
-              </div>
-            </div>
-            
-            {/* Dashboard Intuitivo */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '16px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '12px',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
-            }}>
-              <Activity style={{ 
-                width: '24px', 
-                height: '24px', 
-                color: 'white', 
-                marginRight: '16px',
-                flexShrink: 0
-              }} />
-              <div>
-                <div style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: 'white',
-                  marginBottom: '4px'
-                }}>Dashboard Intuitivo</div>
-                <div style={{
-                  fontSize: '12px',
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  lineHeight: '1.4'
-                }}>Monitorea métricas y gestiona citas de manera eficiente</div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Logo pequeño en la esquina */}
-          <div style={{
-            position: 'absolute',
-            bottom: '20px',
-            left: '20px',
-            width: '32px',
-            height: '32px',
-            background: 'rgba(0, 0, 0, 0.3)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '16px',
-            fontWeight: '600',
-            color: 'white'
+            alignItems: 'center',
+            padding: '40px'
           }}>
-            N
+            {/* Burbujas de fondo */}
+            <div style={{
+              position: 'absolute',
+              top: '20%',
+              right: '-5%',
+              width: '120px',
+              height: '120px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%',
+              animation: 'float 6s ease-in-out infinite'
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              bottom: '30%',
+              left: '-3%',
+              width: '80px',
+              height: '80px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '50%',
+              animation: 'float 8s ease-in-out infinite 1s'
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              top: '60%',
+              right: '10%',
+              width: '60px',
+              height: '60px',
+              background: 'rgba(255, 255, 255, 0.06)',
+              borderRadius: '50%',
+              animation: 'float 7s ease-in-out infinite 2s'
+            }}></div>
+            
+            {/* Logo UppaMed */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              marginBottom: '40px',
+              zIndex: 10
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '20px'
+              }}>
+                <Heart style={{ 
+                  width: '32px', 
+                  height: '32px', 
+                  color: 'white',
+                  strokeWidth: 2,
+                  marginRight: '8px'
+                }} />
+                <h1 style={{
+                  fontSize: '28px',
+                  fontWeight: '700',
+                  color: 'white',
+                  letterSpacing: '-0.02em'
+                }}>UppaMed</h1>
+              </div>
+            </div>
+            
+            {/* Título principal */}
+            <h2 style={{
+              fontSize: '32px',
+              fontWeight: '700',
+              color: 'white',
+              textAlign: 'center',
+              marginBottom: '16px',
+              lineHeight: '1.2',
+              zIndex: 10
+            }}>Sistema de Gestión Médica</h2>
+            
+            {/* Descripción */}
+            <p style={{
+              fontSize: '16px',
+              color: 'rgba(255, 255, 255, 0.9)',
+              textAlign: 'center',
+              marginBottom: '40px',
+              lineHeight: '1.5',
+              maxWidth: '280px',
+              zIndex: 10
+            }}>Administra centros médicos de manera eficiente y profesional</p>
+            
+            {/* Características */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              width: '100%',
+              maxWidth: '280px',
+              zIndex: 10
+            }}>
+              {/* Gestión de Centros */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
+              }}>
+                <Building2 style={{ 
+                  width: '24px', 
+                  height: '24px', 
+                  color: 'white', 
+                  marginRight: '16px',
+                  flexShrink: 0
+                }} />
+                <div>
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: 'white',
+                    marginBottom: '4px'
+                  }}>Gestión de Centros</div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    lineHeight: '1.4'
+                  }}>Administra múltiples centros médicos desde una sola plataforma</div>
+                </div>
+              </div>
+              
+              {/* Usuarios Multirol */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
+              }}>
+                <Users style={{ 
+                  width: '24px', 
+                  height: '24px', 
+                  color: 'white', 
+                  marginRight: '16px',
+                  flexShrink: 0
+                }} />
+                <div>
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: 'white',
+                    marginBottom: '4px'
+                  }}>Usuarios Multirol</div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    lineHeight: '1.4'
+                  }}>Super Admin, Administradores, Especialistas y Pacientes</div>
+                </div>
+              </div>
+              
+              {/* Dashboard Intuitivo */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
+              }}>
+                <Activity style={{ 
+                  width: '24px', 
+                  height: '24px', 
+                  color: 'white', 
+                  marginRight: '16px',
+                  flexShrink: 0
+                }} />
+                <div>
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: 'white',
+                    marginBottom: '4px'
+                  }}>Dashboard Intuitivo</div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    lineHeight: '1.4'
+                  }}>Monitorea métricas y gestiona citas de manera eficiente</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Panel derecho - Formulario de login */}
         <div style={{
@@ -317,34 +315,49 @@ export default function LoginPage() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '40px',
-          background: 'white'
-        }}>
-          {/* Logo móvil */}
+          padding: '20px',
+          background: 'white',
+          overflowY: 'auto',
+          width: '100%'
+        }} className="px-4 sm:px-6 lg:px-8">
+          {/* Logo móvil y tablet */}
           <div style={{
-            display: 'none',
+            display: 'flex',
             textAlign: 'center',
-            marginBottom: '40px'
+            marginBottom: '32px',
+            flexDirection: 'column',
+            alignItems: 'center'
           }} className="lg:hidden">
             <div style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: '16px'
+              marginBottom: '12px'
             }}>
               <Heart style={{ 
-                width: '24px', 
-                height: '24px', 
+                width: '28px', 
+                height: '28px', 
                 color: '#1e40af',
                 marginRight: '8px'
               }} />
               <h1 style={{
-                fontSize: '24px',
+                fontSize: '22px',
                 fontWeight: '700',
                 color: '#1e293b'
               }}>UppaMed</h1>
             </div>
-            <p style={{ color: '#64748b', fontSize: '14px' }}>Sistema de Gestión Médica</p>
+            <p style={{ 
+              color: '#64748b', 
+              fontSize: '14px',
+              marginBottom: '8px'
+            }}>Sistema de Gestión Médica</p>
+            {/* Línea decorativa */}
+            <div style={{
+              width: '40px',
+              height: '2px',
+              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+              borderRadius: '1px'
+            }}></div>
           </div>
 
           {/* Formulario de login */}
@@ -355,16 +368,16 @@ export default function LoginPage() {
             {/* Header del formulario */}
             <div style={{
               textAlign: 'center',
-              marginBottom: '40px'
+              marginBottom: '32px'
             }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                marginBottom: '24px'
+                marginBottom: '20px'
               }}>
                 <div style={{
-                  width: '60px',
-                  height: '60px',
+                  width: '56px',
+                  height: '56px',
                   background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
                   borderRadius: '50%',
                   display: 'flex',
@@ -372,14 +385,14 @@ export default function LoginPage() {
                   justifyContent: 'center'
                 }}>
                   <Shield style={{ 
-                    width: '28px', 
-                    height: '28px', 
+                    width: '24px', 
+                    height: '24px', 
                     color: 'white' 
                   }} />
                 </div>
               </div>
               <h2 style={{
-                fontSize: '28px',
+                fontSize: '24px',
                 fontWeight: '700',
                 color: '#1e293b',
                 marginBottom: '8px'
@@ -388,16 +401,16 @@ export default function LoginPage() {
               </h2>
               <p style={{ 
                 color: '#64748b',
-                fontSize: '16px'
+                fontSize: '15px'
               }}>
                 Ingresa tus credenciales para acceder al sistema
               </p>
             </div>
             
             {/* Formulario */}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {/* Campo Email */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{
                   fontSize: '14px',
                   fontWeight: '500',
@@ -408,7 +421,7 @@ export default function LoginPage() {
                 <div style={{ position: 'relative' }}>
                   <User style={{
                     position: 'absolute',
-                    left: '16px',
+                    left: '14px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     width: '18px',
@@ -423,12 +436,12 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     style={{
                       width: '100%',
-                      height: '48px',
-                      padding: '0 16px 0 44px',
+                      height: '44px',
+                      padding: '0 14px 0 40px',
                       border: '1px solid #d1d5db',
                       borderRadius: '8px',
                       color: '#1f2937',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       outline: 'none',
                       transition: 'all 0.2s ease',
                       background: 'white'
@@ -447,7 +460,7 @@ export default function LoginPage() {
               </div>
 
               {/* Campo Contraseña */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{
                   fontSize: '14px',
                   fontWeight: '500',
@@ -458,7 +471,7 @@ export default function LoginPage() {
                 <div style={{ position: 'relative' }}>
                   <Lock style={{
                     position: 'absolute',
-                    left: '16px',
+                    left: '14px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     width: '18px',
@@ -473,13 +486,13 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     style={{
                       width: '100%',
-                      height: '48px',
-                      padding: '0 16px 0 44px',
-                      paddingRight: '48px',
+                      height: '44px',
+                      padding: '0 14px 0 40px',
+                      paddingRight: '44px',
                       border: '1px solid #d1d5db',
                       borderRadius: '8px',
                       color: '#1f2937',
-                      fontSize: '16px',
+                      fontSize: '15px',
                       outline: 'none',
                       transition: 'all 0.2s ease',
                       background: 'white'
@@ -499,7 +512,7 @@ export default function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     style={{
                       position: 'absolute',
-                      right: '16px',
+                      right: '14px',
                       top: '50%',
                       transform: 'translateY(-50%)',
                       background: 'none',
@@ -536,8 +549,8 @@ export default function LoginPage() {
                 type="submit" 
                 style={{
                   width: '100%',
-                  height: '48px',
-                  fontSize: '16px',
+                  height: '44px',
+                  fontSize: '15px',
                   fontWeight: '600',
                   background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
                   color: 'white',
@@ -549,7 +562,8 @@ export default function LoginPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px'
+                  gap: '8px',
+                  marginTop: '8px'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-1px)';
@@ -564,8 +578,8 @@ export default function LoginPage() {
                 {isLoading ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{
-                      width: '20px',
-                      height: '20px',
+                      width: '18px',
+                      height: '18px',
                       border: '2px solid rgba(255,255,255,0.3)',
                       borderTop: '2px solid white',
                       borderRadius: '50%',
@@ -576,7 +590,7 @@ export default function LoginPage() {
                   </div>
                 ) : (
                   <>
-                    <Key style={{ width: '18px', height: '18px' }} />
+                    <Key style={{ width: '16px', height: '16px' }} />
                     Iniciar Sesión
                   </>
                 )}
@@ -586,17 +600,17 @@ export default function LoginPage() {
             {/* Información de ayuda */}
             <div style={{
               textAlign: 'center',
-              marginTop: '32px'
+              marginTop: '24px'
             }}>
               <p style={{
-                fontSize: '14px',
+                fontSize: '13px',
                 color: '#6b7280',
-                marginBottom: '8px'
+                marginBottom: '6px'
               }}>
                 ¿Necesitas ayuda? Contacta al administrador del sistema
               </p>
               <p style={{
-                fontSize: '14px',
+                fontSize: '13px',
                 color: '#6b7280'
               }}>
                 Tus datos están protegidos con encriptación de nivel bancario
@@ -605,6 +619,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
@@ -614,6 +629,31 @@ export default function LoginPage() {
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
+        }
+        
+        /* Responsive breakpoints */
+        @media (max-width: 640px) {
+          /* Mobile styles */
+          .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+          }
+        }
+        
+        @media (min-width: 641px) and (max-width: 1023px) {
+          /* Tablet styles */
+          .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          /* Desktop styles */
+          .px-8 {
+            padding-left: 2rem;
+            padding-right: 2rem;
+          }
         }
       `}</style>
     </>
