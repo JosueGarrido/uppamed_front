@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className="h-full">
-      <body className={`${inter.className} h-full`}>
+      <body className="h-full">
         <AuthProvider>
           {children}
         </AuthProvider>
