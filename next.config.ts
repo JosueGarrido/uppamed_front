@@ -32,8 +32,8 @@ const nextConfig: NextConfig = {
     return config;
   },
   
-  // Configuración de prerenderizado
-  output: 'standalone',
+  // Configuración de prerenderizado - EXPORT ESTÁTICO
+  output: 'export',
   
   // Configuración de tipos - DESHABILITADA
   typescript: {
@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
   },
   
   // Configuración de páginas estáticas
-  trailingSlash: false,
+  trailingSlash: true,
   
   // Configuración de exportación
   skipTrailingSlashRedirect: true,
@@ -61,6 +61,9 @@ const nextConfig: NextConfig = {
   generateBuildId: async () => {
     return 'build-' + Date.now();
   },
+  
+  // Deshabilitar prerenderizado estático
+  staticPageGenerationTimeout: 0,
 };
 
 export default nextConfig;
