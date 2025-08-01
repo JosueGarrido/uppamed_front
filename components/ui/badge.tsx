@@ -2,7 +2,7 @@ import React from 'react';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'medical';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -11,11 +11,12 @@ export function Badge({ children, variant = 'default', size = 'md', className = 
   const baseClasses = 'inline-flex items-center font-medium rounded-full';
   
   const variantClasses = {
-    default: 'bg-gray-100 text-gray-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    danger: 'bg-red-100 text-red-800',
-    info: 'bg-blue-100 text-blue-800'
+    default: 'bg-secondary text-secondary-foreground',
+    success: 'bg-success-100 text-success-800 border border-success-200',
+    warning: 'bg-warning-100 text-warning-800 border border-warning-200',
+    danger: 'bg-danger-100 text-danger-800 border border-danger-200',
+    info: 'bg-info-100 text-info-800 border border-info-200',
+    medical: 'bg-medical-100 text-medical-800 border border-medical-200'
   };
   
   const sizeClasses = {
@@ -44,7 +45,7 @@ export function RoleBadge({ role }: { role: string }) {
       case 'Paciente':
         return 'success';
       default:
-        return 'default';
+        return 'medical';
     }
   };
   

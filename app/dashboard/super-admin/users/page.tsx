@@ -367,7 +367,7 @@ export default function GlobalUsers() {
       >
         <Button 
           onClick={openCreateModal}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+          variant="medical"
         >
           <UserPlus className="mr-2 h-4 w-4" />
           Nuevo Usuario
@@ -375,25 +375,25 @@ export default function GlobalUsers() {
       </DashboardHeader>
 
       {/* Filtros y búsqueda */}
-      <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+      <Card className="p-6 bg-medical-gradient-light border-medical-200">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Buscar usuarios por nombre, email o identificación..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                className="pl-10"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-gray-400" />
+            <Filter className="h-4 w-4 text-muted-foreground" />
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="p-2 border border-blue-200 rounded-md focus:border-blue-500 focus:ring-blue-500"
+              className="p-2 border border-border rounded-md focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-input text-foreground"
             >
               <option value="">Todos los roles</option>
               <option value="Super Admin">Super Admin</option>
@@ -414,53 +414,53 @@ export default function GlobalUsers() {
 
       {/* Estadísticas */}
       <div className="grid gap-6 mt-8 md:grid-cols-4">
-        <Card className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+        <Card className="p-6 bg-medical-gradient-light border-medical-200">
           <div className="flex items-center">
-            <div className="p-3 bg-blue-600 rounded-full">
+            <div className="p-3 bg-medical-500 rounded-full">
               <Users className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <div className="text-2xl font-bold text-blue-900">{users.length}</div>
-              <div className="text-blue-700">Total Usuarios</div>
+              <div className="text-2xl font-bold text-medical-900">{users.length}</div>
+              <div className="text-medical-700">Total Usuarios</div>
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200">
+        <Card className="p-6 bg-warning-50 border-warning-200">
           <div className="flex items-center">
-            <div className="p-3 bg-yellow-600 rounded-full">
+            <div className="p-3 bg-warning-500 rounded-full">
               <Shield className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <div className="text-2xl font-bold text-yellow-900">
+              <div className="text-2xl font-bold text-warning-900">
                 {users.filter(u => u.role === 'Especialista').length}
               </div>
-              <div className="text-yellow-700">Especialistas</div>
+              <div className="text-warning-700">Especialistas</div>
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+        <Card className="p-6 bg-success-50 border-success-200">
           <div className="flex items-center">
-            <div className="p-3 bg-green-600 rounded-full">
+            <div className="p-3 bg-success-500 rounded-full">
               <UserIcon className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <div className="text-2xl font-bold text-green-900">
+              <div className="text-2xl font-bold text-success-900">
                 {users.filter(u => u.role === 'Paciente').length}
               </div>
-              <div className="text-green-700">Pacientes</div>
+              <div className="text-success-700">Pacientes</div>
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-gradient-to-r from-indigo-50 to-indigo-100 border-indigo-200">
+        <Card className="p-6 bg-info-50 border-info-200">
           <div className="flex items-center">
-            <div className="p-3 bg-indigo-600 rounded-full">
+            <div className="p-3 bg-info-500 rounded-full">
               <Shield className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <div className="text-2xl font-bold text-indigo-900">
+              <div className="text-2xl font-bold text-info-900">
                 {users.filter(u => u.role === 'Administrador').length}
               </div>
-              <div className="text-indigo-700">Administradores</div>
+              <div className="text-info-700">Administradores</div>
             </div>
           </div>
         </Card>
@@ -476,33 +476,33 @@ export default function GlobalUsers() {
         {selectedUser && (
           <div className="grid gap-6">
             {/* Información básica */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4 flex items-center text-blue-900">
+            <div className="bg-medical-gradient-light p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-medical-900">
                 <UserIcon className="mr-2 h-5 w-5" />
                 Información Básica
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Nombre de Usuario</label>
-                  <p className="text-lg font-medium text-gray-900">{selectedUser.username}</p>
+                  <label className="text-sm font-medium text-foreground">Nombre de Usuario</label>
+                  <p className="text-lg font-medium text-foreground">{selectedUser.username}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Email</label>
-                  <p className="text-lg flex items-center text-gray-900">
-                    <Mail className="mr-2 h-4 w-4 text-blue-500" />
+                  <label className="text-sm font-medium text-foreground">Email</label>
+                  <p className="text-lg flex items-center text-foreground">
+                    <Mail className="mr-2 h-4 w-4 text-medical-500" />
                     {selectedUser.email}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Rol</label>
+                  <label className="text-sm font-medium text-foreground">Rol</label>
                   <div className="mt-1">
                     <RoleBadge role={selectedUser.role} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Número de Identificación</label>
-                  <p className="text-lg flex items-center text-gray-900">
-                    <IdCard className="mr-2 h-4 w-4 text-blue-500" />
+                  <label className="text-sm font-medium text-foreground">Número de Identificación</label>
+                  <p className="text-lg flex items-center text-foreground">
+                    <IdCard className="mr-2 h-4 w-4 text-medical-500" />
                     {selectedUser.identification_number || 'No especificado'}
                   </p>
                 </div>
@@ -510,53 +510,53 @@ export default function GlobalUsers() {
             </div>
 
             {/* Información adicional */}
-            <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4 flex items-center text-green-900">
+            <div className="bg-success-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-success-900">
                 <Building className="mr-2 h-5 w-5" />
                 Información Adicional
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Centro Médico</label>
-                  <p className="text-lg text-gray-900">
+                  <label className="text-sm font-medium text-foreground">Centro Médico</label>
+                  <p className="text-lg text-foreground">
                     {getTenantName(selectedUser.tenant_id)}
                   </p>
                 </div>
                 {selectedUser.role === 'Especialista' && (
                   <>
                     <div>
-                      <label className="text-sm font-medium text-gray-600">Área</label>
-                      <p className="text-lg text-gray-900">{selectedUser.area || 'No especificada'}</p>
+                      <label className="text-sm font-medium text-foreground">Área</label>
+                      <p className="text-lg text-foreground">{selectedUser.area || 'No especificada'}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-600">Especialidad</label>
-                      <p className="text-lg text-gray-900">{selectedUser.specialty || 'No especificada'}</p>
+                      <label className="text-sm font-medium text-foreground">Especialidad</label>
+                      <p className="text-lg text-foreground">{selectedUser.specialty || 'No especificada'}</p>
                     </div>
                   </>
                 )}
                 <div>
-                  <label className="text-sm font-medium text-gray-600">ID del Usuario</label>
-                  <p className="text-lg font-mono text-gray-900">{selectedUser.id}</p>
+                  <label className="text-sm font-medium text-foreground">ID del Usuario</label>
+                  <p className="text-lg font-mono text-foreground">{selectedUser.id}</p>
                 </div>
               </div>
             </div>
 
             {/* Fechas */}
-            <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4 flex items-center text-purple-900">
+            <div className="bg-info-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-info-900">
                 <Calendar className="mr-2 h-5 w-5" />
                 Fechas del Sistema
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Fecha de Creación</label>
-                  <p className="text-lg text-gray-900">
+                  <label className="text-sm font-medium text-foreground">Fecha de Creación</label>
+                  <p className="text-lg text-foreground">
                     {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString('es-ES') : 'No disponible'}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Última Actualización</label>
-                  <p className="text-lg text-gray-900">
+                  <label className="text-sm font-medium text-foreground">Última Actualización</label>
+                  <p className="text-lg text-foreground">
                     {selectedUser.updatedAt ? new Date(selectedUser.updatedAt).toLocaleDateString('es-ES') : 'No disponible'}
                   </p>
                 </div>
@@ -576,40 +576,38 @@ export default function GlobalUsers() {
         <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }}>
           <div className="grid gap-6">
             {/* Información básica */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4 flex items-center text-blue-900">
+            <div className="bg-medical-gradient-light p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-medical-900">
                 <UserIcon className="mr-2 h-5 w-5" />
                 Información Básica
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de Usuario</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Nombre de Usuario</label>
                   <Input
                     name="username"
                     value={editFormData.username}
                     onChange={handleInputChange}
                     required
-                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Email</label>
                   <Input
                     name="email"
                     type="email"
                     value={editFormData.email}
                     onChange={handleInputChange}
                     required
-                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Rol</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Rol</label>
                   <select
                     name="role"
                     value={editFormData.role}
                     onChange={handleInputChange}
-                    className="w-full p-2 border border-blue-200 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full p-2 border border-border rounded-md focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-input text-foreground"
                     required
                   >
                     <option value="">Seleccionar rol</option>
@@ -620,60 +618,47 @@ export default function GlobalUsers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Número de Identificación</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Número de Identificación</label>
                   <Input
                     name="identification_number"
                     value={editFormData.identification_number}
                     onChange={handleInputChange}
-                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* Información adicional */}
-            <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg">
+            <div className="bg-green-50 p-6 rounded-lg">
               <h3 className="text-lg font-semibold mb-4 flex items-center text-green-900">
                 <Building className="mr-2 h-5 w-5" />
                 Información Adicional
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Centro Médico</label>
-                  <select
-                    name="tenant_id"
-                    value={editFormData.tenant_id}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-green-200 rounded-md focus:border-green-500 focus:ring-green-500"
-                  >
-                    <option value="">Sin centro asignado</option>
-                    {tenants.map(tenant => (
-                      <option key={tenant.id} value={tenant.id}>
-                        {tenant.name}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-medium text-foreground">Centro Médico</label>
+                  <p className="text-lg text-foreground">
+                    {getTenantName(selectedUser?.tenant_id)}
+                  </p>
                 </div>
                 {editFormData.role === 'Especialista' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Área</label>
+                      <label className="block text-sm font-medium text-foreground">Área</label>
                       <Input
                         name="area"
                         value={editFormData.area}
                         onChange={handleInputChange}
                         placeholder="Ej: Medicina Interna"
-                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Especialidad</label>
+                      <label className="block text-sm font-medium text-foreground">Especialidad</label>
                       <Input
                         name="specialty"
                         value={editFormData.specialty}
                         onChange={handleInputChange}
                         placeholder="Ej: Cardiología"
-                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
                       />
                     </div>
                   </>
@@ -682,20 +667,19 @@ export default function GlobalUsers() {
             </div>
 
             {/* Botones de acción */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-border">
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => setEditModalOpen(false)}
                 disabled={saving}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
+                variant="medical"
                 disabled={saving}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? 'Guardando...' : 'Guardar Cambios'}
@@ -715,51 +699,48 @@ export default function GlobalUsers() {
         <form onSubmit={(e) => { e.preventDefault(); handleCreateUser(); }}>
           <div className="grid gap-6">
             {/* Información básica */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4 flex items-center text-blue-900">
+            <div className="bg-medical-gradient-light p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-medical-900">
                 <UserIcon className="mr-2 h-5 w-5" />
                 Información Básica
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de Usuario</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Nombre de Usuario</label>
                   <Input
                     name="username"
                     value={createFormData.username}
                     onChange={handleCreateInputChange}
                     required
-                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Email</label>
                   <Input
                     name="email"
                     type="email"
                     value={createFormData.email}
                     onChange={handleCreateInputChange}
                     required
-                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Contraseña</label>
                   <Input
                     name="password"
                     type="password"
                     value={createFormData.password}
                     onChange={handleCreateInputChange}
                     required
-                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Rol</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Rol</label>
                   <select
                     name="role"
                     value={createFormData.role}
                     onChange={handleCreateInputChange}
-                    className="w-full p-2 border border-blue-200 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full p-2 border border-border rounded-md focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-input text-foreground"
                     required
                   >
                     <option value="">Seleccionar rol</option>
@@ -770,31 +751,30 @@ export default function GlobalUsers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Número de Identificación</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Número de Identificación</label>
                   <Input
                     name="identification_number"
                     value={createFormData.identification_number}
                     onChange={handleCreateInputChange}
-                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* Información adicional */}
-            <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg">
+            <div className="bg-green-50 p-6 rounded-lg">
               <h3 className="text-lg font-semibold mb-4 flex items-center text-green-900">
                 <Building className="mr-2 h-5 w-5" />
                 Información Adicional
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Centro Médico</label>
+                  <label className="block text-sm font-medium text-foreground">Centro Médico</label>
                   <select
                     name="tenant_id"
                     value={createFormData.tenant_id}
                     onChange={handleCreateInputChange}
-                    className="w-full p-2 border border-green-200 rounded-md focus:border-green-500 focus:ring-green-500"
+                    className="w-full p-2 border border-border rounded-md focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-input text-foreground"
                   >
                     <option value="">Sin centro asignado</option>
                     {tenants.map(tenant => (
@@ -807,23 +787,21 @@ export default function GlobalUsers() {
                 {createFormData.role === 'Especialista' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Área</label>
+                      <label className="block text-sm font-medium text-foreground">Área</label>
                       <Input
                         name="area"
                         value={createFormData.area}
                         onChange={handleCreateInputChange}
                         placeholder="Ej: Medicina Interna"
-                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Especialidad</label>
+                      <label className="block text-sm font-medium text-foreground">Especialidad</label>
                       <Input
                         name="specialty"
                         value={createFormData.specialty}
                         onChange={handleCreateInputChange}
                         placeholder="Ej: Cardiología"
-                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
                       />
                     </div>
                   </>
@@ -832,20 +810,19 @@ export default function GlobalUsers() {
             </div>
 
             {/* Botones de acción */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-border">
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => setCreateModalOpen(false)}
                 disabled={creating}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
+                variant="medical"
                 disabled={creating}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 {creating ? 'Creando...' : 'Crear Usuario'}
