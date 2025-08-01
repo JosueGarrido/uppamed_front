@@ -1,12 +1,11 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-medical-200;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-medical-900;
   }
 }
 

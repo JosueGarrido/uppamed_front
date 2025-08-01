@@ -9,7 +9,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Paleta médica principal
         medical: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -22,7 +21,6 @@ const config: Config = {
           800: '#075985',
           900: '#0c4a6e',
         },
-        // Colores de estado médico
         success: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -71,101 +69,13 @@ const config: Config = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
-        // Colores de fondo y texto - más claros
-        background: {
-          DEFAULT: '#ffffff',
-          secondary: '#f8fafc',
-          tertiary: '#f1f5f9',
-        },
-        foreground: {
-          DEFAULT: '#1e293b',
-          secondary: '#475569',
-          muted: '#64748b',
-        },
-        // Colores de borde
-        border: {
-          DEFAULT: '#e2e8f0',
-          secondary: '#cbd5e1',
-          accent: '#94a3b8',
-        },
-        // Colores de input
-        input: {
-          DEFAULT: '#ffffff',
-          border: '#e2e8f0',
-          focus: '#0ea5e9',
-        },
-        // Colores de ring (focus)
-        ring: {
-          DEFAULT: '#0ea5e9',
-          secondary: '#3b82f6',
-        },
-        // Colores de accent
-        accent: {
-          DEFAULT: '#f1f5f9',
-          foreground: '#0f172a',
-        },
-        // Colores de muted
-        muted: {
-          DEFAULT: '#f8fafc',
-          foreground: '#64748b',
-        },
-        // Colores de card
-        card: {
-          DEFAULT: '#ffffff',
-          foreground: '#0f172a',
-        },
-        // Colores de popover
-        popover: {
-          DEFAULT: '#ffffff',
-          foreground: '#0f172a',
-        },
-        // Colores de destructive
-        destructive: {
-          DEFAULT: '#ef4444',
-          foreground: '#ffffff',
-        },
-        // Colores de primary (usando medical)
-        primary: {
-          DEFAULT: '#0ea5e9',
-          foreground: '#ffffff',
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        },
-        // Colores de secondary
-        secondary: {
-          DEFAULT: '#64748b',
-          foreground: '#ffffff',
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-        },
       },
-      fontFamily: {
-        sans: ['Inter var', 'sans-serif'],
-      },
-      // Sombras personalizadas - más suaves
       boxShadow: {
         'medical': '0 4px 6px -1px rgba(14, 165, 233, 0.08), 0 2px 4px -1px rgba(14, 165, 233, 0.04)',
         'medical-lg': '0 10px 15px -3px rgba(14, 165, 233, 0.08), 0 4px 6px -2px rgba(14, 165, 233, 0.04)',
         'soft': '0 2px 8px rgba(0, 0, 0, 0.06)',
         'soft-lg': '0 4px 16px rgba(0, 0, 0, 0.08)',
       },
-      // Gradientes médicos - más suaves
       backgroundImage: {
         'medical-gradient': 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
         'medical-gradient-light': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
