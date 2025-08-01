@@ -28,7 +28,7 @@ import { authService } from '@/services/auth.service';
 import Cookies from 'js-cookie';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
-import { Plus, Building2, Edit, Eye, Trash2, Users, Settings, UserCheck } from 'lucide-react';
+import { Plus, Building2, Edit, Eye, Trash2, Users, Settings, UserCheck, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Tenant {
   id: number;
@@ -39,6 +39,7 @@ interface Tenant {
 
 export default function TenantsPage() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [filteredTenants, setFilteredTenants] = useState<Tenant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -56,11 +57,17 @@ export default function TenantsPage() {
   const [configSaving, setConfigSaving] = useState(false);
   const [impersonating, setImpersonating] = useState(false);
   const [impersonatedTenant, setImpersonatedTenant] = useState<string | null>(null);
+  
+  // Nuevos estados para filtro y paginación
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const tenantsPerPage = 5;
 
   const fetchTenants = async () => {
     try {
       const data = await tenantService.getAllTenants();
       setTenants(data);
+      setFilteredTenants(data);
       setError(null);
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -75,6 +82,22 @@ export default function TenantsPage() {
   useEffect(() => {
     void fetchTenants();
   }, []);
+
+  // Filtrar tenants basado en el término de búsqueda
+  useEffect(() => {
+    const filtered = tenants.filter(tenant =>
+      tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tenant.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredTenants(filtered);
+    setCurrentPage(1); // Resetear a la primera página cuando se filtra
+  }, [searchTerm, tenants]);
+
+  // Calcular tenants para la página actual
+  const indexOfLastTenant = currentPage * tenantsPerPage;
+  const indexOfFirstTenant = indexOfLastTenant - tenantsPerPage;
+  const currentTenants = filteredTenants.slice(indexOfFirstTenant, indexOfLastTenant);
+  const totalPages = Math.ceil(filteredTenants.length / tenantsPerPage);
 
   const handleCreateTenant = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -261,87 +284,156 @@ export default function TenantsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {tenants.length === 0 ? (
+          {/* Filtro de búsqueda */}
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Buscar por nombre o dirección..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            {searchTerm && (
+              <p className="text-sm text-gray-500 mt-2">
+                Mostrando {filteredTenants.length} de {tenants.length} tenants
+              </p>
+            )}
+          </div>
+
+          {filteredTenants.length === 0 ? (
             <div className="text-center py-8">
               <Building2 className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No hay tenants</h3>
-              <p className="mt-1 text-sm text-gray-500">Comienza creando el primer centro médico.</p>
-              <div className="mt-6">
-                <Button onClick={() => setShowCreateModal(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Crear Primer Tenant
-                </Button>
-              </div>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                {searchTerm ? 'No se encontraron tenants' : 'No hay tenants'}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                {searchTerm ? 'Intenta con otros términos de búsqueda.' : 'Comienza creando el primer centro médico.'}
+              </p>
+              {!searchTerm && (
+                <div className="mt-6">
+                  <Button onClick={() => setShowCreateModal(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Crear Primer Tenant
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="space-y-4">
-              {tenants.map((tenant) => (
-                <div key={tenant.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Building2 className="h-5 w-5 text-blue-600" />
+            <>
+              <div className="space-y-4">
+                {currentTenants.map((tenant) => (
+                  <div key={tenant.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Building2 className="h-5 w-5 text-blue-600" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900">{tenant.name}</h3>
+                        <p className="text-sm text-gray-500">{tenant.address}</p>
+                        <p className="text-xs text-gray-400">
+                          Creado el {format(new Date(tenant.createdAt), "d 'de' MMMM 'de' yyyy", { locale: es })}
+                        </p>
                       </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">{tenant.name}</h3>
-                      <p className="text-sm text-gray-500">{tenant.address}</p>
-                      <p className="text-xs text-gray-400">
-                        Creado el {format(new Date(tenant.createdAt), "d 'de' MMMM 'de' yyyy", { locale: es })}
-                      </p>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => startEditing(tenant)}
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Editar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => void viewDetails(tenant)}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Ver detalles
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openConfigModal(tenant.id)}
+                      >
+                        <Settings className="h-4 w-4 mr-1" />
+                        Configurar
+                      </Button>
+                      <Link href={`/dashboard/super-admin/tenants/${tenant.id}/users`}>
+                        <Button variant="outline" size="sm">
+                          <Users className="h-4 w-4 mr-1" />
+                          Ver usuarios
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleImpersonate(tenant)}
+                      >
+                        <UserCheck className="h-4 w-4 mr-1" />
+                        Impersonar
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setTenantToDelete(tenant)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Eliminar
+                      </Button>
                     </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Paginación */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-6">
+                  <div className="text-sm text-gray-700">
+                    Mostrando {indexOfFirstTenant + 1} a {Math.min(indexOfLastTenant, filteredTenants.length)} de {filteredTenants.length} tenants
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => startEditing(tenant)}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
                     >
-                      <Edit className="h-4 w-4 mr-1" />
-                      Editar
+                      <ChevronLeft className="h-4 w-4" />
+                      Anterior
                     </Button>
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className="w-8 h-8 p-0"
+                        >
+                          {page}
+                        </Button>
+                      ))}
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => void viewDetails(tenant)}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
                     >
-                      <Eye className="h-4 w-4 mr-1" />
-                      Ver detalles
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openConfigModal(tenant.id)}
-                    >
-                      <Settings className="h-4 w-4 mr-1" />
-                      Configurar
-                    </Button>
-                    <Link href={`/dashboard/super-admin/tenants/${tenant.id}/users`}>
-                      <Button variant="outline" size="sm">
-                        <Users className="h-4 w-4 mr-1" />
-                        Ver usuarios
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleImpersonate(tenant)}
-                    >
-                      <UserCheck className="h-4 w-4 mr-1" />
-                      Impersonar
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => setTenantToDelete(tenant)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Eliminar
+                      Siguiente
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

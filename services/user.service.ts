@@ -73,14 +73,14 @@ export const userService = {
     }
   },
 
-  async createUser(tenantId: string | number, userData: Partial<User>): Promise<User> {
+  async createUser(userData: Partial<User> & { tenant_id: number }): Promise<User> {
     try {
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl(`/users/${tenantId}/users`), {
+      const response = await fetch(buildApiUrl(`/users/${userData.tenant_id}/users`), {
         method: 'POST',
         headers: createAuthHeaders(token),
         body: JSON.stringify(userData)
