@@ -2,10 +2,11 @@
 
 @layer base {
   * {
-    @apply border-gray-200;
+    border-color: #e5e7eb;
   }
   body {
-    @apply bg-white text-gray-900;
+    background-color: transparent;
+    color: #111827;
   }
 }
 
@@ -24,11 +25,11 @@ html {
 }
 
 .bg-background {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
 }
 
 .bg-card {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
 }
 
 .border-border {
