@@ -8,6 +8,7 @@ import { Modal } from '@/components/ui/modal';
 import { DataTable } from '@/components/ui/data-table';
 import { RoleBadge } from '@/components/ui/badge';
 import { userService } from '@/services/user.service';
+import { tenantService } from '@/services/tenant.service';
 import { User, UserRole } from '@/types/auth';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardHeader } from '@/components/dashboard/header';
@@ -31,9 +32,17 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+interface Tenant {
+  id: number;
+  name: string;
+  address: string;
+  createdAt: string;
+}
+
 export default function GlobalUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,20 +75,24 @@ export default function GlobalUsers() {
   const { user } = useAuth();
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const loadData = async () => {
       try {
-        const allUsers = await userService.getAllUsers();
+        const [allUsers, allTenants] = await Promise.all([
+          userService.getAllUsers(),
+          tenantService.getAllTenants()
+        ]);
         setUsers(allUsers);
         setFilteredUsers(allUsers);
+        setTenants(allTenants);
         setLoading(false);
       } catch (error) {
-        setError('Error al cargar usuarios');
+        setError('Error al cargar datos');
         setLoading(false);
       }
     };
 
     if (user?.role === 'Super Admin') {
-      loadUsers();
+      loadData();
     }
   }, [user]);
 
@@ -100,6 +113,12 @@ export default function GlobalUsers() {
 
     setFilteredUsers(filtered);
   }, [users, searchTerm, roleFilter]);
+
+  const getTenantName = (tenantId: number | null | undefined) => {
+    if (!tenantId) return 'Sin centro asignado';
+    const tenant = tenants.find(t => t.id === tenantId);
+    return tenant ? tenant.name : `Centro ${tenantId}`;
+  };
 
   const handleViewUser = (user: User) => {
     setSelectedUser(user);
@@ -261,7 +280,7 @@ export default function GlobalUsers() {
         <div className="flex items-center">
           <Building className="h-4 w-4 text-gray-400 mr-2" />
           <span className="text-sm text-gray-900">
-            {value ? `Centro ${value}` : 'Sin centro'}
+            {getTenantName(value)}
           </span>
         </div>
       )
@@ -500,7 +519,7 @@ export default function GlobalUsers() {
                 <div>
                   <label className="text-sm font-medium text-gray-600">Centro Médico</label>
                   <p className="text-lg text-gray-900">
-                    {selectedUser.tenant_id ? `Centro ${selectedUser.tenant_id}` : 'Sin centro asignado'}
+                    {getTenantName(selectedUser.tenant_id)}
                   </p>
                 </div>
                 {selectedUser.role === 'Especialista' && (
@@ -620,15 +639,20 @@ export default function GlobalUsers() {
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Centro Médico (ID)</label>
-                  <Input
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Centro Médico</label>
+                  <select
                     name="tenant_id"
-                    type="number"
                     value={editFormData.tenant_id}
                     onChange={handleInputChange}
-                    placeholder="Dejar vacío para sin centro"
-                    className="border-green-200 focus:border-green-500 focus:ring-green-500"
-                  />
+                    className="w-full p-2 border border-green-200 rounded-md focus:border-green-500 focus:ring-green-500"
+                  >
+                    <option value="">Sin centro asignado</option>
+                    {tenants.map(tenant => (
+                      <option key={tenant.id} value={tenant.id}>
+                        {tenant.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 {editFormData.role === 'Especialista' && (
                   <>
@@ -765,15 +789,20 @@ export default function GlobalUsers() {
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Centro Médico (ID)</label>
-                  <Input
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Centro Médico</label>
+                  <select
                     name="tenant_id"
-                    type="number"
                     value={createFormData.tenant_id}
                     onChange={handleCreateInputChange}
-                    placeholder="Dejar vacío para sin centro"
-                    className="border-green-200 focus:border-green-500 focus:ring-green-500"
-                  />
+                    className="w-full p-2 border border-green-200 rounded-md focus:border-green-500 focus:ring-green-500"
+                  >
+                    <option value="">Sin centro asignado</option>
+                    {tenants.map(tenant => (
+                      <option key={tenant.id} value={tenant.id}>
+                        {tenant.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 {createFormData.role === 'Especialista' && (
                   <>
