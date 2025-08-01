@@ -103,8 +103,8 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Panel derecho - Formulario de login */}
-      <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
+      {/* Panel derecho - Formulario de login - PANTALLA COMPLETA */}
+      <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 p-8 lg:p-12 xl:p-16">
         {/* Logo móvil */}
         <div className="lg:hidden text-center mb-8">
           <div className="flex items-center justify-center mb-4">
@@ -116,8 +116,8 @@ export default function LoginPage() {
           <p className="text-gray-600">Sistema de Gestión Médica</p>
         </div>
 
-        {/* Formulario de login - Ocupa todo el ancho disponible */}
-        <div className="w-full">
+        {/* Formulario de login - PANTALLA COMPLETA SIN RESTRICCIONES */}
+        <div className="h-full flex flex-col justify-center">
           {/* Header del formulario */}
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
@@ -131,7 +131,7 @@ export default function LoginPage() {
             </p>
           </div>
           
-          {/* Formulario */}
+          {/* Formulario - OCUPA TODO EL ANCHO DISPONIBLE */}
           <div className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Campo Email */}
