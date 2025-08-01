@@ -291,11 +291,10 @@ export default function LoginPage() {
           <div style={{ width: '100%' }}>
             {/* Header del formulario */}
             <div style={{
-              textAlign: 'center',
               marginBottom: '32px'
             }}>
               <div style={{
-                margin: '0 auto 16px',
+                margin: '0 0 16px 0',
                 padding: '12px',
                 background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)',
                 borderRadius: '50%',
