@@ -361,7 +361,8 @@ export default function LoginPage() {
                         color: '#111827',
                         fontSize: '14px',
                         outline: 'none',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.2s',
+                        background: 'transparent'
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#3b82f6';
@@ -414,7 +415,8 @@ export default function LoginPage() {
                         color: '#111827',
                         fontSize: '14px',
                         outline: 'none',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.2s',
+                        background: 'transparent'
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#3b82f6';
@@ -456,7 +458,7 @@ export default function LoginPage() {
                     borderRadius: '6px',
                     color: '#dc2626',
                     fontSize: '14px',
-                    background: '#fef2f2'
+                    background: 'rgba(254, 242, 242, 0.8)'
                   }}>
                     {error}
                   </div>
