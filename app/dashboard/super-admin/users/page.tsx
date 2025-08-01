@@ -26,9 +26,9 @@ import {
   Building,
   Calendar,
   Shield,
-  Save
+  Save,
+  Plus
 } from 'lucide-react';
-import Link from 'next/link';
 import { toast } from 'sonner';
 
 export default function GlobalUsers() {
@@ -41,6 +41,7 @@ export default function GlobalUsers() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({
     username: '',
     email: '',
@@ -50,7 +51,18 @@ export default function GlobalUsers() {
     specialty: '',
     tenant_id: ''
   });
+  const [createFormData, setCreateFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    role: '' as UserRole,
+    identification_number: '',
+    area: '',
+    specialty: '',
+    tenant_id: ''
+  });
   const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -108,9 +120,31 @@ export default function GlobalUsers() {
     setEditModalOpen(true);
   };
 
+  const openCreateModal = () => {
+    setCreateFormData({
+      username: '',
+      email: '',
+      password: '',
+      role: '' as UserRole,
+      identification_number: '',
+      area: '',
+      specialty: '',
+      tenant_id: ''
+    });
+    setCreateModalOpen(true);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCreateInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setCreateFormData(prev => ({
       ...prev,
       [name]: value
     }));
@@ -140,6 +174,28 @@ export default function GlobalUsers() {
       toast.error('Error al actualizar el usuario');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleCreateUser = async () => {
+    setCreating(true);
+    try {
+      const createData = {
+        ...createFormData,
+        tenant_id: createFormData.tenant_id ? parseInt(createFormData.tenant_id) : null
+      };
+
+      const newUser = await userService.createUser(createData.tenant_id || 1, createData);
+      
+      // Agregar el nuevo usuario a la lista
+      setUsers([...users, newUser]);
+      
+      toast.success('Usuario creado correctamente');
+      setCreateModalOpen(false);
+    } catch (error) {
+      toast.error('Error al crear el usuario');
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -290,12 +346,13 @@ export default function GlobalUsers() {
         heading="Gestión de Usuarios Globales"
         text="Administra todos los usuarios del sistema médico"
       >
-        <Link href="/dashboard/super-admin/users/new">
-          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Nuevo Usuario
-          </Button>
-        </Link>
+        <Button 
+          onClick={openCreateModal}
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+        >
+          <UserPlus className="mr-2 h-4 w-4" />
+          Nuevo Usuario
+        </Button>
       </DashboardHeader>
 
       {/* Filtros y búsqueda */}
@@ -446,14 +503,18 @@ export default function GlobalUsers() {
                     {selectedUser.tenant_id ? `Centro ${selectedUser.tenant_id}` : 'Sin centro asignado'}
                   </p>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Área</label>
-                  <p className="text-lg text-gray-900">{selectedUser.area || 'No especificada'}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Especialidad</label>
-                  <p className="text-lg text-gray-900">{selectedUser.specialty || 'No especificada'}</p>
-                </div>
+                {selectedUser.role === 'Especialista' && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Área</label>
+                      <p className="text-lg text-gray-900">{selectedUser.area || 'No especificada'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Especialidad</label>
+                      <p className="text-lg text-gray-900">{selectedUser.specialty || 'No especificada'}</p>
+                    </div>
+                  </>
+                )}
                 <div>
                   <label className="text-sm font-medium text-gray-600">ID del Usuario</label>
                   <p className="text-lg font-mono text-gray-900">{selectedUser.id}</p>
@@ -569,26 +630,30 @@ export default function GlobalUsers() {
                     className="border-green-200 focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Área</label>
-                  <Input
-                    name="area"
-                    value={editFormData.area}
-                    onChange={handleInputChange}
-                    placeholder="Ej: Medicina Interna"
-                    className="border-green-200 focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Especialidad</label>
-                  <Input
-                    name="specialty"
-                    value={editFormData.specialty}
-                    onChange={handleInputChange}
-                    placeholder="Ej: Cardiología"
-                    className="border-green-200 focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
+                {editFormData.role === 'Especialista' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Área</label>
+                      <Input
+                        name="area"
+                        value={editFormData.area}
+                        onChange={handleInputChange}
+                        placeholder="Ej: Medicina Interna"
+                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Especialidad</label>
+                      <Input
+                        name="specialty"
+                        value={editFormData.specialty}
+                        onChange={handleInputChange}
+                        placeholder="Ej: Cardiología"
+                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -610,6 +675,151 @@ export default function GlobalUsers() {
               >
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? 'Guardando...' : 'Guardar Cambios'}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal de Creación */}
+      <Modal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        title="Crear Nuevo Usuario"
+        size="lg"
+      >
+        <form onSubmit={(e) => { e.preventDefault(); handleCreateUser(); }}>
+          <div className="grid gap-6">
+            {/* Información básica */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-blue-900">
+                <UserIcon className="mr-2 h-5 w-5" />
+                Información Básica
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de Usuario</label>
+                  <Input
+                    name="username"
+                    value={createFormData.username}
+                    onChange={handleCreateInputChange}
+                    required
+                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <Input
+                    name="email"
+                    type="email"
+                    value={createFormData.email}
+                    onChange={handleCreateInputChange}
+                    required
+                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                  <Input
+                    name="password"
+                    type="password"
+                    value={createFormData.password}
+                    onChange={handleCreateInputChange}
+                    required
+                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Rol</label>
+                  <select
+                    name="role"
+                    value={createFormData.role}
+                    onChange={handleCreateInputChange}
+                    className="w-full p-2 border border-blue-200 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="">Seleccionar rol</option>
+                    <option value="Super Admin">Super Admin</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Especialista">Especialista</option>
+                    <option value="Paciente">Paciente</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Número de Identificación</label>
+                  <Input
+                    name="identification_number"
+                    value={createFormData.identification_number}
+                    onChange={handleCreateInputChange}
+                    className="border-blue-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Información adicional */}
+            <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-green-900">
+                <Building className="mr-2 h-5 w-5" />
+                Información Adicional
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Centro Médico (ID)</label>
+                  <Input
+                    name="tenant_id"
+                    type="number"
+                    value={createFormData.tenant_id}
+                    onChange={handleCreateInputChange}
+                    placeholder="Dejar vacío para sin centro"
+                    className="border-green-200 focus:border-green-500 focus:ring-green-500"
+                  />
+                </div>
+                {createFormData.role === 'Especialista' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Área</label>
+                      <Input
+                        name="area"
+                        value={createFormData.area}
+                        onChange={handleCreateInputChange}
+                        placeholder="Ej: Medicina Interna"
+                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Especialidad</label>
+                      <Input
+                        name="specialty"
+                        value={createFormData.specialty}
+                        onChange={handleCreateInputChange}
+                        placeholder="Ej: Cardiología"
+                        className="border-green-200 focus:border-green-500 focus:ring-green-500"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Botones de acción */}
+            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setCreateModalOpen(false)}
+                disabled={creating}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={creating}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {creating ? 'Creando...' : 'Crear Usuario'}
               </Button>
             </div>
           </div>
