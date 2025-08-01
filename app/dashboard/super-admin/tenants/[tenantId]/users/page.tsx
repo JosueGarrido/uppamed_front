@@ -37,7 +37,7 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
 import { 
   Plus, 
-  User, 
+  User as UserIcon, 
   Edit, 
   Eye, 
   Trash2, 
@@ -250,15 +250,15 @@ export default function TenantUsersPage() {
   const getRoleIcon = (role: string) => {
     switch (role) {
       case 'Super Admin':
-        return <Shield className="h-4 w-4" />;
+        return <UserIcon className="h-4 w-4" />;
       case 'Administrador':
-        return <UserCheck className="h-4 w-4" />;
+        return <UserIcon className="h-4 w-4" />;
       case 'Especialista':
-        return <User className="h-4 w-4" />;
+        return <Shield className="h-4 w-4" />;
       case 'Paciente':
-        return <UserX className="h-4 w-4" />;
+        return <UserCheck className="h-4 w-4" />;
       default:
-        return <User className="h-4 w-4" />;
+        return <UserIcon className="h-4 w-4" />;
     }
   };
 
@@ -343,7 +343,7 @@ export default function TenantUsersPage() {
 
           {filteredUsers.length === 0 ? (
             <div className="text-center py-8">
-              <User className="mx-auto h-12 w-12 text-gray-400" />
+              <UserIcon className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
                 {searchTerm || roleFilter ? 'No se encontraron usuarios' : 'No hay usuarios'}
               </h3>
@@ -367,7 +367,7 @@ export default function TenantUsersPage() {
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <User className="h-5 w-5 text-blue-600" />
+                          <UserIcon className="h-5 w-5 text-blue-600" />
                         </div>
                       </div>
                       <div>
@@ -696,7 +696,7 @@ export default function TenantUsersPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center">
-                    <User className="mr-2 h-5 w-5" />
+                    <UserIcon className="mr-2 h-5 w-5" />
                     {selectedUser.username}
                   </CardTitle>
                   <CardDescription>Información General del Usuario</CardDescription>
