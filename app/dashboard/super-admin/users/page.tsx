@@ -237,13 +237,13 @@ export default function GlobalUsers() {
       render: (value: string, row: User) => (
         <div className="flex items-center">
           <div className="flex-shrink-0 h-10 w-10">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-full bg-medical-gradient flex items-center justify-center">
               <UserIcon className="h-5 w-5 text-white" />
             </div>
           </div>
           <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900">{value}</div>
-            <div className="text-sm text-gray-500">ID: {row.id}</div>
+            <div className="text-sm font-medium text-medical-900">{value}</div>
+            <div className="text-sm text-medical-600">ID: {row.id}</div>
           </div>
         </div>
       )
@@ -253,8 +253,8 @@ export default function GlobalUsers() {
       label: 'Email',
       render: (value: string) => (
         <div className="flex items-center">
-          <Mail className="h-4 w-4 text-gray-400 mr-2" />
-          <span className="text-sm text-gray-900">{value}</span>
+          <Mail className="h-4 w-4 text-medical-500 mr-2" />
+          <span className="text-sm text-medical-900 font-medium">{value}</span>
         </div>
       )
     },
@@ -268,8 +268,8 @@ export default function GlobalUsers() {
       label: 'Identificación',
       render: (value: string) => (
         <div className="flex items-center">
-          <IdCard className="h-4 w-4 text-gray-400 mr-2" />
-          <span className="text-sm text-gray-900">{value || '-'}</span>
+          <IdCard className="h-4 w-4 text-medical-500 mr-2" />
+          <span className="text-sm text-medical-900 font-medium">{value || '-'}</span>
         </div>
       )
     },
@@ -278,8 +278,8 @@ export default function GlobalUsers() {
       label: 'Centro',
       render: (value: number) => (
         <div className="flex items-center">
-          <Building className="h-4 w-4 text-gray-400 mr-2" />
-          <span className="text-sm text-gray-900">
+          <Building className="h-4 w-4 text-medical-500 mr-2" />
+          <span className="text-sm text-medical-900 font-medium">
             {getTenantName(value)}
           </span>
         </div>
@@ -297,7 +297,7 @@ export default function GlobalUsers() {
               e.stopPropagation();
               handleViewUser(row);
             }}
-            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+            className="text-medical-600 hover:text-medical-800 hover:bg-medical-50"
             title="Ver usuario"
           >
             <Eye className="h-4 w-4" />
@@ -309,7 +309,7 @@ export default function GlobalUsers() {
               e.stopPropagation();
               handleEditUser(row);
             }}
-            className="text-green-600 hover:text-green-800 hover:bg-green-50"
+            className="text-success-600 hover:text-success-800 hover:bg-success-50"
             title="Editar usuario"
           >
             <Edit className="h-4 w-4" />
@@ -321,7 +321,7 @@ export default function GlobalUsers() {
               e.stopPropagation();
               handleDeleteUser(row.id);
             }}
-            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+            className="text-danger-600 hover:text-danger-800 hover:bg-danger-50"
             title="Eliminar usuario"
           >
             <Trash2 className="h-4 w-4" />

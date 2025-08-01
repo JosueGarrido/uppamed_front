@@ -28,13 +28,13 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       />
       
       {/* Modal */}
-      <div className={`relative w-full mx-4 ${sizeClasses[size]} bg-card rounded-lg shadow-medical-lg border border-border`}>
+      <div className={`relative w-full mx-4 ${sizeClasses[size]} bg-white rounded-lg shadow-soft-lg border border-medical-200`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border bg-medical-gradient-light">
-          <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+        <div className="flex items-center justify-between p-6 border-b border-medical-200 bg-medical-gradient-light">
+          <h2 className="text-xl font-semibold text-medical-900">{title}</h2>
           <button
             onClick={onClose}
-            className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"
+            className="p-2 text-medical-400 hover:text-medical-600 hover:bg-medical-50 rounded-full transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
