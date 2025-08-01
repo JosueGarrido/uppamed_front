@@ -414,17 +414,30 @@ export default function LoginPage() {
               </p>
             </div>
             
-            {/* Formulario mejorado */}
+            {/* Formulario mejorado con bordes definidos */}
             <div style={{ 
-              background: 'rgba(255, 255, 255, 0.95)',
+              background: 'rgba(255, 255, 255, 0.98)',
               padding: '45px',
               borderRadius: '24px',
-              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.15)',
+              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.3)'
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              position: 'relative'
             }}>
+              {/* Borde decorativo superior */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60px',
+                height: '4px',
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #8b5cf6 100%)',
+                borderRadius: '0 0 2px 2px'
+              }}></div>
+              
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-                {/* Campo Email mejorado */}
+                {/* Campo Email mejorado con alineación corregida */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <label htmlFor="email" style={{
                     display: 'block',
@@ -443,7 +456,8 @@ export default function LoginPage() {
                       transform: 'translateY(-50%)',
                       width: '20px',
                       height: '20px',
-                      color: '#64748b'
+                      color: '#64748b',
+                      zIndex: 2
                     }} />
                     <input
                       id="email"
@@ -456,17 +470,16 @@ export default function LoginPage() {
                         height: '52px',
                         paddingLeft: '52px',
                         paddingRight: '18px',
-                        paddingTop: '14px',
-                        paddingBottom: '14px',
                         border: '2px solid #e2e8f0',
                         borderRadius: '14px',
                         color: '#1e293b',
                         fontSize: '16px',
                         outline: 'none',
                         transition: 'all 0.3s ease',
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        backdropFilter: 'blur(10px)',
-                        fontWeight: '500'
+                        background: '#ffffff',
+                        fontWeight: '500',
+                        lineHeight: '52px',
+                        verticalAlign: 'middle'
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#3b82f6';
@@ -483,7 +496,7 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Campo Contraseña mejorado */}
+                {/* Campo Contraseña mejorado con alineación corregida */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <label htmlFor="password" style={{
                     display: 'block',
@@ -502,7 +515,8 @@ export default function LoginPage() {
                       transform: 'translateY(-50%)',
                       width: '20px',
                       height: '20px',
-                      color: '#64748b'
+                      color: '#64748b',
+                      zIndex: 2
                     }} />
                     <input
                       id="password"
@@ -515,17 +529,16 @@ export default function LoginPage() {
                         height: '52px',
                         paddingLeft: '52px',
                         paddingRight: '52px',
-                        paddingTop: '14px',
-                        paddingBottom: '14px',
                         border: '2px solid #e2e8f0',
                         borderRadius: '14px',
                         color: '#1e293b',
                         fontSize: '16px',
                         outline: 'none',
                         transition: 'all 0.3s ease',
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        backdropFilter: 'blur(10px)',
-                        fontWeight: '500'
+                        background: '#ffffff',
+                        fontWeight: '500',
+                        lineHeight: '52px',
+                        verticalAlign: 'middle'
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = '#3b82f6';
@@ -553,7 +566,8 @@ export default function LoginPage() {
                         cursor: 'pointer',
                         padding: '6px',
                         borderRadius: '6px',
-                        transition: 'all 0.2s ease'
+                        transition: 'all 0.2s ease',
+                        zIndex: 2
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.color = '#3b82f6';
@@ -661,7 +675,7 @@ export default function LoginPage() {
               <div style={{
                 textAlign: 'center',
                 paddingTop: '28px',
-                borderTop: '1px solid rgba(226, 232, 240, 0.6)',
+                borderTop: '2px solid rgba(226, 232, 240, 0.8)',
                 marginTop: '28px'
               }}>
                 <p style={{
