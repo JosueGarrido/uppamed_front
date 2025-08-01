@@ -63,13 +63,31 @@ export default function LoginPage() {
         html {
           background: transparent !important;
         }
+        
+        /* Sobrescribir cualquier layout principal */
+        main {
+          padding: 0 !important;
+          max-width: none !important;
+          margin: 0 !important;
+        }
+        
+        main > div {
+          max-width: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
       `}</style>
       <div style={{
         minHeight: '100vh',
         display: 'flex',
         background: 'linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%)',
         width: '100%',
-        height: '100vh'
+        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
       }}>
         {/* Panel izquierdo - Información médica */}
         <div style={{
