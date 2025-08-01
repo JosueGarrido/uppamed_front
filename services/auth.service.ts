@@ -2,8 +2,7 @@
 
 import { LoginCredentials, AuthResponse, User } from '../types/auth';
 import Cookies from 'js-cookie';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://uppamed.vercel.app';
+import { buildApiUrl, createAuthHeaders } from '../lib/config';
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
@@ -13,9 +12,12 @@ export const authService = {
       }
       this.clearImpersonation();
 
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch(buildApiUrl('/auth/login'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({
           email: credentials.email.toLowerCase().trim(),
           password: credentials.password
@@ -50,12 +52,10 @@ export const authService = {
       const token = this.getToken();
       if (!token) throw new Error('No hay token de autenticación');
 
-      const response = await fetch(`${API_URL}/auth/me`, {
+      const response = await fetch(buildApiUrl('/auth/me'), {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+        headers: createAuthHeaders(token),
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Error al obtener datos del usuario');
@@ -124,12 +124,10 @@ export const authService = {
       }
     }
 
-    const response = await fetch(`${API_URL}/auth/impersonate/${tenantId}`, {
+    const response = await fetch(buildApiUrl(`/auth/impersonate/${tenantId}`), {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      }
+      headers: createAuthHeaders(token),
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -147,25 +145,44 @@ export const authService = {
   },
 
   async restoreImpersonation() {
-    // 1. Llama al endpoint del backend para restaurar el token original
-    const token = this.getToken();
-    const response = await fetch(`${API_URL}/auth/restore-impersonation`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Para enviar cookies
-    });
+    try {
+      // Obtener el token y usuario originales almacenados
+      const originalToken = localStorage.getItem('original_token') || Cookies.get('original_token');
+      const originalUserStr = localStorage.getItem('original_user') || Cookies.get('original_user');
+      
+      if (!originalToken) {
+        throw new Error('No se encontró la sesión original');
+      }
 
-    if (!response.ok) {
+      // Restaurar el token original
+      this.setToken(originalToken);
+      
+      // Restaurar el usuario original
+      if (originalUserStr) {
+        try {
+          const originalUser = JSON.parse(originalUserStr);
+          localStorage.setItem('user', JSON.stringify(originalUser));
+        } catch (error) {
+          console.error('Error parseando usuario original:', error);
+          // Si no se puede parsear, obtener del backend
+          await this.fetchUserData();
+        }
+      } else {
+        // Si no hay usuario original, obtener del backend
+        await this.fetchUserData();
+      }
+
+      // Limpiar flags de impersonación
+      localStorage.removeItem('isImpersonating');
+      localStorage.removeItem('original_token');
+      localStorage.removeItem('original_user');
+      Cookies.remove('original_token');
+      Cookies.remove('original_user');
+
+      return this.getCurrentUser();
+    } catch (error) {
+      console.error('Error restaurando impersonación:', error);
       throw new Error('No se pudo restaurar la sesión original');
     }
-
-    const data = await response.json();
-    // 2. Usa el token original devuelto por el backend
-    this.setToken(data.token);
-    // 3. Refresca el usuario desde el backend
-    return await this.fetchUserData();
   }
 }; 

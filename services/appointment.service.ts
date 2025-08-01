@@ -59,6 +59,21 @@ class AppointmentService {
     }
   }
 
+  async getPatientAppointments(): Promise<Appointment[]> {
+    try {
+      console.log('🚀 Iniciando getPatientAppointments');
+      const response = await api.get('/appointments/patient');
+      console.log('✅ Citas del paciente obtenidas:', response.data.length);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error obteniendo citas del paciente:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        throw new Error(error.response.data.message || 'Error al obtener las citas');
+      }
+      throw new Error('Error al conectar con el servidor');
+    }
+  }
+
   async getAppointmentById(appointmentId: string): Promise<Appointment | null> {
     try {
       const response = await api.get(`/appointments/appointments/${appointmentId}`);

@@ -28,6 +28,16 @@ class MedicalRecordService {
       throw new Error('Error al obtener los registros médicos');
     }
   }
+
+  async createMedicalRecord(recordData: Partial<MedicalRecord>): Promise<MedicalRecord> {
+    try {
+      const response = await api.post<MedicalRecord>('/medical-records', recordData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creando registro médico:', error);
+      throw new Error('Error al crear el registro médico');
+    }
+  }
 }
 
 export const medicalRecordService = new MedicalRecordService(); 

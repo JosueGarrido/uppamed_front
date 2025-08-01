@@ -138,6 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role: response.user.role
       });
       
+      // Actualizar estado inmediatamente con los datos del login
       setState({
         user: response.user,
         token: response.token,
@@ -149,7 +150,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Redirigir al dashboard correspondiente según el rol
       const dashboardRoute = DASHBOARD_ROUTES[response.user.role as keyof typeof DASHBOARD_ROUTES] || '/dashboard';
       console.log('🔄 Redirigiendo a:', dashboardRoute);
-      router.push(dashboardRoute);
+      
+      // Usar setTimeout para asegurar que el estado se actualice antes de la redirección
+      setTimeout(() => {
+        router.push(dashboardRoute);
+      }, 100);
+      
     } catch (error) {
       console.error('❌ Error en login:', error);
       setState(prev => ({

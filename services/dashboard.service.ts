@@ -9,17 +9,25 @@ function getAuthHeader() {
 }
 
 export interface SuperAdminSummary {
-  kpis: Array<{ label: string; value: number }>;
+  kpis: {
+    totalTenants: number;
+    totalUsers: number;
+    totalEspecialistas: number;
+    totalPacientes: number;
+    totalCitas: number;
+  };
   ultimosTenants: Array<{ id: number; name: string }>;
   ultimosUsuarios: Array<{ id: number; username: string; role: string }>;
   ultimasCitas: Array<{ id: number; date: string }>;
 }
 
 export interface TenantActivity {
-  id: number;
-  name: string;
-  activity: string;
-  date: string;
+  tenantId: number;
+  tenantName: string;
+  users: number;
+  especialistas: number;
+  pacientes: number;
+  citas: number;
 }
 
 export const dashboardService = {

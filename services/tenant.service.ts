@@ -1,8 +1,5 @@
 import { authService } from './auth.service';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const API_URL = 'https://uppamed.vercel.app';
+import { buildApiUrl, createAuthHeaders } from '@/lib/config';
 
 interface Tenant {
   id: number;
@@ -18,120 +15,165 @@ interface CreateTenantData {
 
 export const tenantService = {
   async getAllTenants(): Promise<Tenant[]> {
-    const token = authService.getToken();
-    if (!token) {
-      throw new Error('No hay token de autenticación');
-    }
-
-    const response = await fetch(`${API_URL}/tenants`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Error al obtener los tenants');
+      const response = await fetch(buildApiUrl('/tenants'), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener los tenants');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error obteniendo tenants:', error);
+      throw error;
     }
-
-    return response.json();
   },
 
   async createTenant(data: CreateTenantData): Promise<Tenant> {
-    const token = authService.getToken();
-    if (!token) {
-      throw new Error('No hay token de autenticación');
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/tenants'), {
+        method: 'POST',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al crear el tenant');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error creando tenant:', error);
+      throw error;
     }
-
-    const response = await fetch(`${API_URL}/tenants`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error al crear el tenant');
-    }
-
-    return response.json();
   },
 
   async getTenantById(id: number): Promise<Tenant> {
-    const token = authService.getToken();
-    if (!token) {
-      throw new Error('No hay token de autenticación');
-    }
-
-    const response = await fetch(`${API_URL}/tenants/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Error al obtener el tenant');
+      const response = await fetch(buildApiUrl(`/tenants/${id}`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener el tenant');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error obteniendo tenant por ID:', error);
+      throw error;
     }
-
-    return response.json();
   },
 
   async updateTenant(id: number, data: Partial<CreateTenantData>): Promise<Tenant> {
-    const token = authService.getToken();
-    if (!token) {
-      throw new Error('No hay token de autenticación');
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/tenants/${id}`), {
+        method: 'PUT',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al actualizar el tenant');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error actualizando tenant:', error);
+      throw error;
     }
-
-    const response = await fetch(`${API_URL}/tenants/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error al actualizar el tenant');
-    }
-
-    return response.json();
   },
 
   async deleteTenant(id: number): Promise<void> {
-    const token = authService.getToken();
-    if (!token) {
-      throw new Error('No hay token de autenticación');
-    }
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
 
-    const response = await fetch(`${API_URL}/tenants/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+      const response = await fetch(buildApiUrl(`/tenants/${id}`), {
+        method: 'DELETE',
+        headers: createAuthHeaders(token),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Error al eliminar el tenant');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al eliminar el tenant');
+      }
+    } catch (error) {
+      console.error('Error eliminando tenant:', error);
+      throw error;
     }
   },
 
   async getTenantConfig(tenantId: string | number) {
-    const { data } = await axios.get(`${API_URL}/tenants/${tenantId}/config`, { headers: getAuthHeader() });
-    return data;
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/tenants/${tenantId}/config`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener la configuración del tenant');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error obteniendo configuración del tenant:', error);
+      throw error;
+    }
   },
 
   async updateTenantConfig(tenantId: string | number, configs: { key: string, value: string }[]) {
-    const { data } = await axios.put(`${API_URL}/tenants/${tenantId}/config`, { configs }, { headers: getAuthHeader() });
-    return data;
-  },
-};
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
 
-function getAuthHeader() {
-  const token = Cookies.get('token') || authService.getToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-} 
+      const response = await fetch(buildApiUrl(`/tenants/${tenantId}/config`), {
+        method: 'PUT',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify({ configs })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al actualizar la configuración del tenant');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error actualizando configuración del tenant:', error);
+      throw error;
+    }
+  },
+}; 

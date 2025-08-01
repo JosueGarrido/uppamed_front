@@ -25,6 +25,16 @@ class MedicalExamService {
       throw new Error('Error al obtener los exámenes médicos');
     }
   }
+
+  async createMedicalExam(examData: Partial<MedicalExam>): Promise<MedicalExam> {
+    try {
+      const response = await api.post<MedicalExam>('/medical-exams', examData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creando examen médico:', error);
+      throw new Error('Error al crear el examen médico');
+    }
+  }
 }
 
 export const medicalExamService = new MedicalExamService(); 
