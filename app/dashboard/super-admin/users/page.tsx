@@ -375,25 +375,25 @@ export default function GlobalUsers() {
       </DashboardHeader>
 
       {/* Filtros y búsqueda */}
-      <Card className="p-6 bg-medical-gradient-light border-medical-200">
+      <Card className="p-6 bg-medical-gradient-soft border-medical-200 shadow-soft">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-medical-400 h-4 w-4" />
               <Input
                 placeholder="Buscar usuarios por nombre, email o identificación..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-medical-200 focus:border-medical-500 focus:ring-medical-500"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Filter className="h-4 w-4 text-medical-400" />
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="p-2 border border-border rounded-md focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-input text-foreground"
+              className="p-2 border border-medical-200 rounded-md focus:border-medical-500 focus:ring-2 focus:ring-medical-500 focus:ring-offset-2 bg-white text-medical-700"
             >
               <option value="">Todos los roles</option>
               <option value="Super Admin">Super Admin</option>
@@ -414,9 +414,9 @@ export default function GlobalUsers() {
 
       {/* Estadísticas */}
       <div className="grid gap-6 mt-8 md:grid-cols-4">
-        <Card className="p-6 bg-medical-gradient-light border-medical-200">
+        <Card className="p-6 bg-medical-gradient-soft border-medical-200 shadow-soft">
           <div className="flex items-center">
-            <div className="p-3 bg-medical-500 rounded-full">
+            <div className="p-3 bg-medical-gradient rounded-full">
               <Users className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
@@ -425,9 +425,9 @@ export default function GlobalUsers() {
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-warning-50 border-warning-200">
+        <Card className="p-6 bg-warning-50 border-warning-200 shadow-soft">
           <div className="flex items-center">
-            <div className="p-3 bg-warning-500 rounded-full">
+            <div className="p-3 bg-warning-gradient rounded-full">
               <Shield className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
@@ -438,9 +438,9 @@ export default function GlobalUsers() {
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-success-50 border-success-200">
+        <Card className="p-6 bg-success-50 border-success-200 shadow-soft">
           <div className="flex items-center">
-            <div className="p-3 bg-success-500 rounded-full">
+            <div className="p-3 bg-success-gradient rounded-full">
               <UserIcon className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
@@ -451,9 +451,9 @@ export default function GlobalUsers() {
             </div>
           </div>
         </Card>
-        <Card className="p-6 bg-info-50 border-info-200">
+        <Card className="p-6 bg-info-50 border-info-200 shadow-soft">
           <div className="flex items-center">
-            <div className="p-3 bg-info-500 rounded-full">
+            <div className="p-3 bg-info-gradient rounded-full">
               <Shield className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">

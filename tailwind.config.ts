@@ -71,14 +71,14 @@ const config: Config = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
-        // Colores de fondo y texto
+        // Colores de fondo y texto - más claros
         background: {
           DEFAULT: '#ffffff',
           secondary: '#f8fafc',
           tertiary: '#f1f5f9',
         },
         foreground: {
-          DEFAULT: '#0f172a',
+          DEFAULT: '#1e293b',
           secondary: '#475569',
           muted: '#64748b',
         },
@@ -158,18 +158,22 @@ const config: Config = {
       fontFamily: {
         sans: ['Inter var', 'sans-serif'],
       },
-      // Sombras personalizadas
+      // Sombras personalizadas - más suaves
       boxShadow: {
-        'medical': '0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -1px rgba(14, 165, 233, 0.06)',
-        'medical-lg': '0 10px 15px -3px rgba(14, 165, 233, 0.1), 0 4px 6px -2px rgba(14, 165, 233, 0.05)',
+        'medical': '0 4px 6px -1px rgba(14, 165, 233, 0.08), 0 2px 4px -1px rgba(14, 165, 233, 0.04)',
+        'medical-lg': '0 10px 15px -3px rgba(14, 165, 233, 0.08), 0 4px 6px -2px rgba(14, 165, 233, 0.04)',
+        'soft': '0 2px 8px rgba(0, 0, 0, 0.06)',
+        'soft-lg': '0 4px 16px rgba(0, 0, 0, 0.08)',
       },
-      // Gradientes médicos
+      // Gradientes médicos - más suaves
       backgroundImage: {
-        'medical-gradient': 'linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%)',
-        'medical-gradient-light': 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
-        'success-gradient': 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-        'warning-gradient': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-        'danger-gradient': 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+        'medical-gradient': 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)',
+        'medical-gradient-light': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+        'medical-gradient-soft': 'linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%)',
+        'success-gradient': 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)',
+        'warning-gradient': 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+        'danger-gradient': 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+        'info-gradient': 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
       },
     },
   },
