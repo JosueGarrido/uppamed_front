@@ -5,29 +5,29 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus:ring-2 focus:ring-medical-500 focus:ring-offset-2",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-medical hover:bg-primary/90 active:bg-primary/80",
+          "bg-medical-500 text-white shadow-lg hover:bg-medical-600 hover:shadow-xl active:bg-medical-700 transform hover:-translate-y-0.5",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-medical hover:bg-destructive/90 active:bg-destructive/80",
+          "bg-red-500 text-white shadow-lg hover:bg-red-600 hover:shadow-xl active:bg-red-700 transform hover:-translate-y-0.5",
         outline:
-          "border border-border bg-background text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-medical-200 bg-white text-medical-700 shadow-md hover:bg-medical-50 hover:text-medical-900 hover:shadow-lg transform hover:-translate-y-0.5",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-medical hover:bg-secondary/80 active:bg-secondary/70",
+          "bg-gray-100 text-gray-900 shadow-md hover:bg-gray-200 hover:shadow-lg active:bg-gray-300 transform hover:-translate-y-0.5",
         ghost:
-          "text-foreground hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "text-medical-700 hover:bg-medical-50 hover:text-medical-900 hover:shadow-md transform hover:-translate-y-0.5",
+        link: "text-medical-600 underline-offset-4 hover:underline hover:text-medical-800",
         success:
-          "bg-success-500 text-white shadow-medical hover:bg-success-600 active:bg-success-700",
+          "bg-green-500 text-white shadow-lg hover:bg-green-600 hover:shadow-xl active:bg-green-700 transform hover:-translate-y-0.5",
         warning:
-          "bg-warning-500 text-white shadow-medical hover:bg-warning-600 active:bg-warning-700",
+          "bg-yellow-500 text-white shadow-lg hover:bg-yellow-600 hover:shadow-xl active:bg-yellow-700 transform hover:-translate-y-0.5",
         info:
-          "bg-info-500 text-white shadow-medical hover:bg-info-600 active:bg-info-700",
+          "bg-blue-500 text-white shadow-lg hover:bg-blue-600 hover:shadow-xl active:bg-blue-700 transform hover:-translate-y-0.5",
         medical:
-          "bg-medical-gradient text-white shadow-medical hover:shadow-medical-lg active:bg-medical-700",
+          "bg-medical-500 text-white shadow-lg hover:bg-medical-600 hover:shadow-xl active:bg-medical-700 transform hover:-translate-y-0.5",
       },
       size: {
         default: "h-10 px-4 py-2",

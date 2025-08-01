@@ -54,10 +54,10 @@ export default function LoginPage() {
           <div className="mb-8">
             <div className="flex items-center mb-6">
               <Heart className="h-12 w-12 mr-4 text-white" />
-              <h1 className="text-4xl font-bold">UppaMed</h1>
+              <h1 className="text-4xl font-bold text-white">UppaMed</h1>
             </div>
-            <p className="text-xl text-blue-100 mb-2">Sistema de Gestión Médica</p>
-            <p className="text-blue-200">Administra centros médicos de manera eficiente y profesional</p>
+            <p className="text-xl text-white mb-2 font-semibold">Sistema de Gestión Médica</p>
+            <p className="text-white/90 text-lg">Administra centros médicos de manera eficiente y profesional</p>
           </div>
 
           {/* Características */}
@@ -67,8 +67,8 @@ export default function LoginPage() {
                 <Building2 className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Gestión de Centros</h3>
-                <p className="text-blue-200">Administra múltiples centros médicos desde una sola plataforma</p>
+                <h3 className="font-semibold text-lg text-white">Gestión de Centros</h3>
+                <p className="text-white/90">Administra múltiples centros médicos desde una sola plataforma</p>
               </div>
             </div>
             
@@ -77,8 +77,8 @@ export default function LoginPage() {
                 <Users className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Usuarios Multirol</h3>
-                <p className="text-blue-200">Super Admin, Administradores, Especialistas y Pacientes</p>
+                <h3 className="font-semibold text-lg text-white">Usuarios Multirol</h3>
+                <p className="text-white/90">Super Admin, Administradores, Especialistas y Pacientes</p>
               </div>
             </div>
             
@@ -87,15 +87,15 @@ export default function LoginPage() {
                 <Activity className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Dashboard Intuitivo</h3>
-                <p className="text-blue-200">Monitorea métricas y gestiona citas de manera eficiente</p>
+                <h3 className="font-semibold text-lg text-white">Dashboard Intuitivo</h3>
+                <p className="text-white/90">Monitorea métricas y gestiona citas de manera eficiente</p>
               </div>
             </div>
           </div>
 
           {/* Footer */}
           <div className="mt-auto pt-8">
-            <p className="text-blue-200 text-sm">
+            <p className="text-white/80 text-sm">
               © 2024 UppaMed. Sistema de gestión médica integral.
             </p>
           </div>
@@ -187,8 +187,7 @@ export default function LoginPage() {
                 {/* Botón de login */}
                 <Button 
                   type="submit" 
-                  variant="medical"
-                  className="w-full h-12 text-lg font-semibold shadow-medical hover:shadow-medical-lg transition-all duration-200"
+                  className="w-full h-12 text-lg font-semibold bg-medical-500 hover:bg-medical-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 border-0"
                   disabled={isLoading}
                 >
                   {isLoading ? (
