@@ -46,6 +46,13 @@ const nextConfig: NextConfig = {
     // Ignorar errores de ESLint durante el build
     ignoreDuringBuilds: true,
   },
+  
+  // Configuración de páginas estáticas
+  trailingSlash: false,
+  
+  // Configuración de exportación
+  skipTrailingSlashRedirect: true,
+  skipMiddlewareUrlNormalize: true,
 };
 
 export default nextConfig;
