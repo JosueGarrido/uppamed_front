@@ -64,6 +64,11 @@ const nextConfig: NextConfig = {
   
   // Configuración de timeout para generación estática (30 segundos)
   staticPageGenerationTimeout: 30000,
+  
+  // Deshabilitar generación estática
+  generateStaticParams: async () => {
+    return [];
+  },
 };
 
 export default nextConfig;

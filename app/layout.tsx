@@ -4,6 +4,10 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Deshabilitar prerenderizado
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'UppaMed - Sistema de gestión médica',
   description: 'Sistema CRM para la gestión de citas médicas',
