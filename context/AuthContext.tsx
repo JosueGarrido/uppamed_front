@@ -31,11 +31,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading: true,
     error: null
   });
+  const [isMounted, setIsMounted] = useState(false);
 
-  const isImpersonating = typeof window !== 'undefined' && authService.isImpersonating();
+  const isImpersonating = isMounted && typeof window !== 'undefined' && authService.isImpersonating();
 
   // Función para verificar el estado de autenticación
   const checkAuth = async () => {
+    if (!isMounted) return;
+    
     console.log('🔍 Verificando autenticación...');
     const token = authService.getToken();
     const user = authService.getCurrentUser();
@@ -70,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       // Redirigir al dashboard correspondiente si estamos en la página principal
-      if (window.location.pathname === '/') {
+      if (typeof window !== 'undefined' && window.location.pathname === '/') {
         const dashboardRoute = DASHBOARD_ROUTES[user.role as keyof typeof DASHBOARD_ROUTES] || '/dashboard';
         router.push(dashboardRoute);
       }
@@ -96,6 +99,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    
     checkAuth();
 
     // Listener para detectar cambios en localStorage (como restauración de sesión)
@@ -117,15 +126,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }, 100);
     };
 
-    // Agregar listeners
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('focus', handleLocalChange);
+    // Agregar listeners solo si estamos en el cliente
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange);
+      window.addEventListener('focus', handleLocalChange);
 
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleLocalChange);
-    };
-  }, []);
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener('focus', handleLocalChange);
+      };
+    }
+  }, [isMounted]);
 
   const login = async (credentials: LoginCredentials) => {
     console.log('🚀 Iniciando login...');

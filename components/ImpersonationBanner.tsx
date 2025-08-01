@@ -7,20 +7,25 @@ import { toast } from 'sonner';
 
 export default function ImpersonationBanner() {
   const [isImpersonating, setIsImpersonating] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setIsMounted(true);
+    
     const checkImpersonation = () => {
       if (typeof window !== 'undefined') {
         setIsImpersonating(localStorage.getItem('isImpersonating') === 'true');
       }
     };
+    
     checkImpersonation();
     const interval = setInterval(checkImpersonation, 500);
     return () => clearInterval(interval);
   }, []);
 
-  if (!isImpersonating) return null;
+  // Durante SSR o si no está suplantando, no mostrar el banner
+  if (!isMounted || !isImpersonating) return null;
 
   const handleRestore = async () => {
     try {

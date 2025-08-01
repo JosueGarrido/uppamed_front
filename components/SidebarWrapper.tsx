@@ -1,17 +1,16 @@
 'use client';
 
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserRole } from '@/types/auth';
+import { UserRole, User } from '@/types/auth';
 import { 
   BarChart3, 
   Building2, 
   Users, 
   Settings, 
   UserCheck, 
-  User, 
+  User as UserIcon, 
   Calendar, 
   FileText, 
   Microscope, 
@@ -19,13 +18,47 @@ import {
   LogOut 
 } from 'lucide-react';
 
+interface MenuItem {
+  name: string;
+  href: string;
+  icon: React.ReactNode;
+}
+
 const SidebarWrapper = () => {
-  const { user, logout } = useAuth();
   const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [logout, setLogout] = useState<(() => void) | null>(null);
 
-  if (!user) return null;
+  useEffect(() => {
+    setIsMounted(true);
+    
+    // Verificar si estamos en el cliente y si hay datos de usuario
+    if (typeof window !== 'undefined') {
+      try {
+        // Intentar obtener datos del localStorage
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+        }
+        
+        // Configurar logout
+        setLogout(() => () => {
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        });
+      } catch (error) {
+        console.log('Error loading user data:', error);
+      }
+    }
+  }, []);
 
-  const menuItems: Record<UserRole, Array<{ name: string; href: string; icon: React.ReactNode }>> = {
+  // Durante SSR o si no hay usuario, no mostrar el sidebar
+  if (!isMounted || !user) return null;
+
+  const menuItems: Record<UserRole, MenuItem[]> = {
     'Super Admin': [
       { name: 'Dashboard', href: '/dashboard/super-admin', icon: <BarChart3 className="h-5 w-5" /> },
       { name: 'Gestión de Tenants', href: '/dashboard/super-admin/tenants', icon: <Building2 className="h-5 w-5" /> },
@@ -36,7 +69,7 @@ const SidebarWrapper = () => {
       { name: 'Dashboard', href: '/dashboard/admin', icon: <BarChart3 className="h-5 w-5" /> },
       { name: 'Usuarios', href: '/dashboard/admin/users', icon: <Users className="h-5 w-5" /> },
       { name: 'Especialistas', href: '/dashboard/admin/specialists', icon: <UserCheck className="h-5 w-5" /> },
-      { name: 'Pacientes', href: '/dashboard/admin/patients', icon: <User className="h-5 w-5" /> },
+      { name: 'Pacientes', href: '/dashboard/admin/patients', icon: <UserIcon className="h-5 w-5" /> },
       { name: 'Citas', href: '/dashboard/admin/appointments', icon: <Calendar className="h-5 w-5" /> },
     ],
     'Especialista': [
@@ -55,6 +88,12 @@ const SidebarWrapper = () => {
 
   const currentUserMenu = menuItems[user.role] || [];
 
+  const handleLogout = () => {
+    if (logout) {
+      logout();
+    }
+  };
+
   return (
     <aside className="w-64 bg-white shadow-lg border-r border-medical-200">
       <div className="h-full px-3 py-4 overflow-y-auto">
@@ -63,7 +102,7 @@ const SidebarWrapper = () => {
           <p className="text-sm text-medical-600">{user.role}</p>
         </div>
         <ul className="space-y-2">
-          {currentUserMenu.map((item) => (
+          {currentUserMenu.map((item: MenuItem) => (
             <li key={item.href}>
               <Link
                 href={item.href}
@@ -80,7 +119,7 @@ const SidebarWrapper = () => {
           ))}
           <li className="mt-6 pt-4 border-t border-gray-200">
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="flex w-full items-center p-3 text-base font-normal text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-700 transition-all duration-200 hover:shadow-md"
             >
               <LogOut className="h-5 w-5 mr-3" />

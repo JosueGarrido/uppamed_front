@@ -14,9 +14,9 @@ export default function ThemeWrapper({ children }: ThemeWrapperProps) {
     setIsMounted(true);
   }, []);
 
-  // Renderizar un placeholder durante SSR
+  // Durante SSR, renderizar sin el ThemeProvider para evitar errores
   if (!isMounted) {
-    return <div className="min-h-screen bg-white">{children}</div>;
+    return <>{children}</>;
   }
 
   return <ThemeProvider>{children}</ThemeProvider>;
