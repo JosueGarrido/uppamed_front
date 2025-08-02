@@ -64,7 +64,7 @@ const AdminSpecialistsPage = () => {
   
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const [specialistsPerPage] = useState(10);
+  const [specialistsPerPage] = useState(5);
 
   const fetchSpecialists = async (tenantId: string | number) => {
     setIsLoading(true);
@@ -268,7 +268,7 @@ const AdminSpecialistsPage = () => {
         {currentSpecialists.length > 0 ? (
           <div className="space-y-4">
             {currentSpecialists.map((specialist) => (
-              <div key={specialist.id} className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <div key={specialist.id} className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
                 <div className="flex items-center space-x-4 min-w-0 flex-1">
                   <div className="flex-shrink-0">
                     <UserCheck className="h-6 w-6 text-green-500" />
@@ -298,7 +298,7 @@ const AdminSpecialistsPage = () => {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mt-4 lg:mt-0 flex-1 sm:flex-none">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => openDetailModal(specialist)}
                     className="flex-1 sm:flex-none min-w-[80px]"
@@ -307,7 +307,7 @@ const AdminSpecialistsPage = () => {
                     <span className="hidden sm:inline">Ver</span>
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => openEditModal(specialist)}
                     className="flex-1 sm:flex-none min-w-[80px]"
@@ -316,10 +316,10 @@ const AdminSpecialistsPage = () => {
                     <span className="hidden sm:inline">Editar</span>
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="destructive"
                     size="sm"
                     onClick={() => openDeleteModal(specialist)}
-                    className="flex-1 sm:flex-none min-w-[80px] text-red-600 hover:text-red-700"
+                    className="flex-1 sm:flex-none min-w-[80px]"
                   >
                     <Trash2 className="h-4 w-4 mr-1" />
                     <span className="hidden sm:inline">Eliminar</span>
