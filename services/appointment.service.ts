@@ -105,7 +105,15 @@ class AppointmentService {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl('/appointments'), {
+      // Obtener el tenant_id del usuario actual
+      const user = await authService.fetchUserData();
+      const tenantId = user.tenant_id;
+
+      if (!tenantId) {
+        throw new Error('No se pudo obtener el tenant_id');
+      }
+
+      const response = await fetch(buildApiUrl(`/appointments/${tenantId}/appointments`), {
         method: 'POST',
         headers: createAuthHeaders(token),
         body: JSON.stringify(appointmentData)
@@ -152,7 +160,7 @@ class AppointmentService {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl(`/appointments/appointments/${appointmentId}`), {
+      const response = await fetch(buildApiUrl(`/appointments/${appointmentId}`), {
         method: 'PUT',
         headers: createAuthHeaders(token),
         body: JSON.stringify(data)
@@ -176,7 +184,7 @@ class AppointmentService {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl(`/appointments/appointments/${appointmentId}`), {
+      const response = await fetch(buildApiUrl(`/appointments/${appointmentId}`), {
         method: 'DELETE',
         headers: createAuthHeaders(token)
       });

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { userService } from '@/services/user.service';
 import { authService } from '@/services/auth.service';
+import { specialistService } from '@/services/specialist.service';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -65,6 +66,14 @@ const AdminSpecialistsPage = () => {
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [specialistsPerPage] = useState(5);
+
+  // Disponibilidad
+  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
+  const [selectedSpecialist, setSelectedSpecialist] = useState<User | null>(null);
+  const [specialistSchedules, setSpecialistSchedules] = useState<any[]>([]);
+  const [specialistBreaks, setSpecialistBreaks] = useState<any[]>([]);
+  const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [savingAvailability, setSavingAvailability] = useState(false);
 
   const fetchSpecialists = async (tenantId: string | number) => {
     setIsLoading(true);
@@ -202,6 +211,59 @@ const AdminSpecialistsPage = () => {
     setShowDetailModal(true);
   };
 
+  const openAvailabilityModal = async (specialist: User) => {
+    setSelectedSpecialist(specialist);
+    setShowAvailabilityModal(true);
+    await fetchSpecialistAvailability(specialist.id);
+  };
+
+  const fetchSpecialistAvailability = async (specialistId: number) => {
+    if (!tenantId) return;
+    
+    setLoadingAvailability(true);
+    try {
+      const response = await specialistService.getSpecialistSchedule(tenantId, specialistId);
+      setSpecialistSchedules(response.schedules || []);
+      setSpecialistBreaks(response.breaks || []);
+    } catch (error) {
+      console.error('Error fetching specialist availability:', error);
+      toast.error('Error al cargar la disponibilidad del especialista');
+      setSpecialistSchedules([]);
+      setSpecialistBreaks([]);
+    } finally {
+      setLoadingAvailability(false);
+    }
+  };
+
+  const handleSaveAvailability = async () => {
+    if (!selectedSpecialist || !tenantId) return;
+    
+    console.log('=== FRONTEND SAVE AVAILABILITY ===');
+    console.log('tenantId:', tenantId);
+    console.log('specialistId:', selectedSpecialist.id);
+    console.log('specialistSchedules:', JSON.stringify(specialistSchedules, null, 2));
+    
+    setSavingAvailability(true);
+    try {
+      await specialistService.updateSpecialistSchedule(tenantId, selectedSpecialist.id, specialistSchedules);
+      toast.success('Disponibilidad actualizada exitosamente');
+      // No limpiar el estado aquí, solo cerrar el modal
+      setShowAvailabilityModal(false);
+    } catch (error) {
+      console.error('Error saving availability:', error);
+      toast.error('Error al guardar la disponibilidad');
+    } finally {
+      setSavingAvailability(false);
+    }
+  };
+
+  const handleCloseAvailabilityModal = () => {
+    setShowAvailabilityModal(false);
+    setSelectedSpecialist(null);
+    setSpecialistSchedules([]);
+    setSpecialistBreaks([]);
+  };
+
   if (isLoading) {
     return (
       <DashboardShell>
@@ -314,6 +376,15 @@ const AdminSpecialistsPage = () => {
                   >
                     <Edit className="h-4 w-4 mr-1" />
                     <span className="hidden sm:inline">Editar</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openAvailabilityModal(specialist)}
+                    className="flex-1 sm:flex-none min-w-[80px]"
+                  >
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span className="hidden sm:inline">Disponibilidad</span>
                   </Button>
                   <Button
                     variant="destructive"
@@ -635,6 +706,123 @@ const AdminSpecialistsPage = () => {
                   </p>
                 </div>
               )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Disponibilidad */}
+      <Dialog open={showAvailabilityModal} onOpenChange={handleCloseAvailabilityModal}>
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Calendar className="mr-2 h-5 w-5" />
+              Configurar Disponibilidad - {selectedSpecialist?.username}
+            </DialogTitle>
+            <DialogDescription>
+              Configura los horarios de trabajo y descansos del especialista
+            </DialogDescription>
+          </DialogHeader>
+          
+          {loadingAvailability ? (
+            <div className="p-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Cargando disponibilidad...</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Horarios de Trabajo */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Horarios de Trabajo</h3>
+                <div className="space-y-4">
+                  {['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].map((day, index) => {
+                    const schedule = specialistSchedules.find(s => s.day_of_week === index);
+                    return (
+                      <div key={day} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <input
+                            type="checkbox"
+                            checked={schedule?.is_available || false}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSpecialistSchedules(prev => [
+                                  ...prev.filter(s => s.day_of_week !== index),
+                                  {
+                                    day_of_week: index,
+                                    start_time: '09:00',
+                                    end_time: '17:00',
+                                    is_available: true
+                                  }
+                                ]);
+                              } else {
+                                setSpecialistSchedules(prev => prev.filter(s => s.day_of_week !== index));
+                              }
+                            }}
+                            className="h-4 w-4 text-blue-600"
+                          />
+                          <span className="font-medium min-w-[80px]">{day}</span>
+                        </div>
+                        
+                        {schedule?.is_available && (
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="time"
+                              value={schedule.start_time}
+                              onChange={(e) => {
+                                setSpecialistSchedules(prev => 
+                                  prev.map(s => 
+                                    s.day_of_week === index 
+                                      ? { ...s, start_time: e.target.value }
+                                      : s
+                                  )
+                                );
+                              }}
+                              className="border rounded px-2 py-1 text-sm"
+                            />
+                            <span>a</span>
+                            <input
+                              type="time"
+                              value={schedule.end_time}
+                              onChange={(e) => {
+                                setSpecialistSchedules(prev => 
+                                  prev.map(s => 
+                                    s.day_of_week === index 
+                                      ? { ...s, end_time: e.target.value }
+                                      : s
+                                  )
+                                );
+                              }}
+                              className="border rounded px-2 py-1 text-sm"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    console.log('=== DEBUG AVAILABILITY ===');
+                    console.log('specialistSchedules:', specialistSchedules);
+                    console.log('selectedSpecialist:', selectedSpecialist);
+                    console.log('tenantId:', tenantId);
+                  }}
+                  disabled={savingAvailability}
+                >
+                  Debug
+                </Button>
+                <Button variant="outline" onClick={handleCloseAvailabilityModal} disabled={savingAvailability}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSaveAvailability} disabled={savingAvailability}>
+                  {savingAvailability ? 'Guardando...' : 'Guardar Disponibilidad'}
+                </Button>
+              </DialogFooter>
             </div>
           )}
         </DialogContent>

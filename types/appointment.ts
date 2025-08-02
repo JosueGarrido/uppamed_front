@@ -15,10 +15,13 @@ export interface Specialist {
 export interface Appointment {
   id: number;
   date: string;
+  time?: string;
   reason: string;
   status: 'pendiente' | 'confirmada' | 'completada' | 'cancelada';
   patient: Patient;
   specialist: Specialist;
+  appointmentPatient?: Patient;
+  appointmentSpecialist?: Specialist;
   specialist_id: number;
   patient_id: number;
   tenant_id: number;
