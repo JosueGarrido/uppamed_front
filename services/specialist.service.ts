@@ -1,4 +1,5 @@
-import { buildApiUrl } from '@/lib/config';
+import { buildApiUrl, createAuthHeaders } from '@/lib/config';
+import { authService } from './auth.service';
 
 export interface SpecialistSchedule {
   id: number;
@@ -27,6 +28,11 @@ export interface AvailabilityResponse {
 
 export interface AvailableSlotsResponse {
   availableSlots: string[];
+}
+
+export interface ScheduleResponse {
+  schedules: SpecialistSchedule[];
+  breaks: SpecialistBreak[];
 }
 
 class SpecialistService {
@@ -97,6 +103,64 @@ class SpecialistService {
     }
 
     return response.json();
+  }
+
+  // Método para que el especialista obtenga su propio horario
+  async getMySchedule(): Promise<ScheduleResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const user = await authService.fetchUserData();
+      if (!user?.tenant_id) {
+        throw new Error('Usuario no tiene tenant asignado');
+      }
+
+      const response = await fetch(buildApiUrl(`/specialists/${user.tenant_id}/specialists/${user.id}/schedule`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener el horario');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error getting my schedule:', error);
+      throw error;
+    }
+  }
+
+  // Método para que el especialista actualice su propio horario
+  async updateMySchedule(schedules: SpecialistSchedule[]): Promise<any> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const user = await authService.fetchUserData();
+      if (!user?.tenant_id) {
+        throw new Error('Usuario no tiene tenant asignado');
+      }
+
+      const response = await fetch(buildApiUrl(`/specialists/${user.tenant_id}/specialists/${user.id}/schedule`), {
+        method: 'PUT',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(schedules)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar el horario');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error updating my schedule:', error);
+      throw error;
+    }
   }
 }
 

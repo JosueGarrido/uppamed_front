@@ -10,6 +10,7 @@ class MedicalRecordService {
         throw new Error('No hay token de autenticación');
       }
 
+      // El backend tiene endpoints específicos por rol
       const endpoint = userRole === 'Especialista'
         ? '/medical-records/specialist'
         : '/medical-records';

@@ -11,6 +11,7 @@ class AppointmentService {
         throw new Error('No hay token de autenticación');
       }
 
+      // El backend usa el mismo endpoint para todos los roles, pero filtra por rol internamente
       const response = await fetch(buildApiUrl('/appointments'), {
         headers: createAuthHeaders(token)
       });

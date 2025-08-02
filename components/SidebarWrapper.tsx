@@ -17,7 +17,8 @@ import {
   ClipboardList, 
   LogOut,
   Menu,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 
 interface MenuItem {
@@ -78,8 +79,11 @@ const SidebarWrapper = () => {
     'Especialista': [
       { name: 'Dashboard', href: '/dashboard/specialist', icon: <BarChart3 className="h-5 w-5" /> },
       { name: 'Mis Citas', href: '/appointments', icon: <Calendar className="h-5 w-5" /> },
+      { name: 'Mis Pacientes', href: '/dashboard/specialist/patients', icon: <Users className="h-5 w-5" /> },
+      { name: 'Disponibilidad', href: '/dashboard/specialist/availability', icon: <Clock className="h-5 w-5" /> },
       { name: 'Registros Médicos', href: '/medical-records', icon: <FileText className="h-5 w-5" /> },
       { name: 'Exámenes', href: '/medical-exams', icon: <Microscope className="h-5 w-5" /> },
+      { name: 'Mi Perfil', href: '/dashboard/specialist/profile', icon: <UserCheck className="h-5 w-5" /> },
     ],
     'Paciente': [
       { name: 'Dashboard', href: '/dashboard/paciente', icon: <BarChart3 className="h-5 w-5" /> },
