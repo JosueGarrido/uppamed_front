@@ -276,14 +276,16 @@ export default function TenantUsersPage() {
         heading={`Usuarios de ${tenant?.name || 'Tenant'}`}
         text="Administra los usuarios de este centro médico"
       >
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={() => router.back()}>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver
+            <span className="hidden sm:inline">Volver</span>
+            <span className="sm:hidden">Atrás</span>
           </Button>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
-            Nuevo Usuario
+            <span className="hidden sm:inline">Nuevo Usuario</span>
+            <span className="sm:hidden">Crear Usuario</span>
           </Button>
         </div>
       </DashboardHeader>
@@ -298,11 +300,11 @@ export default function TenantUsersPage() {
         </div>
       )}
 
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Building2 className="mr-2 h-5 w-5" />
-            {tenant?.name}
+            <Building2 className="mr-2 h-5 w-5 flex-shrink-0" />
+            <span className="truncate">{tenant?.name}</span>
           </CardTitle>
           <CardDescription>
             Lista de usuarios del centro médico
@@ -310,20 +312,20 @@ export default function TenantUsersPage() {
         </CardHeader>
         <CardContent>
           {/* Filtros */}
-          <div className="mb-6 space-y-4">
-            <div className="flex gap-4">
-              <div className="flex-1 relative">
+          <div className="mb-6 space-y-4 w-full">
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex-1 relative min-w-0">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
                   type="text"
                   placeholder="Buscar por nombre, email o identificación..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 w-full"
                 />
               </div>
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48 flex-shrink-0">
                   <SelectValue placeholder="Filtrar por rol" />
                 </SelectTrigger>
                 <SelectContent>
@@ -335,14 +337,14 @@ export default function TenantUsersPage() {
               </Select>
             </div>
             {(searchTerm || roleFilter) && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 text-center sm:text-left px-2">
                 Mostrando {filteredUsers.length} de {users.length} usuarios
               </p>
             )}
           </div>
 
           {filteredUsers.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 px-4">
               <UserIcon className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
                 {searchTerm || roleFilter ? 'No se encontraron usuarios' : 'No hay usuarios'}
@@ -352,7 +354,7 @@ export default function TenantUsersPage() {
               </p>
               {!searchTerm && !roleFilter && (
                 <div className="mt-6">
-                  <Button onClick={() => setShowCreateModal(true)}>
+                  <Button onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
                     <Plus className="mr-2 h-4 w-4" />
                     Crear Primer Usuario
                   </Button>
@@ -361,24 +363,29 @@ export default function TenantUsersPage() {
             </div>
           ) : (
             <>
-              <div className="space-y-4">
+              <div className="space-y-4 w-full">
                 {currentUsers.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
+                  <div key={user.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors w-full">
+                    <div className="flex items-center space-x-4 mb-4 lg:mb-0">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           <UserIcon className="h-5 w-5 text-blue-600" />
                         </div>
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h3 className="text-lg font-medium text-gray-900">{user.username}</h3>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                          <h3 className="text-base sm:text-lg font-medium text-gray-900 truncate">{user.username}</h3>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)} w-fit`}>
                             {getRoleIcon(user.role)}
                             <span className="ml-1">{user.role}</span>
                           </span>
                         </div>
-                        <p className="text-sm text-gray-500">{user.email}</p>
+                        <p className="text-sm text-gray-500 flex items-center min-w-0">
+                          <Mail className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden">
+                            {user.email}
+                          </span>
+                        </p>
                         <p className="text-xs text-gray-400">
                           ID: {user.identification_number} • Creado el {user.createdAt ? format(new Date(user.createdAt), "d 'de' MMMM 'de' yyyy", { locale: es }) : 'Fecha no disponible'}
                         </p>
@@ -390,30 +397,33 @@ export default function TenantUsersPage() {
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => startEditing(user)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Edit className="h-4 w-4 mr-1" />
-                        Editar
+                        <span className="hidden sm:inline">Editar</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => viewDetails(user)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Eye className="h-4 w-4 mr-1" />
-                        Ver detalles
+                        <span className="hidden sm:inline">Ver detalles</span>
                       </Button>
                       <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => setUserToDelete(user)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Trash2 className="h-4 w-4 mr-1" />
-                        Eliminar
+                        <span className="hidden sm:inline">Eliminar</span>
                       </Button>
                     </div>
                   </div>
@@ -422,42 +432,105 @@ export default function TenantUsersPage() {
 
               {/* Paginación */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-6">
-                  <div className="text-sm text-gray-700">
+                <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4 px-2">
+                  <div className="text-sm text-gray-700 text-center sm:text-left">
                     Mostrando {indexOfFirstUser + 1} a {Math.min(indexOfLastUser, filteredUsers.length)} de {filteredUsers.length} usuarios
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Anterior
-                    </Button>
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {page}
-                        </Button>
-                      ))}
+                  <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    {/* Botones de navegación */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Anterior</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <span className="hidden sm:inline">Siguiente</span>
+                        <ChevronRight className="h-4 w-4 ml-1 sm:ml-2" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      Siguiente
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    
+                    {/* Números de página */}
+                    <div className="flex items-center gap-1 flex-wrap justify-center">
+                      {totalPages <= 7 ? (
+                        // Si hay 7 páginas o menos, mostrar todas
+                        Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(page)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            {page}
+                          </Button>
+                        ))
+                      ) : (
+                        // Si hay más de 7 páginas, mostrar paginación inteligente
+                        <>
+                          {/* Primera página */}
+                          <Button
+                            variant={currentPage === 1 ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(1)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            1
+                          </Button>
+                          
+                          {/* Puntos suspensivos iniciales */}
+                          {currentPage > 4 && (
+                            <span className="px-2 text-gray-500">...</span>
+                          )}
+                          
+                          {/* Páginas alrededor de la actual */}
+                          {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(page => 
+                              page !== 1 && 
+                              page !== totalPages && 
+                              page >= currentPage - 1 && 
+                              page <= currentPage + 1
+                            )
+                            .map((page) => (
+                              <Button
+                                key={page}
+                                variant={currentPage === page ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setCurrentPage(page)}
+                                className="w-10 h-10 p-0 text-sm"
+                              >
+                                {page}
+                              </Button>
+                            ))}
+                          
+                          {/* Puntos suspensivos finales */}
+                          {currentPage < totalPages - 3 && (
+                            <span className="px-2 text-gray-500">...</span>
+                          )}
+                          
+                          {/* Última página */}
+                          <Button
+                            variant={currentPage === totalPages ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(totalPages)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            {totalPages}
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -468,7 +541,7 @@ export default function TenantUsersPage() {
 
       {/* Modal de Crear Nuevo Usuario */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Plus className="mr-2 h-5 w-5" />
@@ -479,7 +552,7 @@ export default function TenantUsersPage() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={(e) => void handleCreateUser(e)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Nombre de Usuario *</Label>
                 <Input
@@ -503,7 +576,7 @@ export default function TenantUsersPage() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña *</Label>
                 <Input
@@ -527,7 +600,7 @@ export default function TenantUsersPage() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="role">Rol *</Label>
                 <Select value={newUser.role} onValueChange={(value) => setNewUser({ ...newUser, role: value as 'Super Admin' | 'Administrador' | 'Especialista' | 'Paciente' })}>
@@ -544,7 +617,7 @@ export default function TenantUsersPage() {
             </div>
             {newUser.role === 'Especialista' && (
               <>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="area">Área</Label>
                     <Input
@@ -568,11 +641,11 @@ export default function TenantUsersPage() {
                 </div>
               </>
             )}
-            <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>
+            <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
+              <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button type="submit" className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 Crear Usuario
               </Button>
@@ -583,7 +656,7 @@ export default function TenantUsersPage() {
 
       {/* Modal de Editar Usuario */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Edit className="mr-2 h-5 w-5" />
@@ -594,7 +667,7 @@ export default function TenantUsersPage() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={(e) => void handleEditUser(e)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-username">Nombre de Usuario *</Label>
                 <Input
@@ -616,7 +689,7 @@ export default function TenantUsersPage() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-identification">Identificación *</Label>
                 <Input
@@ -645,7 +718,7 @@ export default function TenantUsersPage() {
               </div>
             </div>
             {editingUser?.role === 'Especialista' && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-area">Área</Label>
                   <Input
@@ -666,14 +739,14 @@ export default function TenantUsersPage() {
                 </div>
               </div>
             )}
-            <DialogFooter className="pt-4">
+            <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
               <Button type="button" variant="outline" onClick={() => {
                 setShowEditModal(false);
                 setEditingUser(null);
-              }}>
+              }} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button type="submit" className="w-full sm:w-auto">
                 <Edit className="mr-2 h-4 w-4" />
                 Guardar Cambios
               </Button>
@@ -684,7 +757,7 @@ export default function TenantUsersPage() {
 
       {/* Modal de Detalles del Usuario */}
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-        <DialogContent className="sm:max-w-[625px]">
+        <DialogContent className="w-[95vw] max-w-[625px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Eye className="mr-2 h-5 w-5" />
@@ -702,7 +775,7 @@ export default function TenantUsersPage() {
                   <CardDescription>Información General del Usuario</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">ID del Usuario</Label>
                       <p className="text-sm text-gray-600 mt-1">{selectedUser.id}</p>
@@ -714,12 +787,14 @@ export default function TenantUsersPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">Email</Label>
-                      <p className="text-sm text-gray-600 mt-1 flex items-center">
-                        <Mail className="h-4 w-4 mr-1" />
-                        {selectedUser.email}
+                      <p className="text-sm text-gray-600 mt-1 flex items-center min-w-0">
+                        <Mail className="h-4 w-4 mr-1 flex-shrink-0" />
+                        <span className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden">
+                          {selectedUser.email}
+                        </span>
                       </p>
                     </div>
                     <div>
@@ -730,7 +805,7 @@ export default function TenantUsersPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">Rol</Label>
                       <div className="flex items-center mt-1">
@@ -757,8 +832,8 @@ export default function TenantUsersPage() {
               </Card>
             </div>
           )}
-          <DialogFooter>
-            <Button onClick={() => setShowDetailModal(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={() => setShowDetailModal(false)} className="w-full sm:w-auto">
               Cerrar
             </Button>
           </DialogFooter>
@@ -767,7 +842,7 @@ export default function TenantUsersPage() {
 
       {/* Modal de Eliminar Usuario */}
       <Dialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[95vw] max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center text-red-600">
               <Trash2 className="mr-2 h-5 w-5" />
@@ -777,11 +852,11 @@ export default function TenantUsersPage() {
               ¿Estás seguro que deseas eliminar al usuario "{userToDelete?.username}"? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setUserToDelete(null)} disabled={isDeleting}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setUserToDelete(null)} disabled={isDeleting} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button variant="destructive" onClick={handleDeleteUser} disabled={isDeleting}>
+            <Button variant="destructive" onClick={handleDeleteUser} disabled={isDeleting} className="w-full sm:w-auto">
               <Trash2 className="mr-2 h-4 w-4" />
               {isDeleting ? 'Eliminando...' : 'Eliminar'}
             </Button>

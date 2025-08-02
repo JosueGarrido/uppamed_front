@@ -80,86 +80,88 @@ export default function SuperAdminDashboard() {
         heading="Panel de Super Administrador"
         text="Gestión global de todos los centros médicos y usuarios"
       >
-        <div className="flex space-x-2">
-          <Link href="/dashboard/super-admin/tenants">
-            <Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Link href="/dashboard/super-admin/tenants" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">
               <Building2 className="mr-2 h-4 w-4" />
-              Gestionar Centros
+              <span className="hidden sm:inline">Gestionar Centros</span>
+              <span className="sm:hidden">Centros</span>
             </Button>
           </Link>
-          <Link href="/dashboard/super-admin/users">
-            <Button variant="outline">
+          <Link href="/dashboard/super-admin/users" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto">
               <Users className="mr-2 h-4 w-4" />
-              Usuarios Globales
+              <span className="hidden sm:inline">Usuarios Globales</span>
+              <span className="sm:hidden">Usuarios</span>
             </Button>
           </Link>
         </div>
       </DashboardHeader>
 
       {/* KPIs Principales */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <Card className="p-4">
           <div className="flex items-center">
-            <Building2 className="h-8 w-8 text-blue-500 mr-3" />
-            <div>
-              <h3 className="font-semibold">Centros Médicos</h3>
-              <div className="text-2xl font-bold">{summary?.kpis?.totalTenants || 0}</div>
+            <Building2 className="h-8 w-8 text-blue-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Centros Médicos</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis?.totalTenants || 0}</div>
             </div>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center">
-            <Users className="h-8 w-8 text-green-500 mr-3" />
-            <div>
-              <h3 className="font-semibold">Total Usuarios</h3>
-              <div className="text-2xl font-bold">{summary?.kpis?.totalUsers || 0}</div>
+            <Users className="h-8 w-8 text-green-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Total Usuarios</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis?.totalUsers || 0}</div>
             </div>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center">
-            <UserCheck className="h-8 w-8 text-purple-500 mr-3" />
-            <div>
-              <h3 className="font-semibold">Especialistas</h3>
-              <div className="text-2xl font-bold">{summary?.kpis?.totalEspecialistas || 0}</div>
+            <UserCheck className="h-8 w-8 text-purple-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Especialistas</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis?.totalEspecialistas || 0}</div>
             </div>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center">
-            <UserX className="h-8 w-8 text-orange-500 mr-3" />
-            <div>
-              <h3 className="font-semibold">Pacientes</h3>
-              <div className="text-2xl font-bold">{summary?.kpis?.totalPacientes || 0}</div>
+            <UserX className="h-8 w-8 text-orange-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Pacientes</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis?.totalPacientes || 0}</div>
             </div>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center">
-            <Calendar className="h-8 w-8 text-red-500 mr-3" />
-            <div>
-              <h3 className="font-semibold">Total Citas</h3>
-              <div className="text-2xl font-bold">{summary?.kpis?.totalCitas || 0}</div>
+            <Calendar className="h-8 w-8 text-red-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Total Citas</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis?.totalCitas || 0}</div>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Actividad por Centro Médico */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Actividad por Centro Médico</h2>
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+          <h2 className="text-lg sm:text-xl font-semibold">Actividad por Centro Médico</h2>
           <Link href="/dashboard/super-admin/tenants">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="w-full sm:w-auto">
               Ver todos
             </Button>
           </Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {tenantActivity.slice(0, 6).map((tenant) => (
-            <div key={tenant.tenantId} className="p-4 border rounded-lg">
-              <h3 className="font-semibold mb-2">{tenant.tenantName}</h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
+            <div key={tenant.tenantId} className="p-3 sm:p-4 border rounded-lg">
+              <h3 className="font-semibold mb-2 text-sm sm:text-base">{tenant.tenantName}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
                 <div>
                   <span className="text-gray-600">Usuarios:</span>
                   <span className="ml-1 font-medium">{tenant.users}</span>
@@ -183,12 +185,12 @@ export default function SuperAdminDashboard() {
       </Card>
 
       {/* Últimos Registros */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Últimos Centros</h3>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="font-semibold text-sm sm:text-base">Últimos Centros</h3>
             <Link href="/dashboard/super-admin/tenants">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="w-full sm:w-auto">
                 Ver todos
               </Button>
             </Link>
@@ -207,10 +209,10 @@ export default function SuperAdminDashboard() {
         </Card>
 
         <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Últimos Usuarios</h3>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="font-semibold text-sm sm:text-base">Últimos Usuarios</h3>
             <Link href="/dashboard/super-admin/users">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="w-full sm:w-auto">
                 Ver todos
               </Button>
             </Link>
@@ -230,10 +232,10 @@ export default function SuperAdminDashboard() {
         </Card>
 
         <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Últimas Citas</h3>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="font-semibold text-sm sm:text-base">Últimas Citas</h3>
             <Link href="/appointments">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="w-full sm:w-auto">
                 Ver todas
               </Button>
             </Link>
@@ -256,31 +258,35 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Acciones Rápidas */}
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Acciones Rápidas</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card className="p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">Acciones Rápidas</h2>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <Link href="/dashboard/super-admin/tenants">
             <Button className="w-full" variant="outline">
               <Plus className="mr-2 h-4 w-4" />
-              Crear Centro
+              <span className="hidden sm:inline">Crear Centro</span>
+              <span className="sm:hidden">Centro</span>
             </Button>
           </Link>
           <Link href="/dashboard/super-admin/users">
             <Button className="w-full" variant="outline">
               <Users className="mr-2 h-4 w-4" />
-              Gestionar Usuarios
+              <span className="hidden sm:inline">Gestionar Usuarios</span>
+              <span className="sm:hidden">Usuarios</span>
             </Button>
           </Link>
           <Link href="/dashboard/super-admin/tenants">
             <Button className="w-full" variant="outline">
               <Activity className="mr-2 h-4 w-4" />
-              Ver Estadísticas
+              <span className="hidden sm:inline">Ver Estadísticas</span>
+              <span className="sm:hidden">Estadísticas</span>
             </Button>
           </Link>
           <Link href="/dashboard/super-admin/settings">
             <Button className="w-full" variant="outline">
               <Settings className="mr-2 h-4 w-4" />
-              Configuración
+              <span className="hidden sm:inline">Configuración</span>
+              <span className="sm:hidden">Config</span>
             </Button>
           </Link>
         </div>

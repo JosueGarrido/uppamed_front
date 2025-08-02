@@ -3,7 +3,7 @@ export function DashboardShell({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className="grid items-start gap-8 p-8" {...props}>
+    <div className="grid items-start gap-8" {...props}>
       {children}
     </div>
   );

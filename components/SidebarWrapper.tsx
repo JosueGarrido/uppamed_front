@@ -15,7 +15,9 @@ import {
   FileText, 
   Microscope, 
   ClipboardList, 
-  LogOut 
+  LogOut,
+  Menu,
+  X
 } from 'lucide-react';
 
 interface MenuItem {
@@ -29,6 +31,7 @@ const SidebarWrapper = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [logout, setLogout] = useState<(() => void) | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -94,8 +97,43 @@ const SidebarWrapper = () => {
     }
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
-    <aside className="w-64 bg-white shadow-lg border-r border-medical-200">
+    <>
+      {/* Botón hamburguesa para móviles */}
+      <button
+        onClick={toggleSidebar}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+      >
+        {isSidebarOpen ? (
+          <X className="h-6 w-6 text-gray-700" />
+        ) : (
+          <Menu className="h-6 w-6 text-gray-700" />
+        )}
+      </button>
+
+      {/* Overlay para móviles */}
+      {isSidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={closeSidebar}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-40
+        w-64 bg-white shadow-lg border-r border-medical-200
+        transform transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
       <div className="h-full px-3 py-4 overflow-y-auto">
         <div className="mb-5 p-4 bg-medical-gradient-light rounded-lg">
           <h2 className="text-lg font-semibold text-medical-900">{user.name}</h2>
@@ -129,6 +167,7 @@ const SidebarWrapper = () => {
         </ul>
       </div>
     </aside>
+    </>
   );
 };
 

@@ -194,9 +194,11 @@ const AdminPatientsPage = () => {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-4">
                         {patient.email && (
-                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                            <span className="mr-2">📧</span>
-                            {patient.email}
+                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 min-w-0">
+                            <span className="mr-2 flex-shrink-0">📧</span>
+                            <span className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden">
+                              {patient.email}
+                            </span>
                           </div>
                         )}
                         {patient.identification_number && (
@@ -366,7 +368,10 @@ const AdminPatientsPage = () => {
                 <span className="font-semibold">Nombre de usuario:</span> {detailPatient.username}
               </div>
               <div>
-                <span className="font-semibold">Email:</span> {detailPatient.email}
+                <span className="font-semibold">Email:</span> 
+                <span className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden block">
+                  {detailPatient.email}
+                </span>
               </div>
               <div>
                 <span className="font-semibold">N° Identificación:</span> {detailPatient.identification_number}

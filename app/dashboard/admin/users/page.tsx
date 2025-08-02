@@ -200,9 +200,11 @@ const AdminUsersPage = () => {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-4">
                         {user.email && (
-                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                            <span className="mr-2">📧</span>
-                            {user.email}
+                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 min-w-0">
+                            <span className="mr-2 flex-shrink-0">📧</span>
+                            <span className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden">
+                              {user.email}
+                            </span>
                           </div>
                         )}
                         {user.area && (
@@ -434,7 +436,10 @@ const AdminUsersPage = () => {
                 <span className="font-semibold">Nombre de usuario:</span> {detailUser.username}
               </div>
               <div>
-                <span className="font-semibold">Email:</span> {detailUser.email}
+                <span className="font-semibold">Email:</span> 
+                <span className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden block">
+                  {detailUser.email}
+                </span>
               </div>
               <div>
                 <span className="font-semibold">Rol:</span> {detailUser.role}

@@ -14,8 +14,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <ImpersonationBanner />
           <div className="flex min-h-screen">
             <SidebarWrapper />
-            <main className="flex-1 p-6">
-              <div className="max-w-7xl mx-auto">
+            <main className="flex-1 p-4 lg:p-6 lg:ml-0">
+              <div className="w-full max-w-7xl mx-auto">
                 {children}
               </div>
             </main>

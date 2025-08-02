@@ -219,7 +219,9 @@ export default function TenantsPage() {
       localStorage.setItem('user', JSON.stringify(res.user));
       setImpersonating(true);
       setImpersonatedTenant(tenant.name);
-      window.location.reload();
+      
+      // Redirigir al dashboard del administrador
+      window.location.href = '/dashboard/admin';
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message || 'Error al impersonar');
@@ -250,9 +252,10 @@ export default function TenantsPage() {
         heading="Gestión de Tenants"
         text="Administra los centros médicos y hospitales del sistema"
       >
-        <Button onClick={() => setShowCreateModal(true)}>
+        <Button onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
-          Nuevo Tenant
+          <span className="hidden sm:inline">Nuevo Tenant</span>
+          <span className="sm:hidden">Crear Tenant</span>
         </Button>
       </DashboardHeader>
 
@@ -267,9 +270,11 @@ export default function TenantsPage() {
       )}
 
       {typeof window !== 'undefined' && localStorage.getItem('original_token') && (
-        <div className="bg-yellow-200 text-yellow-900 p-4 rounded mb-4 flex items-center justify-between">
-          <span>Estás en modo impersonación como admin de un tenant.</span>
-          <Button variant="destructive" size="sm" onClick={handleRestoreSuperAdmin}>Volver a ser Super Admin</Button>
+        <div className="bg-yellow-200 text-yellow-900 p-4 rounded mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <span className="text-sm sm:text-base">Estás en modo impersonación como admin de un tenant.</span>
+          <Button variant="destructive" size="sm" onClick={handleRestoreSuperAdmin} className="w-full sm:w-auto">
+            Volver a ser Super Admin
+          </Button>
         </div>
       )}
 
@@ -325,8 +330,8 @@ export default function TenantsPage() {
             <>
               <div className="space-y-4">
                 {currentTenants.map((tenant) => (
-                  <div key={tenant.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
+                  <div key={tenant.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-4 mb-4 lg:mb-0">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           <Building2 className="h-5 w-5 text-blue-600" />
@@ -340,52 +345,57 @@ export default function TenantsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => startEditing(tenant)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Edit className="h-4 w-4 mr-1" />
-                        Editar
+                        <span className="hidden sm:inline">Editar</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => void viewDetails(tenant)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Eye className="h-4 w-4 mr-1" />
-                        Ver detalles
+                        <span className="hidden sm:inline">Ver detalles</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => openConfigModal(tenant.id)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Settings className="h-4 w-4 mr-1" />
-                        Configurar
+                        <span className="hidden sm:inline">Configurar</span>
                       </Button>
-                      <Link href={`/dashboard/super-admin/tenants/${tenant.id}/users`}>
-                        <Button variant="outline" size="sm">
+                      <Link href={`/dashboard/super-admin/tenants/${tenant.id}/users`} className="flex-1 sm:flex-none">
+                        <Button variant="outline" size="sm" className="w-full">
                           <Users className="h-4 w-4 mr-1" />
-                          Ver usuarios
+                          <span className="hidden sm:inline">Ver usuarios</span>
                         </Button>
                       </Link>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleImpersonate(tenant)}
+                        className="flex-1 sm:flex-none"
                       >
                         <UserCheck className="h-4 w-4 mr-1" />
-                        Impersonar
+                        <span className="hidden sm:inline">Impersonar</span>
                       </Button>
                       <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => setTenantToDelete(tenant)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Trash2 className="h-4 w-4 mr-1" />
-                        Eliminar
+                        <span className="hidden sm:inline">Eliminar</span>
                       </Button>
                     </div>
                   </div>
@@ -394,42 +404,105 @@ export default function TenantsPage() {
 
               {/* Paginación */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-6">
-                  <div className="text-sm text-gray-700">
+                <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4 px-2">
+                  <div className="text-sm text-gray-700 text-center sm:text-left">
                     Mostrando {indexOfFirstTenant + 1} a {Math.min(indexOfLastTenant, filteredTenants.length)} de {filteredTenants.length} tenants
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Anterior
-                    </Button>
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                          className="w-8 h-8 p-0"
-                        >
-                          {page}
-                        </Button>
-                      ))}
+                  <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    {/* Botones de navegación */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Anterior</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <span className="hidden sm:inline">Siguiente</span>
+                        <ChevronRight className="h-4 w-4 ml-1 sm:ml-2" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      Siguiente
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    
+                    {/* Números de página */}
+                    <div className="flex items-center gap-1 flex-wrap justify-center">
+                      {totalPages <= 7 ? (
+                        // Si hay 7 páginas o menos, mostrar todas
+                        Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(page)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            {page}
+                          </Button>
+                        ))
+                      ) : (
+                        // Si hay más de 7 páginas, mostrar paginación inteligente
+                        <>
+                          {/* Primera página */}
+                          <Button
+                            variant={currentPage === 1 ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(1)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            1
+                          </Button>
+                          
+                          {/* Puntos suspensivos iniciales */}
+                          {currentPage > 4 && (
+                            <span className="px-2 text-gray-500">...</span>
+                          )}
+                          
+                          {/* Páginas alrededor de la actual */}
+                          {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(page => 
+                              page !== 1 && 
+                              page !== totalPages && 
+                              page >= currentPage - 1 && 
+                              page <= currentPage + 1
+                            )
+                            .map((page) => (
+                              <Button
+                                key={page}
+                                variant={currentPage === page ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setCurrentPage(page)}
+                                className="w-10 h-10 p-0 text-sm"
+                              >
+                                {page}
+                              </Button>
+                            ))}
+                          
+                          {/* Puntos suspensivos finales */}
+                          {currentPage < totalPages - 3 && (
+                            <span className="px-2 text-gray-500">...</span>
+                          )}
+                          
+                          {/* Última página */}
+                          <Button
+                            variant={currentPage === totalPages ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(totalPages)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            {totalPages}
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -440,7 +513,7 @@ export default function TenantsPage() {
 
       {/* Modal de Crear Nuevo Tenant - Mejorado */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Plus className="mr-2 h-5 w-5" />
@@ -473,11 +546,11 @@ export default function TenantsPage() {
                 onChange={(e) => setNewTenant({ ...newTenant, address: e.target.value })}
               />
             </div>
-            <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>
+            <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
+              <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button type="submit" className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 Crear Tenant
               </Button>
@@ -488,7 +561,7 @@ export default function TenantsPage() {
 
       {/* Modal de Editar Tenant - Mejorado */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Edit className="mr-2 h-5 w-5" />
@@ -521,14 +594,14 @@ export default function TenantsPage() {
                 onChange={(e) => setEditingTenant(editingTenant ? { ...editingTenant, address: e.target.value } : null)}
               />
             </div>
-            <DialogFooter className="pt-4">
+            <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
               <Button type="button" variant="outline" onClick={() => {
                 setShowEditModal(false);
                 setEditingTenant(null);
-              }}>
+              }} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button type="submit" className="w-full sm:w-auto">
                 <Edit className="mr-2 h-4 w-4" />
                 Guardar Cambios
               </Button>
@@ -539,7 +612,7 @@ export default function TenantsPage() {
 
       {/* Modal de Detalles del Tenant - Mejorado */}
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-        <DialogContent className="sm:max-w-[625px]">
+        <DialogContent className="w-[95vw] max-w-[625px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Eye className="mr-2 h-5 w-5" />
@@ -557,7 +630,7 @@ export default function TenantsPage() {
                   <CardDescription>Información General del Centro Médico</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">ID del Tenant</Label>
                       <p className="text-sm text-gray-600 mt-1">
@@ -581,8 +654,8 @@ export default function TenantsPage() {
               </Card>
             </div>
           )}
-          <DialogFooter>
-            <Button onClick={() => setShowDetailModal(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={() => setShowDetailModal(false)} className="w-full sm:w-auto">
               Cerrar
             </Button>
           </DialogFooter>
@@ -591,7 +664,7 @@ export default function TenantsPage() {
 
       {/* Modal de Eliminar Tenant - Mejorado */}
       <Dialog open={!!tenantToDelete} onOpenChange={(open) => !open && setTenantToDelete(null)}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[95vw] max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center text-red-600">
               <Trash2 className="mr-2 h-5 w-5" />
@@ -601,11 +674,11 @@ export default function TenantsPage() {
               ¿Estás seguro que deseas eliminar el centro médico "{tenantToDelete?.name}"? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setTenantToDelete(null)} disabled={isDeleting}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setTenantToDelete(null)} disabled={isDeleting} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button variant="destructive" onClick={handleDeleteTenant} disabled={isDeleting}>
+            <Button variant="destructive" onClick={handleDeleteTenant} disabled={isDeleting} className="w-full sm:w-auto">
               <Trash2 className="mr-2 h-4 w-4" />
               {isDeleting ? 'Eliminando...' : 'Eliminar'}
             </Button>
@@ -615,7 +688,7 @@ export default function TenantsPage() {
 
       {/* Modal de Configuración - Mejorado */}
       <Dialog open={showConfigModal} onOpenChange={setShowConfigModal}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Settings className="mr-2 h-5 w-5" />
@@ -633,18 +706,20 @@ export default function TenantsPage() {
           ) : (
             <div className="space-y-4">
               {tenantConfig.map((cfg, idx) => (
-                <div key={idx} className="flex gap-2 items-center">
+                <div key={idx} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                   <Input
                     placeholder="Clave de configuración"
                     value={cfg.key}
                     onChange={e => handleConfigChange(idx, 'key', e.target.value)}
+                    className="flex-1"
                   />
                   <Input
                     placeholder="Valor"
                     value={cfg.value}
                     onChange={e => handleConfigChange(idx, 'value', e.target.value)}
+                    className="flex-1"
                   />
-                  <Button variant="destructive" size="icon" onClick={() => removeConfigRow(idx)}>
+                  <Button variant="destructive" size="icon" onClick={() => removeConfigRow(idx)} className="w-full sm:w-auto">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -655,11 +730,11 @@ export default function TenantsPage() {
               </Button>
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfigModal(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowConfigModal(false)} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button onClick={saveConfig} disabled={configSaving}>
+            <Button onClick={saveConfig} disabled={configSaving} className="w-full sm:w-auto">
               <Settings className="mr-2 h-4 w-4" />
               {configSaving ? 'Guardando...' : 'Guardar Configuración'}
             </Button>

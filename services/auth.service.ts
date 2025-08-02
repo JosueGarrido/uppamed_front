@@ -163,23 +163,36 @@ export const authService = {
     try {
       if (!isClient()) return;
       
-      const originalToken = localStorage.getItem('original_token');
-      const originalUser = localStorage.getItem('original_user');
+      const token = this.getToken();
+      if (!token) throw new Error('No hay token de autenticación');
 
-      if (!originalToken || !originalUser) {
-        throw new Error('No hay datos de sesión original para restaurar');
+      // Llamar al endpoint del backend para restaurar la sesión
+      const response = await fetch(buildApiUrl('/auth/restore-impersonation'), {
+        method: 'POST',
+        headers: createAuthHeaders(token),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al restaurar sesión original');
       }
 
-      // Restaurar datos originales
-      this.setToken(originalToken);
-      localStorage.setItem('user', originalUser);
+      const data = await response.json();
+      
+      // Restaurar el token original
+      this.setToken(data.token);
       
       // Limpiar datos de suplantación
       localStorage.removeItem('isImpersonating');
       localStorage.removeItem('original_token');
       localStorage.removeItem('original_user');
 
-      return JSON.parse(originalUser);
+      // Recargar los datos del usuario actual
+      const userData = await this.fetchUserData();
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      return userData;
     } catch (error) {
       console.error('Error al restaurar sesión original:', error);
       throw error;

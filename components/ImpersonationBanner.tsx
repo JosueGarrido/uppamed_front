@@ -35,9 +35,10 @@ export default function ImpersonationBanner() {
       // Verificar que el usuario sea Super Admin
       const user = authService.getCurrentUser();
       if (user && user.role === 'Super Admin') {
-        console.log('✅ Sesión restaurada correctamente, redirigiendo...');
+        console.log('✅ Sesión restaurada correctamente, recargando página...');
         toast.success('Sesión de Super Admin restaurada');
-        router.push('/dashboard/super-admin');
+        // Recargar la página para asegurar que todos los estados se actualicen
+        window.location.href = '/dashboard/super-admin';
       } else {
         console.error('❌ Error: Usuario no es Super Admin después de la restauración');
         toast.error('No se pudo restaurar la sesión de Super Admin');

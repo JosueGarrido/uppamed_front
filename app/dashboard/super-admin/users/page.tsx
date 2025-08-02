@@ -37,7 +37,9 @@ import {
   Save,
   Plus,
   UserCheck,
-  Settings
+  Settings,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -84,6 +86,11 @@ export default function GlobalUsers() {
   const [saving, setSaving] = useState(false);
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5);
+  
   const { user } = useAuth();
 
   useEffect(() => {
@@ -131,6 +138,12 @@ export default function GlobalUsers() {
     const tenant = tenants.find(t => t.id === tenantId);
     return tenant ? tenant.name : 'Centro no encontrado';
   };
+
+  // Calcular índices para paginación
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   const handleViewUser = (user: User) => {
     setSelectedUser(user);
@@ -211,15 +224,27 @@ export default function GlobalUsers() {
   const handleCreateUser = async () => {
     setCreating(true);
     try {
-      await userService.createUser(0, {
-        ...createFormData,
+      const userData: Partial<User> & { tenant_id?: number } = {
+        username: createFormData.username,
+        email: createFormData.email,
+        password: createFormData.password,
         role: createFormData.role as UserRole,
-        tenant_id: createFormData.tenant_id ? parseInt(createFormData.tenant_id) : undefined
-      });
+        identification_number: createFormData.identification_number,
+        area: createFormData.area,
+        specialty: createFormData.specialty
+      };
+      
+      // Solo incluir tenant_id si no es Super Admin
+      if (createFormData.role !== 'Super Admin' && createFormData.tenant_id) {
+        userData.tenant_id = parseInt(createFormData.tenant_id);
+      }
+      
+      await userService.createUser(userData);
       
       // Recargar la lista de usuarios
       const allUsers = await userService.getAllUsers();
       setUsers(allUsers);
+      setFilteredUsers(allUsers);
       
       setCreateModalOpen(false);
       setCreateFormData({
@@ -300,17 +325,20 @@ export default function GlobalUsers() {
         heading="Gestión de Usuarios Globales"
         text="Administra todos los usuarios del sistema médico"
       >
-        <Button onClick={openCreateModal}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Nuevo Usuario
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button onClick={openCreateModal} className="w-full sm:w-auto">
+            <UserPlus className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Nuevo Usuario</span>
+            <span className="sm:hidden">Crear Usuario</span>
+          </Button>
+        </div>
       </DashboardHeader>
 
       {/* Filtros y búsqueda */}
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Search className="mr-2 h-5 w-5" />
+            <Search className="mr-2 h-5 w-5 flex-shrink-0" />
             Filtros y Búsqueda
           </CardTitle>
           <CardDescription>
@@ -318,24 +346,22 @@ export default function GlobalUsers() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Buscar usuarios por nombre, email o identificación..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <div className="flex-1 relative min-w-0">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Buscar usuarios por nombre, email o identificación..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full"
+              />
             </div>
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-gray-400" />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Filter className="h-4 w-4 text-gray-400 flex-shrink-0" />
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="p-2 border border-gray-200 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-white text-gray-700"
+                className="p-2 border border-gray-200 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-white text-gray-700 w-full sm:w-48 flex-shrink-0"
               >
                 <option value="">Todos los roles</option>
                 <option value="Super Admin">Super Admin</option>
@@ -345,14 +371,19 @@ export default function GlobalUsers() {
               </select>
             </div>
           </div>
+          {(searchTerm || roleFilter) && (
+            <p className="text-sm text-gray-500 text-center sm:text-left mt-2 px-2">
+              Mostrando {filteredUsers.length} de {users.length} usuarios
+            </p>
+          )}
         </CardContent>
       </Card>
 
       {/* Tabla de usuarios */}
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Users className="mr-2 h-5 w-5" />
+            <Users className="mr-2 h-5 w-5 flex-shrink-0" />
             Usuarios Registrados
           </CardTitle>
           <CardDescription>
@@ -360,16 +391,18 @@ export default function GlobalUsers() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {filteredUsers.length === 0 ? (
-            <div className="text-center py-8">
+          {currentUsers.length === 0 ? (
+            <div className="text-center py-8 px-4">
               <Users className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No hay usuarios</h3>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                {searchTerm || roleFilter ? 'No se encontraron usuarios' : 'No hay usuarios'}
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
-                {searchTerm || roleFilter ? 'No se encontraron usuarios con los filtros aplicados.' : 'Comienza creando el primer usuario.'}
+                {searchTerm || roleFilter ? 'Intenta con otros filtros.' : 'Comienza creando el primer usuario.'}
               </p>
               {!searchTerm && !roleFilter && (
                 <div className="mt-6">
-                  <Button onClick={openCreateModal}>
+                  <Button onClick={openCreateModal} className="w-full sm:w-auto">
                     <UserPlus className="mr-2 h-4 w-4" />
                     Crear Primer Usuario
                   </Button>
@@ -377,119 +410,230 @@ export default function GlobalUsers() {
               )}
             </div>
           ) : (
-            <div className="space-y-4">
-              {filteredUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <UserIcon className="h-5 w-5 text-blue-600" />
+            <>
+              <div className="space-y-4 w-full">
+                {currentUsers.map((user) => (
+                  <div key={user.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors w-full overflow-hidden">
+                    <div className="flex items-center space-x-4 mb-4 lg:mb-0 min-w-0 flex-1 max-w-full">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <UserIcon className="h-5 w-5 text-blue-600" />
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1 max-w-full overflow-hidden">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1 min-w-0">
+                          <h3 className="text-base sm:text-lg font-medium text-gray-900 truncate min-w-0">{user.username}</h3>
+                          <RoleBadge role={user.role} />
+                        </div>
+                        <div className="text-sm text-gray-500 flex items-center min-w-0">
+                          <Mail className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <div className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden">
+                            {user.email}
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-400 truncate min-w-0">
+                          {getTenantName(user.tenant_id)}
+                        </p>
                       </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">{user.username}</h3>
-                      <p className="text-sm text-gray-500 flex items-center">
-                        <Mail className="h-4 w-4 mr-1" />
-                        {user.email}
-                      </p>
-                      <div className="flex items-center mt-1">
-                        <RoleBadge role={user.role} />
-                        <span className="mx-2 text-gray-300">•</span>
-                        <span className="text-xs text-gray-400">
-                          {getTenantName(user.tenant_id)}
-                        </span>
-                      </div>
+                    <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewUser(user)}
+                        className="flex-1 sm:flex-none min-w-[80px]"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        <span className="hidden sm:inline">Ver</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditUser(user)}
+                        className="flex-1 sm:flex-none min-w-[80px]"
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        <span className="hidden sm:inline">Editar</span>
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDeleteUser(user)}
+                        className="flex-1 sm:flex-none min-w-[80px]"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        <span className="hidden sm:inline">Eliminar</span>
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewUser(user)}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      Ver
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditUser(user)}
-                    >
-                      <Edit className="h-4 w-4 mr-1" />
-                      Editar
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteUser(user)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Eliminar
-                    </Button>
+                ))}
+              </div>
+
+              {/* Paginación */}
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4 px-2">
+                  <div className="text-sm text-gray-700 text-center sm:text-left">
+                    Mostrando {indexOfFirstUser + 1} a {Math.min(indexOfLastUser, filteredUsers.length)} de {filteredUsers.length} usuarios
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    {/* Botones de navegación */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Anterior</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <span className="hidden sm:inline">Siguiente</span>
+                        <ChevronRight className="h-4 w-4 ml-1 sm:ml-2" />
+                      </Button>
+                    </div>
+                    
+                    {/* Números de página */}
+                    <div className="flex items-center gap-1 flex-wrap justify-center">
+                      {totalPages <= 7 ? (
+                        // Si hay 7 páginas o menos, mostrar todas
+                        Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(page)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            {page}
+                          </Button>
+                        ))
+                      ) : (
+                        // Si hay más de 7 páginas, mostrar paginación inteligente
+                        <>
+                          {/* Primera página */}
+                          <Button
+                            variant={currentPage === 1 ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(1)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            1
+                          </Button>
+                          
+                          {/* Puntos suspensivos iniciales */}
+                          {currentPage > 4 && (
+                            <span className="px-2 text-gray-500">...</span>
+                          )}
+                          
+                          {/* Páginas alrededor de la actual */}
+                          {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(page => 
+                              page !== 1 && 
+                              page !== totalPages && 
+                              page >= currentPage - 1 && 
+                              page <= currentPage + 1
+                            )
+                            .map((page) => (
+                              <Button
+                                key={page}
+                                variant={currentPage === page ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setCurrentPage(page)}
+                                className="w-10 h-10 p-0 text-sm"
+                              >
+                                {page}
+                              </Button>
+                            ))}
+                          
+                          {/* Puntos suspensivos finales */}
+                          {currentPage < totalPages - 3 && (
+                            <span className="px-2 text-gray-500">...</span>
+                          )}
+                          
+                          {/* Última página */}
+                          <Button
+                            variant={currentPage === totalPages ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(totalPages)}
+                            className="w-10 h-10 p-0 text-sm"
+                          >
+                            {totalPages}
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
 
       {/* Estadísticas */}
-      <div className="grid gap-6 mt-8 md:grid-cols-4">
+      <div className="grid gap-4 mt-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Users className="h-6 w-6 text-blue-600" />
+              <div className="p-2 sm:p-3 bg-blue-100 rounded-full flex-shrink-0">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
-              <div className="ml-4">
-                <div className="text-2xl font-bold text-gray-900">{users.length}</div>
-                <div className="text-gray-600">Total Usuarios</div>
+              <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                <div className="text-xl sm:text-2xl font-bold text-gray-900">{users.length}</div>
+                <div className="text-sm sm:text-base text-gray-600">Total Usuarios</div>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <Shield className="h-6 w-6 text-yellow-600" />
+              <div className="p-2 sm:p-3 bg-yellow-100 rounded-full flex-shrink-0">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
               </div>
-              <div className="ml-4">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                <div className="text-xl sm:text-2xl font-bold text-gray-900">
                   {users.filter(u => u.role === 'Especialista').length}
                 </div>
-                <div className="text-gray-600">Especialistas</div>
+                <div className="text-sm sm:text-base text-gray-600">Especialistas</div>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-full">
-                <UserIcon className="h-6 w-6 text-green-600" />
+              <div className="p-2 sm:p-3 bg-green-100 rounded-full flex-shrink-0">
+                <UserIcon className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
               </div>
-              <div className="ml-4">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                <div className="text-xl sm:text-2xl font-bold text-gray-900">
                   {users.filter(u => u.role === 'Paciente').length}
                 </div>
-                <div className="text-gray-600">Pacientes</div>
+                <div className="text-sm sm:text-base text-gray-600">Pacientes</div>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-full">
-                <Shield className="h-6 w-6 text-purple-600" />
+              <div className="p-2 sm:p-3 bg-purple-100 rounded-full flex-shrink-0">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
               </div>
-              <div className="ml-4">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                <div className="text-xl sm:text-2xl font-bold text-gray-900">
                   {users.filter(u => u.role === 'Administrador').length}
                 </div>
-                <div className="text-gray-600">Administradores</div>
+                <div className="text-sm sm:text-base text-gray-600">Administradores</div>
               </div>
             </div>
           </CardContent>
@@ -498,7 +642,7 @@ export default function GlobalUsers() {
 
       {/* Modal de Vista */}
       <Dialog open={viewModalOpen} onOpenChange={setViewModalOpen}>
-        <DialogContent className="sm:max-w-[625px]">
+        <DialogContent className="w-[95vw] max-w-[625px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Eye className="mr-2 h-5 w-5" />
@@ -516,12 +660,14 @@ export default function GlobalUsers() {
                   <CardDescription>Información General del Usuario</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">Email</Label>
-                      <p className="text-sm text-gray-600 mt-1 flex items-center">
-                        <Mail className="h-4 w-4 mr-1" />
-                        {selectedUser.email}
+                      <p className="text-sm text-gray-600 mt-1 flex items-center min-w-0">
+                        <Mail className="h-4 w-4 mr-1 flex-shrink-0" />
+                        <span className="truncate min-w-0 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] overflow-hidden">
+                          {selectedUser.email}
+                        </span>
                       </p>
                     </div>
                     <div>
@@ -565,8 +711,8 @@ export default function GlobalUsers() {
               </Card>
             </div>
           )}
-          <DialogFooter>
-            <Button onClick={() => setViewModalOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={() => setViewModalOpen(false)} className="w-full sm:w-auto">
               Cerrar
             </Button>
           </DialogFooter>
@@ -575,7 +721,7 @@ export default function GlobalUsers() {
 
       {/* Modal de Edición */}
       <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Edit className="mr-2 h-5 w-5" />
@@ -671,11 +817,11 @@ export default function GlobalUsers() {
                 </div>
               </>
             )}
-            <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setEditModalOpen(false)}>
+            <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
+              <Button type="button" variant="outline" onClick={() => setEditModalOpen(false)} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={saving}>
+              <Button type="submit" disabled={saving} className="w-full sm:w-auto">
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? 'Guardando...' : 'Guardar Cambios'}
               </Button>
@@ -686,7 +832,7 @@ export default function GlobalUsers() {
 
       {/* Modal de Creación */}
       <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <UserPlus className="mr-2 h-5 w-5" />
@@ -754,23 +900,25 @@ export default function GlobalUsers() {
                 onChange={handleCreateInputChange}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="create-tenant">Centro Médico</Label>
-              <select
-                id="create-tenant"
-                name="tenant_id"
-                value={createFormData.tenant_id}
-                onChange={handleCreateInputChange}
-                className="w-full p-2 border border-gray-200 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <option value="">Sin asignar</option>
-                {tenants.map(tenant => (
-                  <option key={tenant.id} value={tenant.id}>
-                    {tenant.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {createFormData.role !== 'Super Admin' && (
+              <div className="space-y-2">
+                <Label htmlFor="create-tenant">Centro Médico</Label>
+                <select
+                  id="create-tenant"
+                  name="tenant_id"
+                  value={createFormData.tenant_id}
+                  onChange={handleCreateInputChange}
+                  className="w-full p-2 border border-gray-200 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  <option value="">Sin asignar</option>
+                  {tenants.map(tenant => (
+                    <option key={tenant.id} value={tenant.id}>
+                      {tenant.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             {createFormData.role === 'Especialista' && (
               <>
                 <div className="space-y-2">
@@ -793,11 +941,11 @@ export default function GlobalUsers() {
                 </div>
               </>
             )}
-            <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setCreateModalOpen(false)}>
+            <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
+              <Button type="button" variant="outline" onClick={() => setCreateModalOpen(false)} className="w-full sm:w-auto">
                 Cancelar
               </Button>
-              <Button type="submit" disabled={creating}>
+              <Button type="submit" disabled={creating} className="w-full sm:w-auto">
                 <UserPlus className="mr-2 h-4 w-4" />
                 {creating ? 'Creando...' : 'Crear Usuario'}
               </Button>
@@ -808,7 +956,7 @@ export default function GlobalUsers() {
 
       {/* Modal de Eliminación */}
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[95vw] max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center text-red-600">
               <Trash2 className="mr-2 h-5 w-5" />
@@ -818,11 +966,11 @@ export default function GlobalUsers() {
               ¿Estás seguro que deseas eliminar el usuario "{userToDelete?.username}"? Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteModalOpen(false)} disabled={deleting}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setDeleteModalOpen(false)} disabled={deleting} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button variant="destructive" onClick={confirmDeleteUser} disabled={deleting}>
+            <Button variant="destructive" onClick={confirmDeleteUser} disabled={deleting} className="w-full sm:w-auto">
               <Trash2 className="mr-2 h-4 w-4" />
               {deleting ? 'Eliminando...' : 'Eliminar'}
             </Button>
