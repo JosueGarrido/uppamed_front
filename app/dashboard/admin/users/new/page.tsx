@@ -41,7 +41,7 @@ export default function NewUser() {
         tenant_id: user?.tenant_id || undefined
       };
 
-      await userService.createUser(user?.tenant_id || 0, userData);
+      await userService.createUser({ ...userData, tenant_id: user?.tenant_id || undefined });
       router.push('/dashboard/admin/users');
     } catch (error) {
       setError('Error al crear el usuario');

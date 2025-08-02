@@ -42,7 +42,7 @@ export default function NewGlobalUser() {
         tenant_id: formData.tenant_id ? parseInt(formData.tenant_id) : undefined
       };
 
-      await userService.createUser(0, userData); // 0 para Super Admin
+      await userService.createUser(userData); // Super Admin no tiene tenant_id
       router.push('/dashboard/super-admin/users');
     } catch (error) {
       setError('Error al crear el usuario');

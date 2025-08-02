@@ -1,6 +1,6 @@
 // Configuración centralizada para la aplicación
 export const config = {
-  // URL de la API - prioriza la variable de entorno, sino usa la URL por defecto
+  // URL de la API - usar directamente Vercel
   apiUrl: process.env.NEXT_PUBLIC_API_URL || 'https://uppamed.vercel.app',
   
   // Configuración de CORS
