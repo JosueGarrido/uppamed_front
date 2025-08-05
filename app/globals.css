@@ -4,7 +4,7 @@
 
 /* Estilos responsivos para FullCalendar */
 @layer components {
-  .calendar-container {
+.calendar-container {
     @apply w-full;
   }
 
@@ -274,7 +274,7 @@
     }
     
     /* Título del calendario más pequeño en móvil */
-    .fc-toolbar-title {
+.fc-toolbar-title {
       @apply text-xs !important;
       font-size: 8px !important;
       max-width: 70px !important;
@@ -375,9 +375,9 @@
   @media (min-width: 768px) and (max-width: 1023px) {
     .fc-header-toolbar {
       @apply flex-row;
-    }
-    
-    .fc-button {
+}
+
+.fc-button {
       @apply text-sm px-3 py-2;
     }
     
@@ -394,9 +394,9 @@
     
     .fc-button {
       @apply text-base px-4 py-2;
-    }
-    
-    .fc-daygrid-day {
+}
+
+.fc-daygrid-day {
       @apply min-h-[100px];
     }
   }
@@ -416,17 +416,17 @@
   
   .fc-button-primary:focus {
     @apply ring-2 ring-blue-500 ring-offset-2;
-  }
-  
-  .fc-daygrid-day.fc-day-today {
+}
+
+.fc-daygrid-day.fc-day-today {
     @apply bg-blue-50;
-  }
-  
-  .fc-event {
+}
+
+.fc-event {
     @apply cursor-pointer transition-all duration-200;
-  }
-  
-  .fc-event:hover {
+}
+
+.fc-event:hover {
     @apply shadow-md transform scale-105;
   }
   

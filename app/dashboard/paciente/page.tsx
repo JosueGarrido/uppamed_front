@@ -258,37 +258,37 @@ export default function PacienteDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {upcomingAppointments.length > 0 ? (
+          {upcomingAppointments.length > 0 ? (
               <div className="space-y-4">
-                {upcomingAppointments.map((appointment) => (
+              {upcomingAppointments.map((appointment) => (
                   <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <User className="h-4 w-4 text-gray-500" />
-                        <div>
+                  <div>
                           <p className="font-medium text-gray-900">
                             Dr. {appointment.specialist?.username || `Especialista ${appointment.specialist_id}`}
-                          </p>
-                          <p className="text-sm text-gray-600">
+                    </p>
+                    <p className="text-sm text-gray-600">
                             {formatDate(appointment.date)} - {new Date(appointment.date).toLocaleTimeString('es-ES', {
                               hour: '2-digit',
                               minute: '2-digit'
                             })}
-                          </p>
-                        </div>
+                    </p>
+                  </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {getStatusIcon(appointment.status)}
+                    {getStatusIcon(appointment.status)}
                       {getStatusBadge(appointment.status)}
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
+                </div>
+              ))}
+            </div>
+          ) : (
               <div className="text-center py-8">
                 <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No tienes citas próximas</p>
+            <p className="text-gray-500">No tienes citas próximas</p>
                 <Link href="/dashboard/paciente/appointments">
                   <Button variant="outline" className="mt-2">
                     Ver todas las citas
@@ -326,14 +326,14 @@ export default function PacienteDashboard() {
                     </p>
                     <p className="text-xs text-gray-500">
                       {formatDate(record.date)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : (
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
               <div className="text-center py-8">
                 <Stethoscope className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No hay registros médicos</p>
+            <p className="text-gray-500">No hay registros médicos</p>
                 <Link href="/dashboard/paciente/medical-records">
                   <Button variant="outline" className="mt-2">
                     Ver historial completo
@@ -378,13 +378,13 @@ export default function PacienteDashboard() {
                     <span>Dr. {exam.specialist?.username || 'Especialista'}</span>
                     <span>{formatDate(exam.date)}</span>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
+              </div>
+            ))}
+          </div>
+        ) : (
             <div className="text-center py-8">
               <Microscope className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No hay exámenes registrados</p>
+          <p className="text-gray-500">No hay exámenes registrados</p>
               <Link href="/dashboard/paciente/medical-exams">
                 <Button variant="outline" className="mt-2">
                   Ver todos los exámenes

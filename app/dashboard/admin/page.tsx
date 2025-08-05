@@ -78,7 +78,7 @@ import { MedicalExam } from '@/types/medicalExam';
 
 interface HospitalMetrics {
   // KPIs Principales del Negocio
-  totalUsers: number;
+    totalUsers: number;
   totalSpecialists: number;
   totalPatients: number;
   totalAppointments: number;
@@ -620,7 +620,7 @@ export default function AdminDashboard() {
                 <span>{dashboardData?.metrics.specialistUtilization.toFixed(1) || 0}%</span>
               </div>
               <Progress value={dashboardData?.metrics.specialistUtilization || 0} className="h-2" />
-            </div>
+          </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Eficiencia Operativa</span>
@@ -656,7 +656,7 @@ export default function AdminDashboard() {
               <div className="flex justify-between items-center">
                 <span className="text-sm">Tasa de Retención</span>
                 <span className="text-sm font-bold">{dashboardData?.metrics.patientRetentionRate || 0}%</span>
-              </div>
+                </div>
             </div>
           </CardContent>
         </Card>
@@ -724,7 +724,7 @@ export default function AdminDashboard() {
                   <span className="text-sm">Completadas</span>
                 </div>
                 <span className="text-sm font-medium">{dashboardData?.metrics.appointmentsByStatus.completada || 0}</span>
-              </div>
+          </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -761,11 +761,11 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <span className="text-sm">Ginecología</span>
                 <span className="text-sm font-medium">{dashboardData?.metrics.specialistsByArea.ginecologia || 0}</span>
-              </div>
+          </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Otros</span>
                 <span className="text-sm font-medium">{dashboardData?.metrics.specialistsByArea.otros || 0}</span>
-              </div>
+                </div>
             </div>
           </CardContent>
         </Card>
@@ -807,7 +807,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex items-center space-x-2">
                       {getStatusBadge(appointment.status)}
-                    </div>
+        </div>
                   </div>
                 ))}
               </div>
@@ -843,7 +843,7 @@ export default function AdminDashboard() {
                        alert.type === 'warning' ? <Clock className="h-4 w-4 text-yellow-500" /> :
                        alert.type === 'success' ? <CheckCircle2 className="h-4 w-4 text-green-500" /> :
                        <FileText className="h-4 w-4 text-blue-500" />}
-                      <div>
+                  <div>
                         <p className={`font-medium ${
                           alert.type === 'urgent' ? 'text-red-800' :
                           alert.type === 'warning' ? 'text-yellow-800' :
@@ -854,8 +854,8 @@ export default function AdminDashboard() {
                         </p>
                         <p className="text-sm text-gray-600">{alert.description}</p>
                         <p className="text-xs text-gray-500">{alert.time}</p>
-                      </div>
-                    </div>
+                  </div>
+                  </div>
                     <Badge className={
                       alert.type === 'urgent' ? 'bg-red-100 text-red-800' :
                       alert.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
@@ -873,10 +873,10 @@ export default function AdminDashboard() {
               <div className="text-center py-8">
                 <Shield className="h-12 w-12 text-green-400 mx-auto mb-4" />
                 <p className="text-gray-500">No hay alertas activas</p>
-              </div>
-            )}
+          </div>
+        )}
           </CardContent>
-        </Card>
+      </Card>
       </div>
 
       {/* Acciones Rápidas y Gestión */}
@@ -906,13 +906,13 @@ export default function AdminDashboard() {
               <CalendarPlus className="h-6 w-6" />
               <span className="text-sm">Nueva Cita</span>
             </Button>
-            <Link href="/dashboard/admin/users">
+          <Link href="/dashboard/admin/users">
               <Button className="w-full h-auto p-4 flex flex-col items-center space-y-2" variant="outline">
                 <Users className="h-6 w-6" />
                 <span className="text-sm">Gestionar Usuarios</span>
-              </Button>
-            </Link>
-            <Link href="/dashboard/admin/appointments">
+            </Button>
+          </Link>
+          <Link href="/dashboard/admin/appointments">
               <Button className="w-full h-auto p-4 flex flex-col items-center space-y-2" variant="outline">
                 <Calendar className="h-6 w-6" />
                 <span className="text-sm">Gestionar Citas</span>
@@ -928,9 +928,9 @@ export default function AdminDashboard() {
               <Button className="w-full h-auto p-4 flex flex-col items-center space-y-2" variant="outline">
                 <Settings className="h-6 w-6" />
                 <span className="text-sm">Configuración</span>
-              </Button>
-            </Link>
-          </div>
+            </Button>
+          </Link>
+        </div>
         </CardContent>
       </Card>
 

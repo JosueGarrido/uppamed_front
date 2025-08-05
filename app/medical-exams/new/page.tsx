@@ -153,8 +153,8 @@ export default function NewMedicalExam() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="patient_id">Paciente *</Label>
+          <div>
+            <Label htmlFor="patient_id">Paciente *</Label>
                   <Select value={formData.patient_id} onValueChange={(value) => handleSelectChange('patient_id', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar paciente" />
@@ -174,20 +174,20 @@ export default function NewMedicalExam() {
                   <Input
                     name="title"
                     value={formData.title}
-                    onChange={handleChange}
+              onChange={handleChange}
                     placeholder="Ej: Análisis de sangre completo"
-                    required
+              required
                   />
-                </div>
+          </div>
 
-                <div>
-                  <Label htmlFor="type">Tipo de Examen *</Label>
+          <div>
+            <Label htmlFor="type">Tipo de Examen *</Label>
                   <Input
-                    name="type"
-                    value={formData.type}
-                    onChange={handleChange}
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
                     placeholder="Ej: Análisis de sangre, Rayos X, etc."
-                    required
+              required
                   />
                 </div>
 
@@ -290,17 +290,17 @@ export default function NewMedicalExam() {
                     value={formData.performed_date}
                     onChange={handleChange}
                   />
-                </div>
+          </div>
 
-                <div>
+          <div>
                   <Label htmlFor="report_date">Fecha de Reporte</Label>
-                  <Input
+            <Input
                     type="datetime-local"
                     name="report_date"
                     value={formData.report_date}
-                    onChange={handleChange}
-                  />
-                </div>
+              onChange={handleChange}
+            />
+          </div>
 
                 <div>
                   <Label htmlFor="followup_date">Fecha de Seguimiento</Label>
@@ -321,15 +321,15 @@ export default function NewMedicalExam() {
               <CardTitle>Resultados</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="results">Resultados *</Label>
-                <Textarea
-                  name="results"
-                  value={formData.results}
-                  onChange={handleChange}
+          <div>
+            <Label htmlFor="results">Resultados *</Label>
+            <Textarea
+              name="results"
+              value={formData.results}
+              onChange={handleChange}
                   placeholder="Resultados del examen"
                   rows={4}
-                  required
+              required
                 />
               </div>
 
@@ -391,10 +391,10 @@ export default function NewMedicalExam() {
                     value={formData.technician}
                     onChange={handleChange}
                     placeholder="Nombre del técnico"
-                  />
-                </div>
+            />
+          </div>
 
-                <div>
+          <div>
                   <Label htmlFor="insurance_provider">Proveedor de Seguro</Label>
                   <Input
                     name="insurance_provider"
@@ -435,10 +435,10 @@ export default function NewMedicalExam() {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="attachments">Adjuntar Archivos</Label>
-                <Input
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
+            <Input
+              type="file"
+              multiple
+              onChange={handleFileChange}
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx"
                 />
               </div>
@@ -471,8 +471,8 @@ export default function NewMedicalExam() {
                               Eliminar
                             </Button>
                           </div>
-                        </div>
-                        
+          </div>
+
                         {/* Layout desktop: horizontal */}
                         <div className="medical-exam-file-desktop items-center justify-between">
                           <div className="medical-exam-file-info-desktop">
@@ -513,7 +513,7 @@ export default function NewMedicalExam() {
             <Button type="submit" disabled={loading}>
               {loading ? 'Creando...' : (
                 <>
-                  <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-2 h-4 w-4" />
                   Crear Examen
                 </>
               )}

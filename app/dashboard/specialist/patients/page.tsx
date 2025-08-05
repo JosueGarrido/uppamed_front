@@ -1053,8 +1053,8 @@ export default function SpecialistPatientsPage() {
                     } else {
                       pageNum = currentPage - 2 + i;
                     }
-                    
-                    return (
+            
+            return (
                       <Button
                         key={pageNum}
                         variant={currentPage === pageNum ? "default" : "outline"}
@@ -1066,7 +1066,7 @@ export default function SpecialistPatientsPage() {
                       </Button>
                     );
                   })}
-                </div>
+                          </div>
                 
                 <Button
                   variant="outline"
@@ -1085,7 +1085,7 @@ export default function SpecialistPatientsPage() {
                 >
                   <SkipForward className="h-4 w-4" />
                 </Button>
-              </div>
+                        </div>
             </div>
           </CardContent>
         </Card>
@@ -1277,10 +1277,10 @@ export default function SpecialistPatientsPage() {
         <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
-              <div className="flex items-center">
+                            <div className="flex items-center">
                 <Calendar className="mr-2 h-5 w-5" />
                 Citas de {selectedPatient?.patient.username}
-              </div>
+                            </div>
               <Button 
                 onClick={() => setShowCreateAppointmentModal(true)}
                 size="sm"
@@ -1364,10 +1364,10 @@ export default function SpecialistPatientsPage() {
         <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
-              <div className="flex items-center">
+                              <div className="flex items-center">
                 <FileText className="mr-2 h-5 w-5" />
                 Registros Médicos de {selectedPatient?.patient.username}
-                          </div>
+                              </div>
               <Button 
                 onClick={() => setShowCreateRecordModal(true)}
                 variant="outline"
@@ -1425,9 +1425,9 @@ export default function SpecialistPatientsPage() {
                             <div className="bg-green-50 p-3 rounded-lg">
                               <p className="text-sm font-medium text-green-800 mb-1">Tratamiento:</p>
                               <p className="text-sm text-green-700">{record.treatment}</p>
-                      </div>
+                        </div>
                           )}
-                    </div>
+                      </div>
                       </CardContent>
                     </Card>
                   ))
@@ -1435,7 +1435,7 @@ export default function SpecialistPatientsPage() {
                 <div className="text-center py-8">
                   <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500">No hay registros médicos para este paciente</p>
-                </div>
+                    </div>
               )}
             </div>
           )}
@@ -1497,18 +1497,18 @@ export default function SpecialistPatientsPage() {
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                            <div>
+                        <div>
                               <span className="font-medium text-gray-700">Tipo:</span>
                               <span className="text-gray-600 ml-1">{exam.type}</span>
-                            </div>
+                        </div>
                             {exam.category && (
-                              <div>
+                        <div>
                                 <span className="font-medium text-gray-700">Categoría:</span>
                                 <span className="text-gray-600 ml-1 capitalize">{exam.category}</span>
-                              </div>
+                        </div>
                             )}
                             {exam.priority && (
-                              <div>
+                        <div>
                                 <span className="font-medium text-gray-700">Prioridad:</span>
                                 <Badge className={`ml-1 ${
                                   exam.priority === 'urgente' ? 'bg-red-100 text-red-800' :
@@ -1564,16 +1564,16 @@ export default function SpecialistPatientsPage() {
                               <p className="text-sm text-orange-700">
                                 {exam.results.length > 200 ? `${exam.results.substring(0, 200)}...` : exam.results}
                               </p>
-                            </div>
+                        </div>
                           )}
 
                           {exam.notes && (
                             <div>
                               <p className="text-sm font-medium text-gray-700 mb-1">Notas:</p>
                               <p className="text-sm text-gray-600">{exam.notes}</p>
-                            </div>
+                      </div>
                           )}
-                  </div>
+                    </div>
                 </CardContent>
               </Card>
                   ))
@@ -1610,7 +1610,7 @@ export default function SpecialistPatientsPage() {
                 <p className="text-sm text-blue-700">
                   <strong>Email:</strong> {selectedPatient.patient.email}
                 </p>
-              </div>
+                          </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -1655,8 +1655,8 @@ export default function SpecialistPatientsPage() {
                     <div className="text-xs text-blue-500 flex items-center mt-1">
                       <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-500 mr-1"></div>
                       Verificando disponibilidad...
-                    </div>
-                  )}
+                          </div>
+                        )}
                   {availabilityError && (
                     <div className="text-xs text-red-500 flex items-center mt-1">
                       <AlertCircle className="h-3 w-3 mr-1" />
@@ -1668,9 +1668,9 @@ export default function SpecialistPatientsPage() {
                       ✓ {availableSlots.length} horario(s) disponible(s)
                     </div>
                   )}
-                </div>
-              </div>
-              
+                      </div>
+                    </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Motivo de la consulta *
@@ -1706,14 +1706,14 @@ export default function SpecialistPatientsPage() {
                   disabled={creating}
                 >
                   Cancelar
-                </Button>
+                          </Button>
                 <Button
                   type="submit"
                   disabled={creating}
                 >
                   {creating ? 'Creando...' : 'Crear Cita'}
-                </Button>
-              </div>
+                          </Button>
+                      </div>
             </form>
           )}
         </DialogContent>
@@ -1741,7 +1741,7 @@ export default function SpecialistPatientsPage() {
                 <p className="text-sm text-purple-700">
                   <strong>Email:</strong> {selectedPatient.patient.email}
                 </p>
-      </div>
+                    </div>
               
               <div>
                                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1835,7 +1835,7 @@ export default function SpecialistPatientsPage() {
                 <p className="text-sm text-orange-700">
                   <strong>Email:</strong> {selectedPatient.patient.email}
                 </p>
-              </div>
+      </div>
 
               {/* Información Básica */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

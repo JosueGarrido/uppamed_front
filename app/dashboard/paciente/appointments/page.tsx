@@ -47,6 +47,8 @@ export default function PatientAppointmentsPage() {
     try {
       setLoading(true);
       const data = await appointmentService.getPatientAppointments();
+      console.log('📅 Citas cargadas en el componente:', data);
+      console.log('📅 Número de citas:', data.length);
       setAppointments(data);
     } catch (error) {
       console.error('Error loading appointments:', error);
@@ -62,6 +64,10 @@ export default function PatientAppointmentsPage() {
                          appointment.specialist?.email?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+  console.log('🔍 Citas filtradas:', filteredAppointments.length);
+  console.log('🔍 Filtro actual:', filter);
+  console.log('🔍 Término de búsqueda:', searchTerm);
 
   const calendarEvents = filteredAppointments.map(appointment => ({
     id: appointment.id.toString(),
@@ -209,6 +215,7 @@ export default function PatientAppointmentsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="calendar-responsive">
+              {console.log('📊 Eventos del calendario:', calendarEvents)}
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -258,6 +265,7 @@ export default function PatientAppointmentsPage() {
       ) : (
         /* Vista Lista */
         <div className="space-y-4">
+          {console.log('📋 Renderizando lista con citas:', filteredAppointments)}
           {filteredAppointments.length > 0 ? (
             filteredAppointments.map((appointment) => (
               <Card key={appointment.id}>
