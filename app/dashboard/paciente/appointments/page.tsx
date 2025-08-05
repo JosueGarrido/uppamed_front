@@ -104,7 +104,6 @@ export default function PatientAppointmentsPage() {
       start: appointment.date,
       end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
       backgroundColor: eventColor,
-      borderColor: eventColor,
       textColor: '#FFFFFF',
       classNames: ['custom-event'],
       'data-status': appointment.status,

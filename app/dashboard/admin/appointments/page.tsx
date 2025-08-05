@@ -202,7 +202,6 @@ const AdminAppointmentsPage = () => {
       title: `${patientName} - ${specialistName}`,
       date: appointment.date,
       backgroundColor: eventColor,
-      borderColor: eventColor,
       textColor: '#FFFFFF',
       classNames: ['custom-event'],
       'data-status': appointment.status,
