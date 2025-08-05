@@ -7,14 +7,16 @@ interface TenantConfigItem {
 }
 
 class TenantService {
-  async getTenantConfig(tenantId: number): Promise<TenantConfigItem[]> {
+  async getTenantConfig(tenantId?: number): Promise<TenantConfigItem[]> {
     try {
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl(`/tenants/${tenantId}/config`), {
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}/config` : '/tenants/my/config';
+      const response = await fetch(buildApiUrl(endpoint), {
         headers: createAuthHeaders(token)
       });
 
@@ -31,14 +33,16 @@ class TenantService {
     }
   }
 
-  async updateTenantConfig(tenantId: number, configs: TenantConfigItem[]): Promise<TenantConfigItem[]> {
+  async updateTenantConfig(tenantId: number | undefined, configs: TenantConfigItem[]): Promise<TenantConfigItem[]> {
     try {
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl(`/tenants/${tenantId}/config`), {
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}/config` : '/tenants/my/config';
+      const response = await fetch(buildApiUrl(endpoint), {
         method: 'PUT',
         headers: {
           ...createAuthHeaders(token),
@@ -60,14 +64,16 @@ class TenantService {
     }
   }
 
-  async getTenantById(tenantId: number): Promise<any> {
+  async getTenantById(tenantId?: number): Promise<any> {
     try {
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl(`/tenants/${tenantId}`), {
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}` : '/tenants/my/tenant';
+      const response = await fetch(buildApiUrl(endpoint), {
         headers: createAuthHeaders(token)
       });
 
@@ -84,14 +90,16 @@ class TenantService {
     }
   }
 
-  async updateTenant(tenantId: number, tenantData: { name?: string; address?: string }): Promise<any> {
+  async updateTenant(tenantId: number | undefined, tenantData: { name?: string; address?: string }): Promise<any> {
     try {
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(buildApiUrl(`/tenants/${tenantId}`), {
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}` : '/tenants/my/tenant';
+      const response = await fetch(buildApiUrl(endpoint), {
         method: 'PUT',
         headers: {
           ...createAuthHeaders(token),
