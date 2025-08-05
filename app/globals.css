@@ -40,6 +40,35 @@
   outline: none !important;
 }
 
+/* Reglas específicas para responsive */
+@media (max-width: 768px) {
+  .fc-event,
+  .fc-daygrid-event,
+  .fc-timegrid-event,
+  .fc-list-event,
+  .fc-event-main,
+  .fc-event-main-frame,
+  .fc-event-main-body {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .fc-event,
+  .fc-daygrid-event,
+  .fc-timegrid-event,
+  .fc-list-event,
+  .fc-event-main,
+  .fc-event-main-frame,
+  .fc-event-main-body {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
 /* Estilos responsivos para FullCalendar */
 @layer components {
 .calendar-container {

@@ -265,19 +265,35 @@ export default function PatientAppointmentsPage() {
                 .calendar-responsive :global(.fc-daygrid-event) {
                   border: none !important;
                   box-shadow: none !important;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
                 }
                 
                 .calendar-responsive :global(.fc-event-main) {
                   border: none !important;
                 }
                 
+                .calendar-responsive :global(.fc-timegrid-event) {
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+                
+                .calendar-responsive :global(.fc-list-event) {
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+                
+                .calendar-responsive :global(.fc-event-main-frame) {
+                  border: none !important;
+                }
+                
+                .calendar-responsive :global(.fc-event-main-body) {
+                  border: none !important;
+                }
+                
                 .calendar-responsive :global(.fc-event:hover) {
                   opacity: 0.8;
-                }
-                .calendar-responsive :global(.fc-daygrid-event) {
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
                 }
                 
                 @media (max-width: 768px) {
@@ -287,6 +303,15 @@ export default function PatientAppointmentsPage() {
                   .calendar-responsive :global(.fc-event) {
                     font-size: 10px;
                     padding: 1px 2px;
+                    border: none !important;
+                    box-shadow: none !important;
+                  }
+                  .calendar-responsive :global(.fc-daygrid-event) {
+                    border: none !important;
+                    box-shadow: none !important;
+                  }
+                  .calendar-responsive :global(.fc-event-main) {
+                    border: none !important;
                   }
                   .calendar-responsive :global(.fc-toolbar-title) {
                     font-size: 14px !important;
@@ -310,6 +335,14 @@ export default function PatientAppointmentsPage() {
                   .calendar-responsive :global(.fc-toolbar-chunk) {
                     display: flex;
                     justify-content: center;
+                  }
+                  .calendar-responsive :global(.fc-event) {
+                    border: none !important;
+                    box-shadow: none !important;
+                  }
+                  .calendar-responsive :global(.fc-daygrid-event) {
+                    border: none !important;
+                    box-shadow: none !important;
                   }
                 }
               `}</style>

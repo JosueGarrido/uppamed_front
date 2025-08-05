@@ -488,6 +488,49 @@ const SpecialistAppointmentsPage = () => {
               .calendar-container :global(.fc-event-main) {
                 border: none !important;
               }
+              
+              .calendar-container :global(.fc-timegrid-event) {
+                border: none !important;
+                box-shadow: none !important;
+              }
+              
+              .calendar-container :global(.fc-list-event) {
+                border: none !important;
+                box-shadow: none !important;
+              }
+              
+              .calendar-container :global(.fc-event-main-frame) {
+                border: none !important;
+              }
+              
+              .calendar-container :global(.fc-event-main-body) {
+                border: none !important;
+              }
+              
+              @media (max-width: 768px) {
+                .calendar-container :global(.fc-event) {
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+                .calendar-container :global(.fc-daygrid-event) {
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+                .calendar-container :global(.fc-event-main) {
+                  border: none !important;
+                }
+              }
+              
+              @media (max-width: 480px) {
+                .calendar-container :global(.fc-event) {
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+                .calendar-container :global(.fc-daygrid-event) {
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+              }
             `}</style>
             <div className="min-w-[280px] sm:min-w-[320px]">
               <FullCalendar
