@@ -339,17 +339,31 @@ export default function PatientAppointmentsPage() {
                     showAppointmentDetails(appointment);
                   }
                 }}
-                eventContent={(arg) => (
-                  <div className="p-1 text-xs">
-                    <div className="font-medium truncate">{arg.event.title}</div>
-                    <div className="text-xs opacity-75">
-                      {new Date(arg.event.start!).toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </div>
-                  </div>
-                )}
+                eventContent={(arg) => {
+                  const status = arg.event.extendedProps.status;
+                  const statusOption = STATUS_OPTIONS.find(s => s.value === status);
+                  const eventColor = statusOption?.color || '#6B7280';
+                  
+                  return {
+                    html: `
+                      <div style="
+                        background-color: ${eventColor} !important;
+                        border-color: ${eventColor} !important;
+                        color: white !important;
+                        padding: 2px 4px;
+                        border-radius: 3px;
+                        font-size: 10px;
+                        line-height: 1.2;
+                        margin: 1px;
+                        display: block;
+                        width: 100%;
+                        box-sizing: border-box;
+                      ">
+                        ${arg.event.title}
+                      </div>
+                    `
+                  };
+                }}
               />
             </div>
           </CardContent>
