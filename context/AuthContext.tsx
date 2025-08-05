@@ -176,11 +176,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.push(targetRoute);
     } catch (error) {
       console.error('❌ Error en login:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error en la autenticación';
+      
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Error en la autenticación'
+        error: errorMessage
       }));
+      
+      // NO redirigir automáticamente cuando hay error de credenciales
+      // El usuario debe ver el mensaje de error en la página de login
     }
   };
 

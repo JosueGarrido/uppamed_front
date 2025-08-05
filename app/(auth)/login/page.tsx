@@ -25,7 +25,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, error: authError } = useAuth();
 
   // Detectar si es desktop
   useEffect(() => {
@@ -38,6 +38,17 @@ export default function LoginPage() {
     
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
+  // Mostrar error del contexto de autenticación
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+      // Auto-limpiar el error después de 5 segundos
+      setTimeout(() => {
+        setError('');
+      }, 5000);
+    }
+  }, [authError]);
 
   // Limpiar errores cuando cambian los campos
   useEffect(() => {
