@@ -2,71 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Eliminar bordes de FullCalendar en toda la aplicación */
-.fc-event {
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.fc-daygrid-event {
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.fc-event-main {
-  border: none !important;
-}
-
-.fc-timegrid-event {
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.fc-list-event {
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Asegurar que no haya bordes en ningún tipo de evento */
+/* Eliminar bordes de FullCalendar en toda la aplicación - ESTRATEGIA AGRESIVA */
 .fc-event,
 .fc-daygrid-event,
 .fc-timegrid-event,
 .fc-list-event,
 .fc-event-main,
 .fc-event-main-frame,
-.fc-event-main-body {
+.fc-event-main-body,
+.fc-event-title,
+.fc-event-time,
+.fc-event-dot,
+.fc-event-bg,
+.fc-event-fg,
+.fc-event-inner,
+.fc-event-outer,
+.fc-event-selected,
+.fc-event-selected .fc-event-main,
+.fc-event-selected .fc-event-main-frame,
+.fc-event-selected .fc-event-main-body,
+.fc-daygrid-event-dot,
+.fc-daygrid-event-selected,
+.fc-daygrid-event-selected .fc-event-main,
+.fc-daygrid-event-selected .fc-event-main-frame,
+.fc-daygrid-event-selected .fc-event-main-body,
+.fc-timegrid-event-selected,
+.fc-timegrid-event-selected .fc-event-main,
+.fc-timegrid-event-selected .fc-event-main-frame,
+.fc-timegrid-event-selected .fc-event-main-body {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 3px !important;
+}
+
+/* Eliminar bordes específicos de FullCalendar */
+.fc .fc-event,
+.fc .fc-daygrid-event,
+.fc .fc-timegrid-event,
+.fc .fc-list-event,
+.fc .fc-event-main,
+.fc .fc-event-main-frame,
+.fc .fc-event-main-body {
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
 }
 
-/* Reglas específicas para responsive */
-@media (max-width: 768px) {
-  .fc-event,
-  .fc-daygrid-event,
-  .fc-timegrid-event,
-  .fc-list-event,
-  .fc-event-main,
-  .fc-event-main-frame,
-  .fc-event-main-body {
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .fc-event,
-  .fc-daygrid-event,
-  .fc-timegrid-event,
-  .fc-list-event,
-  .fc-event-main,
-  .fc-event-main-frame,
-  .fc-event-main-body {
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-  }
+/* Eliminar bordes en todos los contenedores de eventos */
+.fc-daygrid-day-events .fc-event,
+.fc-timegrid-col-events .fc-event,
+.fc-list-day-events .fc-event {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* Estilos responsivos para FullCalendar */

@@ -502,61 +502,37 @@ const AdminAppointmentsPage = () => {
         <CardContent className="p-2 sm:p-6">
           <div className="calendar-container overflow-x-auto">
             <style jsx>{`
-              .calendar-container :global(.fc-event) {
+              .calendar-container :global(.fc-event),
+              .calendar-container :global(.fc-daygrid-event),
+              .calendar-container :global(.fc-timegrid-event),
+              .calendar-container :global(.fc-list-event),
+              .calendar-container :global(.fc-event-main),
+              .calendar-container :global(.fc-event-main-frame),
+              .calendar-container :global(.fc-event-main-body),
+              .calendar-container :global(.fc-event-title),
+              .calendar-container :global(.fc-event-time),
+              .calendar-container :global(.fc-event-dot),
+              .calendar-container :global(.fc-event-bg),
+              .calendar-container :global(.fc-event-fg),
+              .calendar-container :global(.fc-event-inner),
+              .calendar-container :global(.fc-event-outer),
+              .calendar-container :global(.fc-event-selected),
+              .calendar-container :global(.fc-event-selected .fc-event-main),
+              .calendar-container :global(.fc-event-selected .fc-event-main-frame),
+              .calendar-container :global(.fc-event-selected .fc-event-main-body),
+              .calendar-container :global(.fc-daygrid-event-dot),
+              .calendar-container :global(.fc-daygrid-event-selected),
+              .calendar-container :global(.fc-daygrid-event-selected .fc-event-main),
+              .calendar-container :global(.fc-daygrid-event-selected .fc-event-main-frame),
+              .calendar-container :global(.fc-daygrid-event-selected .fc-event-main-body),
+              .calendar-container :global(.fc-timegrid-event-selected),
+              .calendar-container :global(.fc-timegrid-event-selected .fc-event-main),
+              .calendar-container :global(.fc-timegrid-event-selected .fc-event-main-frame),
+              .calendar-container :global(.fc-timegrid-event-selected .fc-event-main-body) {
                 border: none !important;
                 box-shadow: none !important;
-              }
-              
-              .calendar-container :global(.fc-daygrid-event) {
-                border: none !important;
-                box-shadow: none !important;
-              }
-              
-              .calendar-container :global(.fc-event-main) {
-                border: none !important;
-              }
-              
-              .calendar-container :global(.fc-timegrid-event) {
-                border: none !important;
-                box-shadow: none !important;
-              }
-              
-              .calendar-container :global(.fc-list-event) {
-                border: none !important;
-                box-shadow: none !important;
-              }
-              
-              .calendar-container :global(.fc-event-main-frame) {
-                border: none !important;
-              }
-              
-              .calendar-container :global(.fc-event-main-body) {
-                border: none !important;
-              }
-              
-              @media (max-width: 768px) {
-                .calendar-container :global(.fc-event) {
-                  border: none !important;
-                  box-shadow: none !important;
-                }
-                .calendar-container :global(.fc-daygrid-event) {
-                  border: none !important;
-                  box-shadow: none !important;
-                }
-                .calendar-container :global(.fc-event-main) {
-                  border: none !important;
-                }
-              }
-              
-              @media (max-width: 480px) {
-                .calendar-container :global(.fc-event) {
-                  border: none !important;
-                  box-shadow: none !important;
-                }
-                .calendar-container :global(.fc-daygrid-event) {
-                  border: none !important;
-                  box-shadow: none !important;
-                }
+                outline: none !important;
+                border-radius: 3px !important;
               }
             `}</style>
             <div className="min-w-[280px] sm:min-w-[320px]">
