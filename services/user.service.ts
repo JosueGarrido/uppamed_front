@@ -40,14 +40,46 @@ export const userService = {
       });
 
       if (!response.ok) {
-        throw new Error('Error al obtener todos los usuarios');
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Manejar diferentes códigos de error HTTP
+        switch (response.status) {
+          case 400:
+            throw new Error(errorData.message || 'Datos de entrada inválidos');
+          case 401:
+            throw new Error('No tienes permisos para ver todos los usuarios');
+          case 403:
+            throw new Error('Acceso denegado. Solo Super Admins pueden ver todos los usuarios');
+          case 404:
+            throw new Error('Endpoint no encontrado');
+          case 500:
+            throw new Error('Error interno del servidor. Intenta de nuevo más tarde');
+          case 502:
+          case 503:
+          case 504:
+            throw new Error('Servidor no disponible. Intenta de nuevo más tarde');
+          default:
+            throw new Error(errorData.message || 'Error al obtener todos los usuarios');
+        }
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error obteniendo todos los usuarios:', error);
-      throw error;
+      
+      // Manejar errores de red
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('No se puede conectar al servidor. Verifica tu conexión a internet');
+      }
+      
+      // Re-lanzar errores que ya tienen mensajes específicos
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      // Error genérico para casos no manejados
+      throw new Error('Error inesperado al obtener usuarios');
     }
   },
 
