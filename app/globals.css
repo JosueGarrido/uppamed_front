@@ -58,630 +58,111 @@
   outline: none !important;
 }
 
-/* Estilos responsivos para FullCalendar */
-@layer components {
-.calendar-container {
-    @apply w-full;
+/* Reglas específicas para responsive */
+@media (max-width: 768px) {
+  .fc-event,
+  .fc-daygrid-event,
+  .fc-timegrid-event,
+  .fc-list-event,
+  .fc-event-main,
+  .fc-event-main-frame,
+  .fc-event-main-body,
+  .fc-event-title,
+  .fc-event-time,
+  .fc-event-dot,
+  .fc-event-bg,
+  .fc-event-fg,
+  .fc-event-inner,
+  .fc-event-outer,
+  .fc-event-selected,
+  .fc-event-selected .fc-event-main,
+  .fc-event-selected .fc-event-main-frame,
+  .fc-event-selected .fc-event-main-body,
+  .fc-daygrid-event-dot,
+  .fc-daygrid-event-selected,
+  .fc-daygrid-event-selected .fc-event-main,
+  .fc-daygrid-event-selected .fc-event-main-frame,
+  .fc-daygrid-event-selected .fc-event-main-body,
+  .fc-timegrid-event-selected,
+  .fc-timegrid-event-selected .fc-event-main,
+  .fc-timegrid-event-selected .fc-event-main-frame,
+  .fc-timegrid-event-selected .fc-event-main-body {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
-
-  /* Estilos específicos para el módulo de Registros Médicos */
-  .medical-records-responsive {
-    @apply w-full;
+  
+  .fc .fc-event,
+  .fc .fc-daygrid-event,
+  .fc .fc-timegrid-event,
+  .fc .fc-list-event,
+  .fc .fc-event-main,
+  .fc .fc-event-main-frame,
+  .fc .fc-event-main-body {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
-
-  /* Responsive para móviles */
-  @media (max-width: 767px) {
-    /* Para móviles muy pequeños */
-    @media (max-width: 480px) {
-      .fc-toolbar-title {
-        font-size: 7px !important;
-        max-width: 60px !important;
-      }
-      
-      .fc-toolbar-chunk:has(.fc-toolbar-title) {
-        max-width: 65px !important;
-      }
-    }
-
-    /* Estilos para tarjetas de registros médicos en móvil */
-    .medical-record-card {
-      @apply p-3;
-    }
-
-    .medical-record-actions {
-      @apply flex-row gap-2;
-    }
-
-    .medical-record-actions button {
-      @apply flex-1 text-xs;
-    }
-
-    .medical-record-info {
-      @apply flex-col gap-3;
-    }
-
-    .medical-record-header {
-      @apply flex-col gap-2;
-    }
-
-    .medical-record-badge {
-      @apply w-fit;
-    }
-
-    .medical-record-text {
-      @apply text-sm break-words;
-    }
-
-    /* Estilos para filtros en móvil */
-    .medical-records-filters {
-      @apply space-y-4;
-    }
-
-    .medical-records-sort-buttons {
-      @apply flex-wrap gap-2;
-    }
-
-    .medical-records-sort-buttons button {
-      @apply flex-1 sm:flex-none;
-    }
-
-    /* Estilos para paginación en móvil */
-    .medical-records-pagination {
-      @apply flex-col gap-4;
-    }
-
-    .medical-records-pagination-info {
-      @apply text-center sm:text-left;
-    }
-
-    .medical-records-pagination-controls {
-      @apply gap-1 sm:gap-2;
-    }
-
-    .medical-records-pagination-controls button {
-      @apply w-8 h-8 text-xs sm:text-sm;
-    }
-
-    /* Ocultar botones de primera/última página en móvil */
-    .medical-records-pagination-controls .pagination-first,
-    .medical-records-pagination-controls .pagination-last {
-      @apply hidden sm:flex;
-    }
-
-    /* Estilos específicos para el módulo de Exámenes Médicos */
-    .medical-exams-responsive {
-      @apply w-full;
-    }
-
-    /* Estilos directos para archivos adjuntos - Solución definitiva */
-    .medical-exam-attachment-item {
-      @apply bg-gray-50 rounded-lg p-4;
-    }
-
-    .medical-exam-attachment-item-mobile {
-      @apply block sm:hidden;
-    }
-
-    .medical-exam-attachment-item-desktop {
-      @apply hidden sm:flex;
-    }
-
-    .medical-exam-attachment-info-mobile {
-      @apply flex items-start space-x-3 mb-4;
-    }
-
-    .medical-exam-attachment-info-desktop {
-      @apply flex items-center space-x-3 flex-1 min-w-0;
-    }
-
-    .medical-exam-attachment-icon {
-      @apply h-5 w-5 text-gray-500 flex-shrink-0;
-    }
-
-    .medical-exam-attachment-icon-mobile {
-      @apply mt-0.5;
-    }
-
-    .medical-exam-attachment-details {
-      @apply flex-1 min-w-0;
-    }
-
-    .medical-exam-attachment-name-mobile {
-      @apply font-medium text-gray-900 break-words text-sm;
-    }
-
-    .medical-exam-attachment-name-desktop {
-      @apply font-medium text-gray-900 truncate text-sm;
-    }
-
-    .medical-exam-attachment-actions-mobile {
-      @apply flex justify-center;
-    }
-
-    .medical-exam-attachment-actions-desktop {
-      @apply flex-shrink-0 ml-4;
-    }
-
-    .medical-exam-attachment-button-mobile {
-      @apply w-full max-w-xs;
-    }
-
-    /* Estilos para archivos en formularios */
-    .medical-exam-file-item {
-      @apply bg-gray-50 rounded p-4;
-    }
-
-    .medical-exam-file-existing {
-      @apply bg-blue-50;
-    }
-
-    .medical-exam-file-item-mobile {
-      @apply block sm:hidden;
-    }
-
-    .medical-exam-file-item-desktop {
-      @apply hidden sm:flex;
-    }
-
-    .medical-exam-file-info-mobile {
-      @apply flex items-start space-x-3 mb-4;
-    }
-
-    .medical-exam-file-info-desktop {
-      @apply flex items-center space-x-3 flex-1 min-w-0;
-    }
-
-    .medical-exam-file-icon {
-      @apply h-5 w-5 text-gray-500 flex-shrink-0;
-    }
-
-    .medical-exam-file-icon-blue {
-      @apply text-blue-500;
-    }
-
-    .medical-exam-file-icon-mobile {
-      @apply mt-0.5;
-    }
-
-    .medical-exam-file-details {
-      @apply flex-1 min-w-0;
-    }
-
-    .medical-exam-file-name-mobile {
-      @apply text-sm break-words;
-    }
-
-    .medical-exam-file-name-desktop {
-      @apply text-sm truncate;
-    }
-
-    .medical-exam-file-actions-mobile {
-      @apply flex justify-center;
-    }
-
-    .medical-exam-file-actions-desktop {
-      @apply flex-shrink-0 ml-4;
-    }
-
-    .medical-exam-file-button-mobile {
-      @apply w-full max-w-xs;
-    }
-    /* Estilos específicos para cada estado de cita en móvil */
-    .fc-event[data-status="pendiente"] {
-      background-color: #F59E0B !important;
-      border-color: #F59E0B !important;
-      color: white !important;
-    }
-    
-    .fc-event[data-status="confirmada"] {
-      background-color: #10B981 !important;
-      border-color: #10B981 !important;
-      color: white !important;
-    }
-    
-    .fc-event[data-status="completada"] {
-      background-color: #3B82F6 !important;
-      border-color: #3B82F6 !important;
-      color: white !important;
-    }
-    
-    .fc-event[data-status="cancelada"] {
-      background-color: #EF4444 !important;
-      border-color: #EF4444 !important;
-      color: white !important;
-    }
-    
-    /* Forzar colores en todos los eventos de móvil */
-    .fc-event {
-      background-color: var(--fc-event-bg-color, #3788d8) !important;
-      border-color: var(--fc-event-border-color, #3788d8) !important;
-    }
-    
-    /* Forzar colores usando selectores más específicos */
-    .fc-daygrid-event {
-      background-color: var(--fc-event-bg-color, #3788d8) !important;
-      border-color: var(--fc-event-border-color, #3788d8) !important;
-    }
-    
-    .fc-daygrid-event-dot {
-      background-color: var(--fc-event-bg-color, #3788d8) !important;
-      border-color: var(--fc-event-border-color, #3788d8) !important;
-    }
-    
-    /* Forzar colores en el contenido del evento */
-    .fc-event-main {
-      background-color: var(--fc-event-bg-color, #3788d8) !important;
-      border-color: var(--fc-event-border-color, #3788d8) !important;
-    }
-    .fc-header-toolbar {
-      @apply flex-col space-y-2;
-    }
-    
-    .fc-toolbar-chunk {
-      @apply flex justify-center;
-    }
-    
-    .fc-button-group {
-      @apply flex-wrap justify-center;
-    }
-    
-    .fc-button {
-      @apply text-xs px-2 py-1;
-    }
-    
-    /* Título del calendario más pequeño en móvil */
-.fc-toolbar-title {
-      @apply text-xs !important;
-      font-size: 8px !important;
-      max-width: 70px !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      white-space: nowrap !important;
-      line-height: 1 !important;
-      font-weight: 500 !important;
-      padding: 0 2px !important;
-      margin: 0 !important;
-    }
-    
-    /* Hacer el contenedor del título más compacto */
-    .fc-toolbar-chunk:has(.fc-toolbar-title) {
-      min-width: auto !important;
-      max-width: 80px !important;
-      flex-shrink: 1 !important;
-    }
-    
-    .fc-daygrid-day {
-      @apply min-h-[80px] !important;
-    }
-    
-    .fc-daygrid-day-number {
-      @apply text-xs;
-    }
-    
-    .fc-daygrid-day-frame {
-      @apply p-1;
-    }
-    
-    .fc-daygrid-day-events {
-      @apply mt-1;
-    }
-    
-    .fc-event {
-      @apply text-[10px] p-0.5 m-0.5 rounded-sm !important;
-      font-size: 10px !important;
-      line-height: 1.2 !important;
-      color: white !important;
-      /* Forzar que los colores del evento se apliquen en móvil */
-      background-color: var(--fc-event-bg-color) !important;
-      border-color: var(--fc-event-border-color) !important;
-    }
-    
-    .fc-event-title {
-      @apply truncate;
-      font-size: 10px !important;
-      color: white !important;
-    }
-    
-    .fc-event-time {
-      @apply hidden;
-    }
-    
-    .fc-daygrid-event-dot {
-      @apply hidden;
-    }
-    
-    .fc-daygrid-day-events {
-      @apply min-h-[20px];
-    }
-    
-    .fc-daygrid-day-frame {
-      @apply min-h-[60px];
-    }
-    
-    .fc-daygrid-day-bg {
-      @apply min-h-[60px];
-    }
-    
-    .fc-daygrid-day {
-      @apply min-h-[60px] max-h-[80px];
-    }
-    
-    .fc-daygrid-day-events {
-      @apply flex flex-col gap-0.5;
-    }
-    
-    .fc-daygrid-event {
-      @apply mb-0.5;
-    }
-    
-    .fc-daygrid-day-frame {
-      @apply flex flex-col;
-    }
-    
-    .fc-daygrid-day-bg {
-      @apply flex-1;
-    }
-    
-    .fc-daygrid-day-events {
-      @apply flex-1 flex flex-col justify-start;
-    }
+  
+  .fc-daygrid-day-events .fc-event,
+  .fc-timegrid-col-events .fc-event,
+  .fc-list-day-events .fc-event {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
-
-  /* Responsive para tablets */
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .fc-header-toolbar {
-      @apply flex-row;
 }
 
-.fc-button {
-      @apply text-sm px-3 py-2;
-    }
-    
-    .fc-daygrid-day {
-      @apply min-h-[80px];
-    }
-  }
-
-  /* Responsive para desktop */
-  @media (min-width: 1024px) {
-    .fc-header-toolbar {
-      @apply flex-row;
-    }
-    
-    .fc-button {
-      @apply text-base px-4 py-2;
-}
-
-.fc-daygrid-day {
-      @apply min-h-[100px];
-    }
-  }
-
-  /* Mejoras generales del calendario */
-  .fc {
-    @apply font-sans;
-  }
-  
-  .fc-toolbar-title {
-    @apply text-lg sm:text-xl font-semibold;
-  }
-  
-  .fc-button-primary {
-    @apply bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700;
+@media (max-width: 480px) {
+  .fc-event,
+  .fc-daygrid-event,
+  .fc-timegrid-event,
+  .fc-list-event,
+  .fc-event-main,
+  .fc-event-main-frame,
+  .fc-event-main-body,
+  .fc-event-title,
+  .fc-event-time,
+  .fc-event-dot,
+  .fc-event-bg,
+  .fc-event-fg,
+  .fc-event-inner,
+  .fc-event-outer,
+  .fc-event-selected,
+  .fc-event-selected .fc-event-main,
+  .fc-event-selected .fc-event-main-frame,
+  .fc-event-selected .fc-event-main-body,
+  .fc-daygrid-event-dot,
+  .fc-daygrid-event-selected,
+  .fc-daygrid-event-selected .fc-event-main,
+  .fc-daygrid-event-selected .fc-event-main-frame,
+  .fc-daygrid-event-selected .fc-event-main-body,
+  .fc-timegrid-event-selected,
+  .fc-timegrid-event-selected .fc-event-main,
+  .fc-timegrid-event-selected .fc-event-main-frame,
+  .fc-timegrid-event-selected .fc-event-main-body {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
   
-  .fc-button-primary:focus {
-    @apply ring-2 ring-blue-500 ring-offset-2;
-}
-
-.fc-daygrid-day.fc-day-today {
-    @apply bg-blue-50;
-}
-
-.fc-event {
-    @apply cursor-pointer transition-all duration-200;
-}
-
-.fc-event:hover {
-    @apply shadow-md transform scale-105;
+  .fc .fc-event,
+  .fc .fc-daygrid-event,
+  .fc .fc-timegrid-event,
+  .fc .fc-list-event,
+  .fc .fc-event-main,
+  .fc .fc-event-main-frame,
+  .fc .fc-event-main-body {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
   
-  /* Estilos para eventos personalizados */
-  .custom-event {
-    color: white !important;
-  }
-  
-  .custom-event .fc-event-title {
-    color: white !important;
-  }
-  
-  .custom-event .fc-event-time {
-    color: white !important;
-  }
-  
-  /* Forzar colores usando !important y selectores más específicos */
-  .fc-event[style*="background-color"] {
-    background-color: var(--fc-event-bg-color, #3788d8) !important;
-  }
-  
-  .fc-event[style*="border-color"] {
-    border-color: var(--fc-event-border-color, #3788d8) !important;
-  }
-  
-  /* Sobrescribir estilos inline específicos */
-  .fc-event[style*="background-color: transparent"] {
-    background-color: var(--fc-event-bg-color, #3788d8) !important;
-  }
-  
-  .fc-event[style*="border-color: transparent"] {
-    border-color: var(--fc-event-border-color, #3788d8) !important;
-  }
-  
-  /* Estilos específicos para cada estado de cita */
-  .fc-event[data-status="pendiente"] {
-    background-color: #F59E0B !important;
-    border-color: #F59E0B !important;
-  }
-  
-  .fc-event[data-status="confirmada"] {
-    background-color: #10B981 !important;
-    border-color: #10B981 !important;
-  }
-  
-  .fc-event[data-status="completada"] {
-    background-color: #3B82F6 !important;
-    border-color: #3B82F6 !important;
-  }
-  
-  .fc-event[data-status="cancelada"] {
-    background-color: #EF4444 !important;
-    border-color: #EF4444 !important;
-  }
-  
-  /* Estilos más agresivos para forzar colores */
-  .fc-event[data-status="pendiente"] .fc-event-main,
-  .fc-event[data-status="pendiente"] .fc-daygrid-event-dot {
-    background-color: #F59E0B !important;
-    border-color: #F59E0B !important;
-  }
-  
-  .fc-event[data-status="confirmada"] .fc-event-main,
-  .fc-event[data-status="confirmada"] .fc-daygrid-event-dot {
-    background-color: #10B981 !important;
-    border-color: #10B981 !important;
-  }
-  
-  .fc-event[data-status="completada"] .fc-event-main,
-  .fc-event[data-status="completada"] .fc-daygrid-event-dot {
-    background-color: #3B82F6 !important;
-    border-color: #3B82F6 !important;
-  }
-  
-  .fc-event[data-status="cancelada"] .fc-event-main,
-  .fc-event[data-status="cancelada"] .fc-daygrid-event-dot {
-    background-color: #EF4444 !important;
-    border-color: #EF4444 !important;
-  }
-
-  /* Estilos específicos para móviles muy pequeños */
-  @media (max-width: 480px) {
-    .medical-exam-attachment-item,
-    .medical-exam-file-item {
-      @apply p-3;
-    }
-    
-    .medical-exam-attachment-name-mobile,
-    .medical-exam-file-name-mobile {
-      @apply text-xs;
-    }
-    
-    .medical-exam-attachment-button-mobile,
-    .medical-exam-file-button-mobile {
-      @apply text-xs;
-    }
-  }
-
-  /* Estilos específicos para archivos con nombres largos */
-  .medical-exam-file-long-name {
-    @apply break-words leading-tight;
-    word-break: break-all;
-    hyphens: auto;
-  }
-
-  .medical-exam-file-long-name-mobile {
-    @apply text-sm leading-tight;
-    word-break: break-all;
-    hyphens: auto;
-    max-width: 100%;
-  }
-
-  .medical-exam-file-long-name-desktop {
-    @apply text-sm truncate;
-    max-width: 100%;
-  }
-
-  /* Estilos para botones de eliminación */
-  .medical-exam-delete-button {
-    @apply text-red-600 hover:text-red-700 hover:bg-red-50;
-  }
-
-  .medical-exam-delete-button-mobile {
-    @apply w-full max-w-xs text-red-600 hover:text-red-700 hover:bg-red-50;
-  }
-
-  /* Estilos para el calendario responsive del paciente */
-  .calendar-responsive {
-    @apply w-full;
-  }
-
-  .calendar-responsive .fc {
-    @apply text-sm;
-  }
-
-  .calendar-responsive .fc-toolbar {
-    @apply flex flex-col sm:flex-row gap-2 mb-4;
-  }
-
-  .calendar-responsive .fc-toolbar-title {
-    @apply text-lg sm:text-xl font-semibold;
-  }
-
-  .calendar-responsive .fc-button-group {
-    @apply flex flex-wrap gap-1;
-  }
-
-  .calendar-responsive .fc-button {
-    @apply text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2;
-  }
-
-  .calendar-responsive .fc-daygrid-day {
-    @apply min-h-[80px] sm:min-h-[100px];
-  }
-
-  .calendar-responsive .fc-daygrid-day-number {
-    @apply text-xs sm:text-sm;
-  }
-
-  .calendar-responsive .fc-event {
-    @apply text-xs p-1;
-  }
-
-  .calendar-responsive .fc-event-title {
-    @apply truncate;
-  }
-
-  .calendar-responsive .fc-timegrid-slot {
-    @apply h-8 sm:h-10;
-  }
-
-  .calendar-responsive .fc-timegrid-slot-label {
-    @apply text-xs;
-  }
-
-  .calendar-responsive .fc-col-header-cell {
-    @apply text-xs sm:text-sm;
-  }
-
-  /* Responsive para móviles muy pequeños */
-  @media (max-width: 480px) {
-    .calendar-responsive .fc-toolbar {
-      @apply text-center;
-    }
-    
-    .calendar-responsive .fc-toolbar-title {
-      @apply text-base;
-    }
-    
-    .calendar-responsive .fc-button {
-      @apply text-xs px-1 py-1;
-    }
-    
-    .calendar-responsive .fc-daygrid-day {
-      @apply min-h-[60px];
-    }
-    
-    .calendar-responsive .fc-event {
-      @apply text-xs p-0.5;
-    }
+  .fc-daygrid-day-events .fc-event,
+  .fc-timegrid-col-events .fc-event,
+  .fc-list-day-events .fc-event {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
 }
