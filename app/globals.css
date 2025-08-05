@@ -552,4 +552,80 @@
   .medical-exam-delete-button-mobile {
     @apply w-full max-w-xs text-red-600 hover:text-red-700 hover:bg-red-50;
   }
+
+  /* Estilos para el calendario responsive del paciente */
+  .calendar-responsive {
+    @apply w-full;
+  }
+
+  .calendar-responsive .fc {
+    @apply text-sm;
+  }
+
+  .calendar-responsive .fc-toolbar {
+    @apply flex flex-col sm:flex-row gap-2 mb-4;
+  }
+
+  .calendar-responsive .fc-toolbar-title {
+    @apply text-lg sm:text-xl font-semibold;
+  }
+
+  .calendar-responsive .fc-button-group {
+    @apply flex flex-wrap gap-1;
+  }
+
+  .calendar-responsive .fc-button {
+    @apply text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2;
+  }
+
+  .calendar-responsive .fc-daygrid-day {
+    @apply min-h-[80px] sm:min-h-[100px];
+  }
+
+  .calendar-responsive .fc-daygrid-day-number {
+    @apply text-xs sm:text-sm;
+  }
+
+  .calendar-responsive .fc-event {
+    @apply text-xs p-1;
+  }
+
+  .calendar-responsive .fc-event-title {
+    @apply truncate;
+  }
+
+  .calendar-responsive .fc-timegrid-slot {
+    @apply h-8 sm:h-10;
+  }
+
+  .calendar-responsive .fc-timegrid-slot-label {
+    @apply text-xs;
+  }
+
+  .calendar-responsive .fc-col-header-cell {
+    @apply text-xs sm:text-sm;
+  }
+
+  /* Responsive para móviles muy pequeños */
+  @media (max-width: 480px) {
+    .calendar-responsive .fc-toolbar {
+      @apply text-center;
+    }
+    
+    .calendar-responsive .fc-toolbar-title {
+      @apply text-base;
+    }
+    
+    .calendar-responsive .fc-button {
+      @apply text-xs px-1 py-1;
+    }
+    
+    .calendar-responsive .fc-daygrid-day {
+      @apply min-h-[60px];
+    }
+    
+    .calendar-responsive .fc-event {
+      @apply text-xs p-0.5;
+    }
+  }
 }
