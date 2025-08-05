@@ -526,7 +526,7 @@ const SpecialistAppointmentsPage = () => {
                     html: `
                       <div style="
                         background-color: ${eventColor} !important;
-                        border-color: ${eventColor} !important;
+                        border: none !important;
                         color: white !important;
                         padding: 2px 4px;
                         border-radius: 3px;
