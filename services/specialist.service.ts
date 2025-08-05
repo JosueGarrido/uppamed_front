@@ -162,6 +162,52 @@ class SpecialistService {
       throw error;
     }
   }
+
+  // Método para que el especialista verifique su propia disponibilidad
+  async checkMyAvailability(date: string, time: string): Promise<AvailabilityResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/specialists/my-availability?date=${date}&time=${time}`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al verificar disponibilidad');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error checking my availability:', error);
+      throw error;
+    }
+  }
+
+  // Método para que el especialista obtenga sus slots disponibles
+  async getMyAvailableSlots(date: string): Promise<AvailableSlotsResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/specialists/my-available-slots?date=${date}`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener slots disponibles');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error getting my available slots:', error);
+      throw error;
+    }
+  }
 }
 
 export const specialistService = new SpecialistService(); 

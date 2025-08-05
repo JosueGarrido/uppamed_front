@@ -107,10 +107,28 @@ const specialistMenuItems = [
   },
   { 
     label: 'Mis Citas',
-    href: '/appointments',
+    href: '/dashboard/specialist/appointments',
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  { 
+    label: 'Mis Pacientes',
+    href: '/dashboard/specialist/patients',
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    ),
+  },
+  { 
+    label: 'Disponibilidad',
+    href: '/dashboard/specialist/availability',
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
   },
@@ -124,11 +142,20 @@ const specialistMenuItems = [
     ),
   },
   { 
-    label: 'Exámenes Médicos',
+    label: 'Exámenes',
     href: '/medical-exams',
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+    ),
+  },
+  { 
+    label: 'Mi Perfil',
+    href: '/dashboard/specialist/profile',
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
   },
@@ -206,20 +233,25 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 bg-white border-r border-gray-100 flex flex-col min-h-screen">
-      <div className="p-6 border-b border-gray-100 bg-medical-50">
+      <div className="p-6 border-b border-gray-100 bg-blue-50">
         <div className="flex items-center justify-center">
-          <h2 className="text-2xl font-bold text-medical-700">Uppa Med</h2>
+          <h2 className="text-2xl font-bold text-blue-700">Uppa Med</h2>
         </div>
         {user && (
           <div className="mt-2 text-center">
-            <span className="text-sm text-medical-600 font-medium">{user.role}</span>
+            <span className="text-sm text-blue-600 font-medium">{user.role}</span>
           </div>
         )}
       </div>
       
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
-          const active = pathname === item.href;
+          // Mejorar la detección de elemento activo con más opciones
+          const active = (item.href === '/dashboard/specialist' && pathname === '/dashboard/specialist') ||
+                        (item.href !== '/dashboard/specialist' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+          
+
+          
           return (
             <Link
               key={item.href}
@@ -227,12 +259,12 @@ export default function Sidebar() {
               className={`
                 flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-150 
                 ${active 
-                  ? 'bg-medical-50 text-medical-700' 
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-medical-600'
+                  ? 'bg-blue-50 text-blue-700' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'
                 }
               `}
             >
-              <span className={`${active ? 'text-medical-600' : 'text-gray-400'}`}>
+              <span className={`${active ? 'text-blue-600' : 'text-gray-400'}`}>
                 {item.icon}
               </span>
               <span className="ml-3">{item.label}</span>
@@ -242,12 +274,12 @@ export default function Sidebar() {
       </nav>
 
       {isAuthenticated && user && (
-        <div className="border-t border-gray-100 bg-medical-50/50">
+        <div className="border-t border-gray-100 bg-blue-50/50">
           <div className="p-4">
             <div className="flex items-center px-4 py-3 rounded-lg bg-white">
               <div className="flex-shrink-0">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-medical-100">
-                  <span className="text-sm font-medium leading-none text-medical-700">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                  <span className="text-sm font-medium leading-none text-blue-700">
                     {user.email.charAt(0).toUpperCase()}
                   </span>
                 </span>

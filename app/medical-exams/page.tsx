@@ -75,8 +75,7 @@ export default function MedicalExamsPage() {
   const filteredExams = exams.filter(exam => {
     return (
       exam.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exam.result?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exam.notes?.toLowerCase().includes(searchTerm.toLowerCase())
+      exam.result?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -194,13 +193,6 @@ export default function MedicalExamsPage() {
                             <div>
                               <strong className="text-sm text-gray-700">Resultado:</strong>
                               <p className="text-sm text-gray-600 mt-1">{exam.result}</p>
-                            </div>
-                          )}
-                          
-                          {exam.notes && (
-                            <div>
-                              <strong className="text-sm text-gray-700">Notas:</strong>
-                              <p className="text-sm text-gray-600 mt-1 line-clamp-2">{exam.notes}</p>
                             </div>
                           )}
                         </div>

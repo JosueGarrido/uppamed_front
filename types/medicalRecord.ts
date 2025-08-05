@@ -1,8 +1,14 @@
 export interface MedicalRecord {
   id: number;
-  date: string;
-  diagnosis: string;
   patient_id: number;
   specialist_id: number;
-  notes?: string;
+  tenant_id: number;
+  diagnosis: string;
+  treatment: string;
+  observations?: string;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+  title?: string;
+  description?: string;
 } 

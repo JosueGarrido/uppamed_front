@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import AuthWrapper from '@/components/AuthWrapper';
 import ThemeWrapper from '@/components/ThemeWrapper';
 import { Toaster } from 'sonner';
 
@@ -10,11 +9,9 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthWrapper>
-      <ThemeWrapper>
-        {children}
-        <Toaster richColors position="top-right" />
-      </ThemeWrapper>
-    </AuthWrapper>
+    <ThemeWrapper>
+      {children}
+      <Toaster richColors position="top-right" />
+    </ThemeWrapper>
   );
 } 

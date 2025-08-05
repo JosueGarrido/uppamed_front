@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ export default function NewMedicalRecord() {
     observations: ''
   });
 
-  useState(() => {
+  useEffect(() => {
     const loadPatients = async () => {
       try {
         if (!user?.tenant_id) return;
@@ -41,7 +41,7 @@ export default function NewMedicalRecord() {
       }
     };
     void loadPatients();
-  });
+  }, [user?.tenant_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

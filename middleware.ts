@@ -2,14 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Solo manejar rutas específicas
-  const { pathname } = request.nextUrl;
-  
-  // Si es la página principal, redirigir al login
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-  
+  // Deshabilitar temporalmente el middleware para debugging
   return NextResponse.next();
 }
 
@@ -21,7 +14,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - public files
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 }; 

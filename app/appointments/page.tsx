@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,13 +31,22 @@ import Link from 'next/link';
 
 export default function AppointmentsPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
+  // Redirigir especialistas al calendario
   useEffect(() => {
-    if (user?.id) {
+    if (user?.role === 'Especialista') {
+      router.push('/dashboard/specialist/appointments');
+      return;
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+    if (user?.id && user?.role !== 'Especialista') {
       loadAppointments();
     }
   }, [user]);
@@ -46,9 +56,7 @@ export default function AppointmentsPage() {
       setLoading(true);
       let appointmentsData: Appointment[] = [];
 
-      if (user?.role === 'Especialista') {
-        appointmentsData = await appointmentService.getSpecialistAppointments();
-      } else if (user?.role === 'Paciente') {
+      if (user?.role === 'Paciente') {
         appointmentsData = await appointmentService.getPatientAppointments();
       } else {
         // Para administradores, obtener todas las citas del tenant
@@ -122,6 +130,20 @@ export default function AppointmentsPage() {
     
     return matchesSearch && matchesStatus;
   });
+
+  // Mostrar mensaje de redirección para especialistas
+  if (user?.role === 'Especialista') {
+    return (
+      <DashboardShell>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Redirigiendo al calendario...</p>
+          </div>
+        </div>
+      </DashboardShell>
+    );
+  }
 
   if (loading) {
     return (

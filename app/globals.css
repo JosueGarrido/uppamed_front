@@ -2,127 +2,319 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos para FullCalendar */
-.calendar-container {
-  width: 100%;
-}
+/* Estilos responsivos para FullCalendar */
+@layer components {
+  .calendar-container {
+    @apply w-full;
+  }
 
-.fc {
-  font-family: inherit;
-}
+  /* Responsive para móviles */
+  @media (max-width: 767px) {
+    /* Para móviles muy pequeños */
+    @media (max-width: 480px) {
+      .fc-toolbar-title {
+        font-size: 7px !important;
+        max-width: 60px !important;
+      }
+      
+      .fc-toolbar-chunk:has(.fc-toolbar-title) {
+        max-width: 65px !important;
+      }
+    }
+    /* Estilos específicos para cada estado de cita en móvil */
+    .fc-event[data-status="pendiente"] {
+      background-color: #F59E0B !important;
+      border-color: #F59E0B !important;
+      color: white !important;
+    }
+    
+    .fc-event[data-status="confirmada"] {
+      background-color: #10B981 !important;
+      border-color: #10B981 !important;
+      color: white !important;
+    }
+    
+    .fc-event[data-status="completada"] {
+      background-color: #3B82F6 !important;
+      border-color: #3B82F6 !important;
+      color: white !important;
+    }
+    
+    .fc-event[data-status="cancelada"] {
+      background-color: #EF4444 !important;
+      border-color: #EF4444 !important;
+      color: white !important;
+    }
+    
+    /* Forzar colores en todos los eventos de móvil */
+    .fc-event {
+      background-color: var(--fc-event-bg-color, #3788d8) !important;
+      border-color: var(--fc-event-border-color, #3788d8) !important;
+    }
+    
+    /* Forzar colores usando selectores más específicos */
+    .fc-daygrid-event {
+      background-color: var(--fc-event-bg-color, #3788d8) !important;
+      border-color: var(--fc-event-border-color, #3788d8) !important;
+    }
+    
+    .fc-daygrid-event-dot {
+      background-color: var(--fc-event-bg-color, #3788d8) !important;
+      border-color: var(--fc-event-border-color, #3788d8) !important;
+    }
+    
+    /* Forzar colores en el contenido del evento */
+    .fc-event-main {
+      background-color: var(--fc-event-bg-color, #3788d8) !important;
+      border-color: var(--fc-event-border-color, #3788d8) !important;
+    }
+    .fc-header-toolbar {
+      @apply flex-col space-y-2;
+    }
+    
+    .fc-toolbar-chunk {
+      @apply flex justify-center;
+    }
+    
+    .fc-button-group {
+      @apply flex-wrap justify-center;
+    }
+    
+    .fc-button {
+      @apply text-xs px-2 py-1;
+    }
+    
+    /* Título del calendario más pequeño en móvil */
+    .fc-toolbar-title {
+      @apply text-xs !important;
+      font-size: 8px !important;
+      max-width: 70px !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      line-height: 1 !important;
+      font-weight: 500 !important;
+      padding: 0 2px !important;
+      margin: 0 !important;
+    }
+    
+    /* Hacer el contenedor del título más compacto */
+    .fc-toolbar-chunk:has(.fc-toolbar-title) {
+      min-width: auto !important;
+      max-width: 80px !important;
+      flex-shrink: 1 !important;
+    }
+    
+    .fc-daygrid-day {
+      @apply min-h-[80px] !important;
+    }
+    
+    .fc-daygrid-day-number {
+      @apply text-xs;
+    }
+    
+    .fc-daygrid-day-frame {
+      @apply p-1;
+    }
+    
+    .fc-daygrid-day-events {
+      @apply mt-1;
+    }
+    
+    .fc-event {
+      @apply text-[10px] p-0.5 m-0.5 rounded-sm !important;
+      font-size: 10px !important;
+      line-height: 1.2 !important;
+      color: white !important;
+      /* Forzar que los colores del evento se apliquen en móvil */
+      background-color: var(--fc-event-bg-color) !important;
+      border-color: var(--fc-event-border-color) !important;
+    }
+    
+    .fc-event-title {
+      @apply truncate;
+      font-size: 10px !important;
+      color: white !important;
+    }
+    
+    .fc-event-time {
+      @apply hidden;
+    }
+    
+    .fc-daygrid-event-dot {
+      @apply hidden;
+    }
+    
+    .fc-daygrid-day-events {
+      @apply min-h-[20px];
+    }
+    
+    .fc-daygrid-day-frame {
+      @apply min-h-[60px];
+    }
+    
+    .fc-daygrid-day-bg {
+      @apply min-h-[60px];
+    }
+    
+    .fc-daygrid-day {
+      @apply min-h-[60px] max-h-[80px];
+    }
+    
+    .fc-daygrid-day-events {
+      @apply flex flex-col gap-0.5;
+    }
+    
+    .fc-daygrid-event {
+      @apply mb-0.5;
+    }
+    
+    .fc-daygrid-day-frame {
+      @apply flex flex-col;
+    }
+    
+    .fc-daygrid-day-bg {
+      @apply flex-1;
+    }
+    
+    .fc-daygrid-day-events {
+      @apply flex-1 flex flex-col justify-start;
+    }
+  }
 
-.fc-toolbar {
-  margin-bottom: 1rem;
-}
+  /* Responsive para tablets */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .fc-header-toolbar {
+      @apply flex-row;
+    }
+    
+    .fc-button {
+      @apply text-sm px-3 py-2;
+    }
+    
+    .fc-daygrid-day {
+      @apply min-h-[80px];
+    }
+  }
 
-.fc-toolbar-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-}
+  /* Responsive para desktop */
+  @media (min-width: 1024px) {
+    .fc-header-toolbar {
+      @apply flex-row;
+    }
+    
+    .fc-button {
+      @apply text-base px-4 py-2;
+    }
+    
+    .fc-daygrid-day {
+      @apply min-h-[100px];
+    }
+  }
 
-.fc-button {
-  background-color: #2563eb;
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.fc-button:hover {
-  background-color: #1d4ed8;
-}
-
-.fc-button:disabled {
-  background-color: #d1d5db;
-  cursor: not-allowed;
-}
-
-.fc-button-active {
-  background-color: #1e40af;
-}
-
-.fc-daygrid-day {
-  border: 1px solid #e5e7eb;
-}
-
-.fc-daygrid-day-number {
-  color: #374151;
-  font-weight: 500;
-}
-
-.fc-daygrid-day.fc-day-today {
-  background-color: #eff6ff;
-}
-
-.fc-event {
-  cursor: pointer;
-  border-radius: 0.375rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: white;
-}
-
-.fc-event:hover {
-  opacity: 0.9;
-}
-
-.fc-event-title {
-  font-weight: 500;
-}
-
-.fc-event-time {
-  font-size: 0.75rem;
-  opacity: 0.9;
-}
-
-.fc-daygrid-event-dot {
-  border-color: white;
-}
-
-.fc-more-link {
-  color: #2563eb;
-  font-size: 0.75rem;
-}
-
-.fc-more-link:hover {
-  color: #1d4ed8;
-}
-
-.fc-popover {
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.fc-popover-header {
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem 0.375rem 0 0;
-}
-
-.fc-popover-body {
-  padding: 0.5rem;
-}
-
-.fc-timegrid-slot {
-  border-color: #e5e7eb;
-}
-
-.fc-timegrid-slot-label {
-  color: #6b7280;
-  font-size: 0.75rem;
-}
-
-.fc-timegrid-now-indicator-line {
-  border-color: #ef4444;
-}
-
-.fc-timegrid-now-indicator-arrow {
-  border-color: #ef4444;
+  /* Mejoras generales del calendario */
+  .fc {
+    @apply font-sans;
+  }
+  
+  .fc-toolbar-title {
+    @apply text-lg sm:text-xl font-semibold;
+  }
+  
+  .fc-button-primary {
+    @apply bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700;
+  }
+  
+  .fc-button-primary:focus {
+    @apply ring-2 ring-blue-500 ring-offset-2;
+  }
+  
+  .fc-daygrid-day.fc-day-today {
+    @apply bg-blue-50;
+  }
+  
+  .fc-event {
+    @apply cursor-pointer transition-all duration-200;
+  }
+  
+  .fc-event:hover {
+    @apply shadow-md transform scale-105;
+  }
+  
+  /* Estilos para eventos personalizados */
+  .custom-event {
+    color: white !important;
+  }
+  
+  .custom-event .fc-event-title {
+    color: white !important;
+  }
+  
+  .custom-event .fc-event-time {
+    color: white !important;
+  }
+  
+  /* Forzar colores usando !important y selectores más específicos */
+  .fc-event[style*="background-color"] {
+    background-color: var(--fc-event-bg-color, #3788d8) !important;
+  }
+  
+  .fc-event[style*="border-color"] {
+    border-color: var(--fc-event-border-color, #3788d8) !important;
+  }
+  
+  /* Sobrescribir estilos inline específicos */
+  .fc-event[style*="background-color: transparent"] {
+    background-color: var(--fc-event-bg-color, #3788d8) !important;
+  }
+  
+  .fc-event[style*="border-color: transparent"] {
+    border-color: var(--fc-event-border-color, #3788d8) !important;
+  }
+  
+  /* Estilos específicos para cada estado de cita */
+  .fc-event[data-status="pendiente"] {
+    background-color: #F59E0B !important;
+    border-color: #F59E0B !important;
+  }
+  
+  .fc-event[data-status="confirmada"] {
+    background-color: #10B981 !important;
+    border-color: #10B981 !important;
+  }
+  
+  .fc-event[data-status="completada"] {
+    background-color: #3B82F6 !important;
+    border-color: #3B82F6 !important;
+  }
+  
+  .fc-event[data-status="cancelada"] {
+    background-color: #EF4444 !important;
+    border-color: #EF4444 !important;
+  }
+  
+  /* Estilos más agresivos para forzar colores */
+  .fc-event[data-status="pendiente"] .fc-event-main,
+  .fc-event[data-status="pendiente"] .fc-daygrid-event-dot {
+    background-color: #F59E0B !important;
+    border-color: #F59E0B !important;
+  }
+  
+  .fc-event[data-status="confirmada"] .fc-event-main,
+  .fc-event[data-status="confirmada"] .fc-daygrid-event-dot {
+    background-color: #10B981 !important;
+    border-color: #10B981 !important;
+  }
+  
+  .fc-event[data-status="completada"] .fc-event-main,
+  .fc-event[data-status="completada"] .fc-daygrid-event-dot {
+    background-color: #3B82F6 !important;
+    border-color: #3B82F6 !important;
+  }
+  
+  .fc-event[data-status="cancelada"] .fc-event-main,
+  .fc-event[data-status="cancelada"] .fc-daygrid-event-dot {
+    background-color: #EF4444 !important;
+    border-color: #EF4444 !important;
+  }
 }

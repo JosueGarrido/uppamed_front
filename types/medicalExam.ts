@@ -1,8 +1,15 @@
 export interface MedicalExam {
   id: number;
-  date: string;
-  type: string;
   patient_id: number;
   specialist_id: number;
-  result?: string;
+  tenant_id: number;
+  type: string;
+  results: string;
+  attachments?: any;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+  title?: string;
+  description?: string;
+  status?: string;
 } 

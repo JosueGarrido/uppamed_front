@@ -53,6 +53,52 @@ class MedicalRecordService {
       throw error;
     }
   }
+
+  async updateMedicalRecord(id: number, recordData: Partial<MedicalRecord>): Promise<MedicalRecord> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/medical-records/${id}`), {
+        method: 'PUT',
+        headers: createAuthHeaders(token),
+        body: JSON.stringify(recordData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar el registro médico');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error actualizando registro médico:', error);
+      throw error;
+    }
+  }
+
+  async getMedicalRecordById(id: number): Promise<MedicalRecord> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/medical-records/${id}`), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener el registro médico');
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Error obteniendo registro médico:', error);
+      throw error;
+    }
+  }
 }
 
 export const medicalRecordService = new MedicalRecordService(); 

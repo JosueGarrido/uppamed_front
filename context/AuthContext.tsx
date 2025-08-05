@@ -72,14 +72,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         error: null
       });
 
-      // Redirigir al dashboard correspondiente si estamos en la página principal
-      if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      // Solo redirigir si estamos en la página principal y no en login
+      if (typeof window !== 'undefined' && 
+          window.location.pathname === '/' && 
+          !window.location.pathname.includes('/login')) {
         const dashboardRoute = DASHBOARD_ROUTES[user.role as keyof typeof DASHBOARD_ROUTES] || '/dashboard';
         router.push(dashboardRoute);
       }
     } catch (error) {
       console.error('❌ Error verificando token:', error);
-      // Si hay error, limpiar la sesión
+      // Si hay error, limpiar la sesión pero NO redirigir automáticamente
       authService.logout();
       setState({
         user: null,
@@ -88,7 +90,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading: false,
         error: 'Sesión expirada'
       });
-      router.push('/login');
+      // Solo redirigir si no estamos ya en login
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        router.push('/login');
+      }
     }
   };
 
@@ -139,17 +144,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [isMounted]);
 
   const login = async (credentials: LoginCredentials) => {
-    console.log('🚀 Iniciando login...');
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-    
     try {
-      const response = await authService.login(credentials);
-      console.log('✅ Login exitoso:', { 
-        userId: response.user.id,
-        role: response.user.role
-      });
+      setState(prev => ({ ...prev, isLoading: true, error: null }));
       
-      // Actualizar estado inmediatamente con los datos del login
+      const response = await authService.login(credentials);
+      
       setState({
         user: response.user,
         token: response.token,
@@ -158,15 +157,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         error: null
       });
 
-      // Redirigir al dashboard correspondiente según el rol
-      const dashboardRoute = DASHBOARD_ROUTES[response.user.role as keyof typeof DASHBOARD_ROUTES] || '/dashboard';
-      console.log('🔄 Redirigiendo a:', dashboardRoute);
+      // Obtener la URL de redirección de los parámetros de la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('redirect');
       
-      // Usar setTimeout para asegurar que el estado se actualice antes de la redirección
-      setTimeout(() => {
-        router.push(dashboardRoute);
-      }, 100);
-      
+      // Determinar la ruta de destino
+      let targetRoute = '/';
+      if (redirectTo && redirectTo !== '/login') {
+        targetRoute = redirectTo;
+      } else {
+        // Redirigir al dashboard correspondiente al rol
+        const dashboardRoute = DASHBOARD_ROUTES[response.user.role as keyof typeof DASHBOARD_ROUTES] || '/dashboard';
+        targetRoute = dashboardRoute;
+      }
+
+      console.log('✅ Login exitoso, redirigiendo a:', targetRoute);
+      router.push(targetRoute);
     } catch (error) {
       console.error('❌ Error en login:', error);
       setState(prev => ({
@@ -174,7 +180,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading: false,
         error: error instanceof Error ? error.message : 'Error en la autenticación'
       }));
-      throw error;
     }
   };
 

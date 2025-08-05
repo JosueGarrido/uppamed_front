@@ -78,7 +78,7 @@ const SidebarWrapper = () => {
     ],
     'Especialista': [
       { name: 'Dashboard', href: '/dashboard/specialist', icon: <BarChart3 className="h-5 w-5" /> },
-      { name: 'Mis Citas', href: '/appointments', icon: <Calendar className="h-5 w-5" /> },
+      { name: 'Mis Citas', href: '/dashboard/specialist/appointments', icon: <Calendar className="h-5 w-5" /> },
       { name: 'Mis Pacientes', href: '/dashboard/specialist/patients', icon: <Users className="h-5 w-5" /> },
       { name: 'Disponibilidad', href: '/dashboard/specialist/availability', icon: <Clock className="h-5 w-5" /> },
       { name: 'Registros Médicos', href: '/medical-records', icon: <FileText className="h-5 w-5" /> },
@@ -149,7 +149,8 @@ const SidebarWrapper = () => {
               <Link
                 href={item.href}
                 className={`flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 ${
-                  pathname === item.href
+                  (item.href === '/dashboard/specialist' && pathname === '/dashboard/specialist') ||
+                  (item.href !== '/dashboard/specialist' && (pathname === item.href || pathname.startsWith(item.href + '/')))
                     ? 'bg-blue-600 text-white shadow-lg border-l-4 border-blue-800 font-semibold'
                     : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 hover:shadow-md'
                 }`}

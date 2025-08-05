@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { appointmentService } from '@/services/appointment.service';
 import { medicalRecordService } from '@/services/medicalRecord.service';
 import { medicalExamService } from '@/services/medicalExam.service';
@@ -13,28 +14,24 @@ import { User } from '@/types/auth';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
-  CalendarIcon, 
+  Calendar, 
+  UserCheck, 
+  UserX, 
+  Clock, 
+  Plus,
   ClipboardList, 
   FileText, 
   Users, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
-  TrendingUp,
-  UserCheck,
-  Stethoscope,
   Activity,
-  BarChart3,
-  Plus,
   Eye,
   Edit
 } from 'lucide-react';
 import Link from 'next/link';
 
-interface DashboardStats {
+interface SpecialistSummary {
+  kpis: {
   totalAppointments: number;
   todayAppointments: number;
   upcomingAppointments: number;
@@ -43,40 +40,33 @@ interface DashboardStats {
   totalPatients: number;
   totalRecords: number;
   totalExams: number;
-  monthlyGrowth: number;
+  };
+  ultimasCitas: Appointment[];
+  ultimosPacientes: User[];
+  ultimosRegistros: MedicalRecord[];
+  ultimosExamenes: MedicalExam[];
 }
 
 export default function SpecialistDashboard() {
-  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
-  const [todayAppointments, setTodayAppointments] = useState<Appointment[]>([]);
-  const [recentAppointments, setRecentAppointments] = useState<Appointment[]>([]);
-  const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>([]);
-  const [medicalExams, setMedicalExams] = useState<MedicalExam[]>([]);
-  const [patients, setPatients] = useState<User[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
-    totalAppointments: 0,
-    todayAppointments: 0,
-    upcomingAppointments: 0,
-    completedAppointments: 0,
-    pendingAppointments: 0,
-    totalPatients: 0,
-    totalRecords: 0,
-    totalExams: 0,
-    monthlyGrowth: 0
-  });
+  const { user, isLoading } = useAuth();
+  const [summary, setSummary] = useState<SpecialistSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        if (!user?.id) {
-          setError('No hay usuario autenticado');
-          setLoading(false);
-          return;
-        }
+    if (!isLoading && user && user.role !== 'Especialista') {
+      if (user.role === 'Super Admin') window.location.href = '/dashboard/super-admin';
+      else if (user.role === 'Administrador') window.location.href = '/dashboard/admin';
+      else if (user.role === 'Paciente') window.location.href = '/dashboard/paciente';
+    }
+  }, [user, isLoading]);
 
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      if (!user || user.role !== 'Especialista') return;
+      
+      setLoading(true);
+      try {
         // Cargar datos de forma individual para manejar errores por separado
         let appointments: Appointment[] = [];
         let records: MedicalRecord[] = [];
@@ -86,21 +76,21 @@ export default function SpecialistDashboard() {
           appointments = await appointmentService.getSpecialistAppointments();
         } catch (error) {
           console.error('Error cargando citas:', error);
-          // Continuar con citas vacías
+          appointments = [];
         }
 
         try {
           records = await medicalRecordService.getMyMedicalRecords('Especialista');
         } catch (error) {
           console.error('Error cargando registros médicos:', error);
-          // Continuar con registros vacíos
+          records = [];
         }
 
         try {
           exams = await medicalExamService.getMyMedicalExams();
         } catch (error) {
           console.error('Error cargando exámenes médicos:', error);
-          // Continuar con exámenes vacíos
+          exams = [];
         }
         
         const today = new Date();
@@ -114,14 +104,6 @@ export default function SpecialistDashboard() {
           return appDate > today;
         }).slice(0, 5);
 
-        const recent = appointments
-          .filter(app => {
-            const appDate = new Date(app.date);
-            return appDate <= today;
-          })
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-          .slice(0, 5);
-
         // Extraer pacientes únicos de las citas
         const uniquePatients = appointments.reduce((acc: any[], app) => {
           if (app.appointmentPatient && !acc.find(p => p.id === app.appointmentPatient?.id)) {
@@ -130,21 +112,12 @@ export default function SpecialistDashboard() {
           return acc;
         }, []);
 
-        setTodayAppointments(today_appointments);
-        setUpcomingAppointments(upcoming);
-        setRecentAppointments(recent);
-        setMedicalRecords(records);
-        setMedicalExams(exams);
-        setPatients(uniquePatients);
-
         // Calcular estadísticas
         const completed = appointments.filter(app => app.status === 'completada').length;
         const pending = appointments.filter(app => app.status === 'pendiente').length;
-        const monthlyGrowth = appointments.length > 0 
-          ? ((appointments.length - (appointments.length * 0.8)) / (appointments.length * 0.8)) * 100
-          : 0;
 
-        setStats({
+        setSummary({
+          kpis: {
           totalAppointments: appointments.length,
           todayAppointments: today_appointments.length,
           upcomingAppointments: upcoming.length,
@@ -152,39 +125,27 @@ export default function SpecialistDashboard() {
           pendingAppointments: pending,
           totalPatients: uniquePatients.length,
           totalRecords: records.length,
-          totalExams: exams.length,
-          monthlyGrowth: Math.round(monthlyGrowth)
+            totalExams: exams.length
+          },
+          ultimasCitas: appointments.slice(0, 5),
+          ultimosPacientes: uniquePatients.slice(0, 5),
+          ultimosRegistros: records.slice(0, 5),
+          ultimosExamenes: exams.slice(0, 5)
         });
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        setError('Error al cargar los datos');
+        
+        setError(null);
+      } catch (err: unknown) {
+        setError('Error al cargar los datos del dashboard');
+        console.error('Error loading dashboard:', err);
+      } finally {
         setLoading(false);
       }
     };
 
-    if (user?.id) {
-      loadData();
-    } else {
-      setLoading(false);
+    if (!isLoading && user?.role === 'Especialista') {
+      loadDashboardData();
     }
-  }, [user]);
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'confirmada':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'pendiente':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'completada':
-        return <CheckCircle className="h-4 w-4 text-blue-500" />;
-      case 'cancelada':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
-    }
-  };
+  }, [user, isLoading]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -201,13 +162,28 @@ export default function SpecialistDashboard() {
     }
   };
 
+  if (isLoading || !user) {
+    return (
+      <DashboardShell>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Cargando...</p>
+          </div>
+        </div>
+      </DashboardShell>
+    );
+  }
+
+  if (user.role !== 'Especialista') return null;
+
   if (loading) {
     return (
       <DashboardShell>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Cargando datos del especialista...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Cargando dashboard...</p>
           </div>
         </div>
       </DashboardShell>
@@ -219,7 +195,6 @@ export default function SpecialistDashboard() {
       <DashboardShell>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <p className="text-red-500 mb-4">{error}</p>
             <Button onClick={() => window.location.reload()}>
               Reintentar
@@ -236,418 +211,201 @@ export default function SpecialistDashboard() {
         heading="Panel del Especialista"
         text={`Bienvenido, ${user?.name || 'Especialista'}. Gestiona tus citas, pacientes y registros médicos.`}
       >
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Link href="/appointments/new">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Link href="/dashboard/specialist/appointments" className="w-full sm:w-auto">
             <Button className="w-full sm:w-auto">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              Nueva Cita
+              <Calendar className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Mis Citas</span>
+              <span className="sm:hidden">Citas</span>
             </Button>
           </Link>
-          <Link href="/medical-records/new">
+          <Link href="/medical-records/new" className="w-full sm:w-auto">
             <Button variant="outline" className="w-full sm:w-auto">
               <ClipboardList className="mr-2 h-4 w-4" />
-              Nuevo Registro
+              <span className="hidden sm:inline">Nuevo Registro</span>
+              <span className="sm:hidden">Registro</span>
             </Button>
           </Link>
         </div>
       </DashboardHeader>
 
-      {/* Métricas principales */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-700">Citas Hoy</CardTitle>
-            <CalendarIcon className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-900">{stats.todayAppointments}</div>
-            <p className="text-xs text-blue-600 mt-1">
-              {stats.todayAppointments > 0 ? `${stats.todayAppointments} programadas` : 'Sin citas programadas'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-700">Próximas Citas</CardTitle>
-            <Clock className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-900">{stats.upcomingAppointments}</div>
-            <p className="text-xs text-green-600 mt-1">
-              En los próximos días
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-700">Pacientes</CardTitle>
-            <Users className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-900">{stats.totalPatients}</div>
-            <p className="text-xs text-purple-600 mt-1">
-              Pacientes atendidos
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-orange-700">Crecimiento</CardTitle>
-            <TrendingUp className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-900">{stats.monthlyGrowth}%</div>
-            <p className="text-xs text-orange-600 mt-1">
-              Este mes
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Estadísticas detalladas */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <BarChart3 className="mr-2 h-5 w-5 text-blue-600" />
-              Estadísticas de Citas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Total de citas:</span>
-              <span className="font-semibold">{stats.totalAppointments}</span>
+      {/* KPIs Principales */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Calendar className="h-8 w-8 text-blue-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Citas Hoy</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis.todayAppointments || 0}</div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Completadas:</span>
-              <span className="font-semibold text-green-600">{stats.completedAppointments}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Pendientes:</span>
-              <span className="font-semibold text-yellow-600">{stats.pendingAppointments}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Registros médicos:</span>
-              <span className="font-semibold text-purple-600">{stats.totalRecords}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Exámenes:</span>
-              <span className="font-semibold text-orange-600">{stats.totalExams}</span>
-            </div>
-          </CardContent>
+          </div>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <Activity className="mr-2 h-5 w-5 text-green-600" />
-              Actividad Reciente
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Citas completadas</p>
-                  <p className="text-xs text-gray-500">Este mes</p>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Clock className="h-8 w-8 text-green-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Próximas Citas</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis.upcomingAppointments || 0}</div>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Users className="h-8 w-8 text-purple-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Pacientes</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis.totalPatients || 0}</div>
+            </div>
+            </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Activity className="h-8 w-8 text-orange-500 mr-3 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm sm:text-base">Total Citas</h3>
+              <div className="text-xl sm:text-2xl font-bold">{summary?.kpis.totalAppointments || 0}</div>
+            </div>
+            </div>
+        </Card>
                 </div>
-                <span className="text-sm font-semibold">{stats.completedAppointments}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Nuevos pacientes</p>
-                  <p className="text-xs text-gray-500">Este mes</p>
-                </div>
-                <span className="text-sm font-semibold">{Math.floor(stats.totalPatients * 0.3)}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Registros creados</p>
-                  <p className="text-xs text-gray-500">Este mes</p>
-                </div>
-                <span className="text-sm font-semibold">{Math.floor(stats.totalRecords * 0.4)}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <Stethoscope className="mr-2 h-5 w-5 text-purple-600" />
-              Acciones Rápidas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Link href="/dashboard/specialist/availability">
-              <Button variant="outline" className="w-full justify-start">
-                <Clock className="mr-2 h-4 w-4" />
-                Gestionar Disponibilidad
+      {/* Últimos Registros */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="p-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="font-semibold text-sm sm:text-base">Últimas Citas</h3>
+            <Link href="/dashboard/specialist/appointments">
+              <Button variant="ghost" size="sm" className="w-full sm:w-auto">
+                Ver todas
               </Button>
             </Link>
+              </div>
+          {summary?.ultimasCitas && summary.ultimasCitas.length > 0 ? (
+            <div className="space-y-2">
+              {summary.ultimasCitas.map((cita) => (
+                <div key={cita.id} className="p-2 border rounded">
+                  <p className="font-medium">{cita.appointmentPatient?.username || `Paciente ${cita.patient_id}`}</p>
+                  <p className="text-sm text-gray-600">{new Date(cita.date).toLocaleDateString()}</p>
+                  <div className="mt-1">{getStatusBadge(cita.status)}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-4">No hay citas registradas</p>
+          )}
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="font-semibold text-sm sm:text-base">Últimos Pacientes</h3>
             <Link href="/dashboard/specialist/patients">
-              <Button variant="outline" className="w-full justify-start">
-                <Users className="mr-2 h-4 w-4" />
-                Ver Pacientes
+              <Button variant="ghost" size="sm" className="w-full sm:w-auto">
+                Ver todos
               </Button>
             </Link>
-            <Link href="/dashboard/specialist/profile">
-              <Button variant="outline" className="w-full justify-start">
-                <UserCheck className="mr-2 h-4 w-4" />
-                Mi Perfil
-              </Button>
-            </Link>
-          </CardContent>
+      </div>
+          {summary?.ultimosPacientes && summary.ultimosPacientes.length > 0 ? (
+            <div className="space-y-2">
+              {summary.ultimosPacientes.map((paciente) => (
+                <div key={paciente.id} className="p-2 border rounded">
+                  <p className="font-medium">{paciente.username}</p>
+                  <p className="text-sm text-gray-600">ID: {paciente.identification_number}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+            <p className="text-gray-500 text-center py-4">No hay pacientes registrados</p>
+          )}
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h3 className="font-semibold text-sm sm:text-base">Últimos Registros</h3>
+            <Link href="/medical-records">
+              <Button variant="ghost" size="sm" className="w-full sm:w-auto">
+                Ver todos
+                        </Button>
+                      </Link>
+                    </div>
+          {summary?.ultimosRegistros && summary.ultimosRegistros.length > 0 ? (
+            <div className="space-y-2">
+              {summary.ultimosRegistros.map((registro) => (
+                <div key={registro.id} className="p-2 border rounded">
+                  <p className="font-medium">{registro.diagnosis}</p>
+                  <p className="text-sm text-gray-600">{new Date(registro.date).toLocaleDateString()}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+            <p className="text-gray-500 text-center py-4">No hay registros médicos</p>
+          )}
         </Card>
       </div>
 
-      {/* Citas de hoy y próximas */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center">
-                <CalendarIcon className="mr-2 h-5 w-5 text-blue-600" />
-                Citas de Hoy
-              </span>
-              <Link href="/appointments">
-                <Button variant="ghost" size="sm">
-                  Ver todas
-                </Button>
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {todayAppointments.length > 0 ? (
-              <div className="space-y-3">
-                {todayAppointments.map((appointment) => (
-                  <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        {appointment.appointmentPatient?.username || `Paciente ${appointment.patient_id}`}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(appointment.date).toLocaleTimeString('es-ES', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </p>
-                      {appointment.reason && (
-                        <p className="text-xs text-gray-500 mt-1">{appointment.reason}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {getStatusBadge(appointment.status)}
-                      <Link href={`/appointments/${appointment.id}`}>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
+      {/* Estadísticas Detalladas */}
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+          <h2 className="text-lg sm:text-xl font-semibold">Estadísticas de Citas</h2>
+          <Link href="/dashboard/specialist/appointments">
+            <Button variant="ghost" size="sm" className="w-full sm:w-auto">
+              Ver todas
                         </Button>
                       </Link>
                     </div>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="text-center p-4 border rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{summary?.kpis.completedAppointments || 0}</div>
+            <p className="text-sm text-gray-600">Completadas</p>
+          </div>
+          <div className="text-center p-4 border rounded-lg">
+            <div className="text-2xl font-bold text-yellow-600">{summary?.kpis.pendingAppointments || 0}</div>
+            <p className="text-sm text-gray-600">Pendientes</p>
+          </div>
+          <div className="text-center p-4 border rounded-lg">
+            <div className="text-2xl font-bold text-purple-600">{summary?.kpis.totalRecords || 0}</div>
+            <p className="text-sm text-gray-600">Registros</p>
                   </div>
-                ))}
+          <div className="text-center p-4 border rounded-lg">
+            <div className="text-2xl font-bold text-orange-600">{summary?.kpis.totalExams || 0}</div>
+            <p className="text-sm text-gray-600">Exámenes</p>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <CalendarIcon className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No hay citas programadas para hoy</p>
-                <Link href="/appointments/new">
-                  <Button variant="outline" className="mt-3">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Programar Cita
-                  </Button>
-                </Link>
               </div>
-            )}
-          </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center">
-                <Clock className="mr-2 h-5 w-5 text-green-600" />
-                Próximas Citas
-              </span>
-              <Link href="/appointments">
-                <Button variant="ghost" size="sm">
-                  Ver todas
+      {/* Acciones Rápidas */}
+      <Card className="p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">Acciones Rápidas</h2>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <Link href="/dashboard/specialist/appointments">
+            <Button className="w-full" variant="outline">
+              <Calendar className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Ver Citas</span>
+              <span className="sm:hidden">Citas</span>
+            </Button>
+          </Link>
+          <Link href="/dashboard/specialist/availability">
+            <Button className="w-full" variant="outline">
+              <Clock className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Disponibilidad</span>
+              <span className="sm:hidden">Horarios</span>
                 </Button>
               </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {upcomingAppointments.length > 0 ? (
-              <div className="space-y-3">
-                {upcomingAppointments.map((appointment) => (
-                  <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        {appointment.appointmentPatient?.username || `Paciente ${appointment.patient_id}`}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(appointment.date).toLocaleDateString('es-ES', { 
-                          weekday: 'short', 
-                          day: 'numeric', 
-                          month: 'short' 
-                        })} - {new Date(appointment.date).toLocaleTimeString('es-ES', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </p>
-                      {appointment.reason && (
-                        <p className="text-xs text-gray-500 mt-1">{appointment.reason}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {getStatusBadge(appointment.status)}
-                      <Link href={`/appointments/${appointment.id}`}>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
+          <Link href="/dashboard/specialist/patients">
+            <Button className="w-full" variant="outline">
+              <Users className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Mis Pacientes</span>
+              <span className="sm:hidden">Pacientes</span>
                         </Button>
                       </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No hay citas próximas</p>
-                <Link href="/appointments/new">
-                  <Button variant="outline" className="mt-3">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Programar Cita
+          <Link href="/dashboard/specialist/profile">
+            <Button className="w-full" variant="outline">
+              <UserCheck className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Mi Perfil</span>
+              <span className="sm:hidden">Perfil</span>
                   </Button>
                 </Link>
               </div>
-            )}
-          </CardContent>
         </Card>
-      </div>
-
-      {/* Registros médicos y exámenes recientes */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center">
-                <ClipboardList className="mr-2 h-5 w-5 text-purple-600" />
-                Últimos Registros Médicos
-              </span>
-              <Link href="/medical-records">
-                <Button variant="ghost" size="sm">
-                  Ver todos
-                </Button>
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {medicalRecords.length > 0 ? (
-              <div className="space-y-3">
-                {medicalRecords.slice(0, 3).map((record) => (
-                  <div key={record.id} className="p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{record.diagnosis}</p>
-                        <p className="text-sm text-gray-600">
-                          {new Date(record.date).toLocaleDateString('es-ES', { 
-                            day: 'numeric', 
-                            month: 'short', 
-                            year: 'numeric' 
-                          })}
-                        </p>
-                        {record.notes && (
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{record.notes}</p>
-                        )}
-                      </div>
-                      <Link href={`/medical-records/${record.id}`}>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <ClipboardList className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No hay registros médicos</p>
-                <Link href="/medical-records/new">
-                  <Button variant="outline" className="mt-3">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Crear Registro
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center">
-                <FileText className="mr-2 h-5 w-5 text-orange-600" />
-                Últimos Exámenes
-              </span>
-              <Link href="/medical-exams">
-                <Button variant="ghost" size="sm">
-                  Ver todos
-                </Button>
-              </Link>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {medicalExams.length > 0 ? (
-              <div className="space-y-3">
-                {medicalExams.slice(0, 3).map((exam) => (
-                  <div key={exam.id} className="p-3 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{exam.type}</p>
-                        <p className="text-sm text-gray-600">
-                          {new Date(exam.date).toLocaleDateString('es-ES', { 
-                            day: 'numeric', 
-                            month: 'short', 
-                            year: 'numeric' 
-                          })}
-                        </p>
-                        {exam.result && (
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{exam.result}</p>
-                        )}
-                      </div>
-                      <Link href={`/medical-exams/${exam.id}`}>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No hay exámenes registrados</p>
-                <Link href="/medical-exams/new">
-                  <Button variant="outline" className="mt-3">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Crear Examen
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
     </DashboardShell>
   );
 } 

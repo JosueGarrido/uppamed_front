@@ -4,15 +4,20 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
 import { medicalRecordService } from '@/services/medicalRecord.service';
+import { userService } from '@/services/user.service';
 import { useAuth } from '@/context/AuthContext';
 import { MedicalRecord } from '@/types/medicalRecord';
+import { User } from '@/types/auth';
 import { toast } from 'sonner';
 import { 
   FileText, 
-  User, 
   Calendar, 
   Plus, 
   Eye, 
@@ -20,34 +25,54 @@ import {
   Search,
   Filter,
   Stethoscope,
-  ClipboardList
+  ClipboardList,
+  Save,
+  X,
+  User as UserIcon
 } from 'lucide-react';
-import Link from 'next/link';
 
 export default function MedicalRecordsPage() {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [patients, setPatients] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<MedicalRecord | null>(null);
+  const [formData, setFormData] = useState({
+    patient_id: '',
+    diagnosis: '',
+    treatment: '',
+    observations: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchRecords = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await medicalRecordService.getMyMedicalRecords(user?.role);
-        setRecords(data);
+        const [recordsData, patientsData] = await Promise.all([
+          medicalRecordService.getMyMedicalRecords(user?.role),
+          userService.getUsersByTenant(user?.tenant_id || 0)
+        ]);
+        
+        setRecords(recordsData);
+        const patientsOnly = patientsData.filter(u => u.role === 'Paciente');
+        setPatients(patientsOnly);
         setLoading(false);
       } catch (err: unknown) {
-        console.error('Error fetching records:', err);
-        setError('Error al obtener los registros médicos');
-        toast.error('Error al cargar los registros médicos');
+        console.error('Error fetching data:', err);
+        setError('Error al obtener los datos');
+        toast.error('Error al cargar los datos');
         setLoading(false);
       }
     };
     
-    if (user?.role) {
-      fetchRecords();
+    if (user?.role && user?.tenant_id) {
+      fetchData();
     } else {
       setLoading(false);
     }
@@ -59,6 +84,80 @@ export default function MedicalRecordsPage() {
       month: 'long',
       year: 'numeric'
     });
+  };
+
+  const openCreateModal = () => {
+    setFormData({
+      patient_id: '',
+      diagnosis: '',
+      treatment: '',
+      observations: ''
+    });
+    setIsCreateModalOpen(true);
+  };
+
+  const openEditModal = (record: MedicalRecord) => {
+    setSelectedRecord(record);
+    setFormData({
+      patient_id: record.patient_id?.toString() || '',
+      diagnosis: record.diagnosis || '',
+      treatment: record.treatment || '',
+      observations: record.notes || ''
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const openViewModal = (record: MedicalRecord) => {
+    setSelectedRecord(record);
+    setIsViewModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      if (isEditModalOpen && selectedRecord) {
+        await medicalRecordService.updateMedicalRecord(selectedRecord.id, {
+          ...formData,
+          patient_id: parseInt(formData.patient_id),
+          specialist_id: user?.id || 0
+        });
+        toast.success('Registro médico actualizado correctamente');
+      } else {
+        await medicalRecordService.createMedicalRecord({
+          ...formData,
+          patient_id: parseInt(formData.patient_id),
+          specialist_id: user?.id || 0
+        });
+        toast.success('Registro médico creado correctamente');
+      }
+
+      // Recargar datos
+      const updatedRecords = await medicalRecordService.getMyMedicalRecords(user?.role);
+      setRecords(updatedRecords);
+
+      // Cerrar modal y limpiar formulario
+      setIsCreateModalOpen(false);
+      setIsEditModalOpen(false);
+      setFormData({
+        patient_id: '',
+        diagnosis: '',
+        treatment: '',
+        observations: ''
+      });
+    } catch (error) {
+      toast.error('Error al guardar el registro médico');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
   const filteredRecords = records.filter(record => {
@@ -104,12 +203,10 @@ export default function MedicalRecordsPage() {
         text={`Historial de registros médicos. Total: ${records.length} registros`}
       >
         <div className="flex flex-col sm:flex-row gap-2">
-          <Link href="/medical-records/new">
-            <Button className="w-full sm:w-auto">
-              <Plus className="mr-2 h-4 w-4" />
-              Nuevo Registro
-            </Button>
-          </Link>
+          <Button onClick={openCreateModal} className="w-full sm:w-auto">
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo Registro
+          </Button>
         </div>
       </DashboardHeader>
 
@@ -168,7 +265,7 @@ export default function MedicalRecordsPage() {
                           </div>
                           {user?.role !== 'Paciente' && (
                             <div className="flex items-center">
-                              <User className="h-4 w-4 mr-2" />
+                              <UserIcon className="h-4 w-4 mr-2" />
                               <span className="truncate">Paciente #{record.patient_id}</span>
                             </div>
                           )}
@@ -201,18 +298,24 @@ export default function MedicalRecordsPage() {
                   {/* Acciones */}
                   <div className="mt-4 lg:mt-0 lg:ml-6">
                     <div className="flex flex-col space-y-2">
-                      <Link href={`/medical-records/${record.id}`}>
-                        <Button variant="outline" size="sm" className="w-full">
-                          <Eye className="mr-2 h-4 w-4" />
-                          Ver Detalles
-                        </Button>
-                      </Link>
-                      <Link href={`/medical-records/${record.id}/edit`}>
-                        <Button variant="outline" size="sm" className="w-full">
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar
-                        </Button>
-                      </Link>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => openViewModal(record)}
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Ver Detalles
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => openEditModal(record)}
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -232,16 +335,253 @@ export default function MedicalRecordsPage() {
                   : 'Los registros médicos aparecerán aquí cuando sean creados'
                 }
               </p>
-              <Link href="/medical-records/new">
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Crear Primer Registro
-                </Button>
-              </Link>
+              <Button onClick={openCreateModal}>
+                <Plus className="mr-2 h-4 w-4" />
+                Crear Primer Registro
+              </Button>
             </CardContent>
           </Card>
         )}
       </div>
+
+      {/* Modal de Crear Registro */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Plus className="mr-2 h-5 w-5" />
+              Nuevo Registro Médico
+            </DialogTitle>
+            <DialogDescription>
+              Crear un nuevo registro médico para un paciente
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="patient_id">Paciente *</Label>
+              <select
+                id="patient_id"
+                name="patient_id"
+                value={formData.patient_id}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md mt-1"
+                required
+              >
+                <option value="">Seleccionar paciente</option>
+                {patients.map(patient => (
+                  <option key={patient.id} value={patient.id}>
+                    {patient.username} - {patient.identification_number}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label htmlFor="diagnosis">Diagnóstico *</Label>
+              <Textarea
+                id="diagnosis"
+                name="diagnosis"
+                value={formData.diagnosis}
+                onChange={handleChange}
+                placeholder="Ingrese el diagnóstico del paciente"
+                required
+                rows={3}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="treatment">Tratamiento *</Label>
+              <Textarea
+                id="treatment"
+                name="treatment"
+                value={formData.treatment}
+                onChange={handleChange}
+                placeholder="Ingrese el tratamiento prescrito"
+                required
+                rows={4}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="observations">Observaciones</Label>
+              <Textarea
+                id="observations"
+                name="observations"
+                value={formData.observations}
+                onChange={handleChange}
+                placeholder="Observaciones adicionales"
+                rows={3}
+                className="mt-1"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+                <X className="mr-2 h-4 w-4" />
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                <Save className="mr-2 h-4 w-4" />
+                {submitting ? 'Guardando...' : 'Guardar Registro'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Editar Registro */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Edit className="mr-2 h-5 w-5" />
+              Editar Registro Médico
+            </DialogTitle>
+            <DialogDescription>
+              Modificar el registro médico seleccionado
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="edit_patient_id">Paciente *</Label>
+              <select
+                id="edit_patient_id"
+                name="patient_id"
+                value={formData.patient_id}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md mt-1"
+                required
+              >
+                <option value="">Seleccionar paciente</option>
+                {patients.map(patient => (
+                  <option key={patient.id} value={patient.id}>
+                    {patient.username} - {patient.identification_number}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <Label htmlFor="edit_diagnosis">Diagnóstico *</Label>
+              <Textarea
+                id="edit_diagnosis"
+                name="diagnosis"
+                value={formData.diagnosis}
+                onChange={handleChange}
+                placeholder="Ingrese el diagnóstico del paciente"
+                required
+                rows={3}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit_treatment">Tratamiento *</Label>
+              <Textarea
+                id="edit_treatment"
+                name="treatment"
+                value={formData.treatment}
+                onChange={handleChange}
+                placeholder="Ingrese el tratamiento prescrito"
+                required
+                rows={4}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit_observations">Observaciones</Label>
+              <Textarea
+                id="edit_observations"
+                name="observations"
+                value={formData.observations}
+                onChange={handleChange}
+                placeholder="Observaciones adicionales"
+                rows={3}
+                className="mt-1"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                <X className="mr-2 h-4 w-4" />
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                <Save className="mr-2 h-4 w-4" />
+                {submitting ? 'Guardando...' : 'Actualizar Registro'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Ver Detalles */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Eye className="mr-2 h-5 w-5" />
+              Detalles del Registro Médico
+            </DialogTitle>
+            <DialogDescription>
+              Información completa del registro médico
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedRecord && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">ID del Registro</Label>
+                  <p className="text-sm text-gray-900">#{selectedRecord.id}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">Fecha</Label>
+                  <p className="text-sm text-gray-900">{formatDate(selectedRecord.date)}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">Paciente</Label>
+                  <p className="text-sm text-gray-900">#{selectedRecord.patient_id}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">Especialista</Label>
+                  <p className="text-sm text-gray-900">#{selectedRecord.specialist_id}</p>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium text-gray-700">Diagnóstico</Label>
+                <p className="text-sm text-gray-900 mt-1">{selectedRecord.diagnosis}</p>
+              </div>
+
+              {selectedRecord.treatment && (
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">Tratamiento</Label>
+                  <p className="text-sm text-gray-900 mt-1">{selectedRecord.treatment}</p>
+                </div>
+              )}
+
+              {selectedRecord.notes && (
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">Observaciones</Label>
+                  <p className="text-sm text-gray-900 mt-1">{selectedRecord.notes}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
+              Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardShell>
   );
 }
