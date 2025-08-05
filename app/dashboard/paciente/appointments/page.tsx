@@ -47,8 +47,6 @@ export default function PatientAppointmentsPage() {
     try {
       setLoading(true);
       const data = await appointmentService.getPatientAppointments();
-      console.log('📅 Citas cargadas en el componente:', data);
-      console.log('📅 Número de citas:', data.length);
       setAppointments(data);
     } catch (error) {
       console.error('Error loading appointments:', error);
@@ -60,18 +58,14 @@ export default function PatientAppointmentsPage() {
 
   const filteredAppointments = appointments.filter(appointment => {
     const matchesFilter = filter === 'all' || appointment.status === filter;
-    const matchesSearch = appointment.specialist?.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         appointment.specialist?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = appointment.appointmentSpecialist?.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         appointment.appointmentSpecialist?.email?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
-  console.log('🔍 Citas filtradas:', filteredAppointments.length);
-  console.log('🔍 Filtro actual:', filter);
-  console.log('🔍 Término de búsqueda:', searchTerm);
-
   const calendarEvents = filteredAppointments.map(appointment => ({
     id: appointment.id.toString(),
-    title: `${appointment.specialist?.username || 'Especialista'} - ${appointment.status}`,
+    title: `${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`,
     start: appointment.date,
     end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
     backgroundColor: getStatusColor(appointment.status),
@@ -79,7 +73,7 @@ export default function PatientAppointmentsPage() {
     textColor: '#ffffff',
     extendedProps: {
       status: appointment.status,
-      specialist: appointment.specialist?.username,
+      specialist: appointment.appointmentSpecialist?.username,
       notes: appointment.notes
     }
   }));
@@ -215,7 +209,6 @@ export default function PatientAppointmentsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="calendar-responsive">
-              {console.log('📊 Eventos del calendario:', calendarEvents)}
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -244,7 +237,7 @@ export default function PatientAppointmentsPage() {
                   const appointment = appointments.find(a => a.id.toString() === info.event.id);
                   if (appointment) {
                     // Aquí podrías abrir un modal con detalles de la cita
-                    toast.info(`Cita con ${appointment.specialist?.username || 'Especialista'} - ${appointment.status}`);
+                    toast.info(`Cita con ${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`);
                   }
                 }}
                 eventContent={(arg) => (
@@ -265,7 +258,6 @@ export default function PatientAppointmentsPage() {
       ) : (
         /* Vista Lista */
         <div className="space-y-4">
-          {console.log('📋 Renderizando lista con citas:', filteredAppointments)}
           {filteredAppointments.length > 0 ? (
             filteredAppointments.map((appointment) => (
               <Card key={appointment.id}>
@@ -277,10 +269,10 @@ export default function PatientAppointmentsPage() {
                           <User className="h-5 w-5 text-blue-600" />
                           <div>
                             <h3 className="font-semibold text-lg">
-                              {appointment.specialist?.username || `Especialista ${appointment.specialist_id}`}
+                              {appointment.appointmentSpecialist?.username || `Especialista ${appointment.specialist_id}`}
                             </h3>
                             <p className="text-sm text-gray-600">
-                              {appointment.specialist?.email}
+                              {appointment.appointmentSpecialist?.email}
                             </p>
                           </div>
                         </div>
