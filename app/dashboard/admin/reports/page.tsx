@@ -161,9 +161,13 @@ export default function AdminReports() {
             name: s.username,
             count: allAppointments.filter(app => app.specialist_id === s.id).length
           }));
-          const mostRequested = specialistAppointmentCounts.reduce((prev, current) => 
-            prev.count > current.count ? prev : current
-          );
+          
+          // Verificar si hay especialistas antes de usar reduce
+          const mostRequested = specialistAppointmentCounts.length > 0 
+            ? specialistAppointmentCounts.reduce((prev, current) => 
+                prev.count > current.count ? prev : current
+              )
+            : { name: 'N/A', count: 0 };
 
           return {
             name: area.name,
@@ -190,7 +194,9 @@ export default function AdminReports() {
         const overallStats = {
           totalSpecialists: specialists.length,
           totalAppointments: allAppointments.length,
-          averageUtilization: specialistStats.reduce((sum, s) => sum + s.utilizationRate, 0) / specialistStats.length,
+          averageUtilization: specialistStats.length > 0 
+            ? specialistStats.reduce((sum, s) => sum + s.utilizationRate, 0) / specialistStats.length 
+            : 0,
           mostRequestedArea: topAreas[0]?.name || 'N/A',
           mostRequestedSpecialist: topSpecialists[0]?.username || 'N/A'
         };
