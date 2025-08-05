@@ -112,7 +112,7 @@ interface SpecialistMetrics {
 interface SpecialistDashboardData {
   metrics: SpecialistMetrics;
   recentAppointments: Appointment[];
-  recentPatients: User[];
+  recentPatients: any[];
   recentRecords: MedicalRecord[];
   recentExams: MedicalExam[];
   upcomingSchedule: Appointment[];
@@ -226,13 +226,13 @@ export default function SpecialistDashboard() {
     // Métricas de Pacientes
     const uniquePatients = extractUniquePatients(appointments);
     const totalPatients = uniquePatients.length;
-    const newPatientsThisMonth = uniquePatients.filter(patient => 
+    const newPatientsThisMonth = uniquePatients.filter((patient: any) => 
       new Date(patient.createdAt || '') >= thisMonth
     ).length;
-    const returningPatients = uniquePatients.filter(patient => 
+    const returningPatients = uniquePatients.filter((patient: any) => 
       appointments.filter(app => app.patient_id === patient.id).length > 1
     ).length;
-    const activePatients = uniquePatients.filter(patient => 
+    const activePatients = uniquePatients.filter((patient: any) => 
       appointments.filter(app => app.patient_id === patient.id && new Date(app.date) >= lastMonth).length > 0
     ).length;
 
@@ -301,8 +301,8 @@ export default function SpecialistDashboard() {
     };
   };
 
-  const extractUniquePatients = (appointments: Appointment[]): User[] => {
-    const uniquePatients = appointments.reduce((acc: User[], app) => {
+  const extractUniquePatients = (appointments: Appointment[]): any[] => {
+    const uniquePatients = appointments.reduce((acc: any[], app) => {
       if (app.appointmentPatient && !acc.find(p => p.id === app.appointmentPatient?.id)) {
         acc.push(app.appointmentPatient);
       }

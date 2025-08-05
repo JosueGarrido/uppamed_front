@@ -236,7 +236,7 @@ export default function PatientMedicalExamsPage() {
                       <div className="flex items-center space-x-2">
                         <User className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-600">
-                          {exam.specialist?.specialty || 'Especialidad no especificada'}
+                          {(exam.specialist as any)?.specialty || 'Especialidad no especificada'}
                         </span>
                       </div>
                     </div>
@@ -256,7 +256,7 @@ export default function PatientMedicalExamsPage() {
                     <div className="flex flex-wrap gap-2">
                       {exam.priority && getPriorityBadge(exam.priority)}
                       {exam.category && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="default" className="text-xs">
                           {exam.category}
                         </Badge>
                       )}
