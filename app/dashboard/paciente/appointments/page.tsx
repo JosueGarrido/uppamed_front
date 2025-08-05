@@ -91,8 +91,7 @@ export default function PatientAppointmentsPage() {
     title: `${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`,
     start: appointment.date,
     end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
-    backgroundColor: getStatusColor(appointment.status),
-    borderColor: getStatusColor(appointment.status),
+    color: getStatusColor(appointment.status),
     textColor: '#ffffff',
     extendedProps: {
       status: appointment.status,
@@ -242,29 +241,54 @@ export default function PatientAppointmentsPage() {
                   overflow-x: auto;
                 }
                 .calendar-responsive :global(.fc) {
-                  min-width: 600px;
+                  min-width: 300px;
                 }
                 .calendar-responsive :global(.fc-event) {
                   cursor: pointer;
                   border-radius: 4px;
                   padding: 2px 4px;
-                  font-size: 12px;
+                  font-size: 11px;
                   font-weight: 500;
+                  margin: 1px 0;
                 }
                 .calendar-responsive :global(.fc-event:hover) {
                   opacity: 0.8;
                 }
+                .calendar-responsive :global(.fc-daygrid-event) {
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
                 @media (max-width: 768px) {
+                  .calendar-responsive :global(.fc) {
+                    min-width: 280px;
+                  }
                   .calendar-responsive :global(.fc-event) {
                     font-size: 10px;
                     padding: 1px 2px;
                   }
                   .calendar-responsive :global(.fc-toolbar-title) {
-                    font-size: 16px !important;
+                    font-size: 14px !important;
                   }
                   .calendar-responsive :global(.fc-button) {
+                    font-size: 11px !important;
+                    padding: 3px 6px !important;
+                  }
+                  .calendar-responsive :global(.fc-daygrid-day-number) {
                     font-size: 12px !important;
-                    padding: 4px 8px !important;
+                  }
+                  .calendar-responsive :global(.fc-col-header-cell) {
+                    font-size: 11px !important;
+                  }
+                }
+                @media (max-width: 480px) {
+                  .calendar-responsive :global(.fc-toolbar) {
+                    flex-direction: column;
+                    gap: 8px;
+                  }
+                  .calendar-responsive :global(.fc-toolbar-chunk) {
+                    display: flex;
+                    justify-content: center;
                   }
                 }
               `}</style>
