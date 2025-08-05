@@ -157,6 +157,8 @@ export default function SpecialistAvailabilityPage() {
       
       // Validar que no haya conflictos entre horarios y breaks
       const hasConflicts = schedules.some(schedule => {
+        if (!schedule.is_available) return false; // Solo validar horarios activos
+        
         const dayBreaks = breaks.filter(b => b.day_of_week === schedule.day_of_week);
         return dayBreaks.some(breakItem => {
           const scheduleStart = schedule.start_time;
@@ -164,9 +166,28 @@ export default function SpecialistAvailabilityPage() {
           const breakStart = breakItem.start_time;
           const breakEnd = breakItem.end_time;
           
-          return (breakStart >= scheduleStart && breakStart < scheduleEnd) ||
-                 (breakEnd > scheduleStart && breakEnd <= scheduleEnd) ||
-                 (breakStart <= scheduleStart && breakEnd >= scheduleEnd);
+          // Un break es válido si está completamente dentro del horario de trabajo
+          // o completamente fuera del horario
+          // Solo hay conflicto si se superpone parcialmente
+          const breakCompletelyOutside = 
+            (breakEnd <= scheduleStart) || // Break termina antes del inicio del horario
+            (breakStart >= scheduleEnd);   // Break empieza después del fin del horario
+          
+          // Si está completamente fuera, no hay conflicto
+          if (breakCompletelyOutside) {
+            return false;
+          }
+          
+          // Si está completamente dentro, no hay conflicto
+          const breakCompletelyInside = 
+            (breakStart >= scheduleStart) && (breakEnd <= scheduleEnd);
+          
+          if (breakCompletelyInside) {
+            return false;
+          }
+          
+          // Si no está completamente fuera ni completamente dentro, hay conflicto
+          return true;
         });
       });
 
@@ -177,7 +198,9 @@ export default function SpecialistAvailabilityPage() {
 
       // Filtrar solo los horarios que están habilitados
       const activeSchedules = schedules.filter(s => s.is_available);
-      await specialistService.updateMySchedule(activeSchedules);
+      
+      // Enviar tanto schedules como breaks
+      await specialistService.updateMySchedule(activeSchedules, breaks);
       
       toast.success('Disponibilidad actualizada correctamente');
       setSaving(false);

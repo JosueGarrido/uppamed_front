@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +21,11 @@ import {
   Filter,
   FileText,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  SkipBack,
+  SkipForward
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -30,7 +34,10 @@ export default function MedicalExamsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const { user } = useAuth();
+
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -62,29 +69,53 @@ export default function MedicalExamsPage() {
     });
   };
 
-  const getResultBadge = (result: string) => {
-    if (result?.toLowerCase().includes('normal') || result?.toLowerCase().includes('negativo')) {
+  const getResultBadge = (results: string) => {
+    if (results?.toLowerCase().includes('normal') || results?.toLowerCase().includes('negativo')) {
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Normal</Badge>;
-    } else if (result?.toLowerCase().includes('anormal') || result?.toLowerCase().includes('positivo')) {
+    } else if (results?.toLowerCase().includes('anormal') || results?.toLowerCase().includes('positivo')) {
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Anormal</Badge>;
     } else {
       return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pendiente</Badge>;
     }
   };
 
-  const filteredExams = exams.filter(exam => {
-    return (
-      exam.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      exam.result?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  // Filtrado optimizado con useMemo
+  const filteredExams = useMemo(() => {
+    return exams.filter(exam => {
+      return (
+        exam.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        exam.results?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  }, [exams, searchTerm]);
+
+  // Paginación
+  const totalPages = Math.ceil(filteredExams.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentExams = filteredExams.slice(startIndex, endIndex);
+
+  // Resetear página cuando cambia la búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Funciones de paginación
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  const goToFirstPage = () => goToPage(1);
+  const goToLastPage = () => goToPage(totalPages);
+  const goToPreviousPage = () => goToPage(currentPage - 1);
+  const goToNextPage = () => goToPage(currentPage + 1);
 
   if (loading) {
     return (
       <DashboardShell>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Cargando exámenes médicos...</p>
           </div>
         </div>
@@ -112,7 +143,7 @@ export default function MedicalExamsPage() {
     <DashboardShell>
       <DashboardHeader
         heading="Exámenes Médicos"
-        text={`Gestión de exámenes médicos y resultados. Total: ${exams.length} exámenes`}
+        text={`Gestión de exámenes médicos y resultados. Mostrando ${currentExams.length} de ${filteredExams.length} exámenes (página ${currentPage} de ${totalPages})`}
       >
         <div className="flex flex-col sm:flex-row gap-2">
           <Link href="/medical-exams/new">
@@ -128,7 +159,7 @@ export default function MedicalExamsPage() {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="flex items-center text-lg">
-            <Filter className="mr-2 h-5 w-5 text-blue-600" />
+            <Filter className="mr-2 h-5 w-5 text-orange-600" />
             Filtros y Búsqueda
           </CardTitle>
         </CardHeader>
@@ -140,7 +171,7 @@ export default function MedicalExamsPage() {
               placeholder="Buscar por tipo, resultado o notas..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
         </CardContent>
@@ -148,51 +179,58 @@ export default function MedicalExamsPage() {
 
       {/* Lista de exámenes */}
       <div className="grid gap-4">
-        {filteredExams.length > 0 ? (
-          filteredExams.map((exam) => (
-            <Card key={exam.id} className="hover:shadow-md transition-shadow">
+        {currentExams.length > 0 ? (
+          currentExams.map((exam) => (
+            <Card key={exam.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-orange-500">
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                   {/* Información principal */}
                   <div className="flex-1">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                          <Microscope className="h-6 w-6 text-orange-600" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
+                          <Microscope className="h-6 w-6 text-white" />
                         </div>
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-2">
+                        <div className="flex items-center space-x-2 mb-3">
                           <h3 className="text-lg font-semibold text-gray-900">
                             Examen #{exam.id}
                           </h3>
-                          {getResultBadge(exam.result || '')}
+                          {getResultBadge(exam.results || '')}
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600 mb-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-600 mb-3">
                           <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2" />
+                            <Calendar className="h-4 w-4 mr-2 text-orange-500" />
                             <span>{formatDate(exam.date)}</span>
                           </div>
                           {user?.role !== 'Paciente' && (
                             <div className="flex items-center">
-                              <User className="h-4 w-4 mr-2" />
+                              <User className="h-4 w-4 mr-2 text-orange-500" />
                               <span className="truncate">Paciente #{exam.patient_id}</span>
                             </div>
                           )}
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <div>
-                            <strong className="text-sm text-gray-700">Tipo de Examen:</strong>
-                            <p className="text-sm text-gray-600 mt-1">{exam.type}</p>
+                            <strong className="text-sm text-gray-700 flex items-center">
+                              <FileText className="h-4 w-4 mr-1 text-orange-500" />
+                              Tipo de Examen:
+                            </strong>
+                            <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-orange-200">
+                              {exam.type}
+                            </p>
                           </div>
                           
-                          {exam.result && (
+                          {exam.results && (
                             <div>
                               <strong className="text-sm text-gray-700">Resultado:</strong>
-                              <p className="text-sm text-gray-600 mt-1">{exam.result}</p>
+                              <p className="text-sm text-gray-600 mt-1 bg-blue-50 p-2 rounded border-l-2 border-blue-200">
+                                {exam.results}
+                              </p>
                             </div>
                           )}
                         </div>
@@ -244,6 +282,84 @@ export default function MedicalExamsPage() {
           </Card>
         )}
       </div>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <Card className="mt-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Mostrando {startIndex + 1} a {Math.min(endIndex, filteredExams.length)} de {filteredExams.length} exámenes
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToFirstPage}
+                  disabled={currentPage === 1}
+                >
+                  <SkipBack className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => goToPage(pageNum)}
+                        className="w-8 h-8"
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToLastPage}
+                  disabled={currentPage === totalPages}
+                >
+                  <SkipForward className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </DashboardShell>
   );
 }

@@ -20,10 +20,12 @@ class MedicalRecordService {
       });
 
       if (!response.ok) {
-        throw new Error('Error al obtener los registros médicos');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al obtener los registros médicos');
       }
 
-      return response.json();
+      const data = await response.json();
+      return Array.isArray(data) ? data : data.records || [];
     } catch (error) {
       console.error('Error obteniendo registros médicos:', error);
       throw error;
@@ -37,6 +39,8 @@ class MedicalRecordService {
         throw new Error('No hay token de autenticación');
       }
 
+      console.log('Creating medical record:', recordData);
+
       const response = await fetch(buildApiUrl('/medical-records'), {
         method: 'POST',
         headers: createAuthHeaders(token),
@@ -44,11 +48,13 @@ class MedicalRecordService {
       });
 
       if (!response.ok) {
-        throw new Error('Error al crear el registro médico');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al crear el registro médico');
       }
 
       const data = await response.json();
-      return data.medicalRecord;
+      console.log('Medical record created:', data);
+      return data.medicalRecord || data;
     } catch (error) {
       console.error('Error creando registro médico:', error);
       throw error;
@@ -62,6 +68,8 @@ class MedicalRecordService {
         throw new Error('No hay token de autenticación');
       }
 
+      console.log('Updating medical record:', id, recordData);
+
       const response = await fetch(buildApiUrl(`/medical-records/${id}`), {
         method: 'PUT',
         headers: createAuthHeaders(token),
@@ -69,10 +77,13 @@ class MedicalRecordService {
       });
 
       if (!response.ok) {
-        throw new Error('Error al actualizar el registro médico');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al actualizar el registro médico');
       }
 
-      return response.json();
+      const data = await response.json();
+      console.log('Medical record updated:', data);
+      return data.medicalRecord || data;
     } catch (error) {
       console.error('Error actualizando registro médico:', error);
       throw error;
@@ -91,10 +102,12 @@ class MedicalRecordService {
       });
 
       if (!response.ok) {
-        throw new Error('Error al obtener el registro médico');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al obtener el registro médico');
       }
 
-      return response.json();
+      const data = await response.json();
+      return data.medicalRecord || data;
     } catch (error) {
       console.error('Error obteniendo registro médico:', error);
       throw error;
@@ -108,14 +121,19 @@ class MedicalRecordService {
         throw new Error('No hay token de autenticación');
       }
 
+      console.log('Deleting medical record:', id);
+
       const response = await fetch(buildApiUrl(`/medical-records/${id}`), {
         method: 'DELETE',
         headers: createAuthHeaders(token)
       });
 
       if (!response.ok) {
-        throw new Error('Error al eliminar el registro médico');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al eliminar el registro médico');
       }
+
+      console.log('Medical record deleted successfully');
     } catch (error) {
       console.error('Error eliminando registro médico:', error);
       throw error;

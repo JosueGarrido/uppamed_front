@@ -113,12 +113,7 @@ class SpecialistService {
         throw new Error('No hay token de autenticación');
       }
 
-      const user = await authService.fetchUserData();
-      if (!user?.tenant_id) {
-        throw new Error('Usuario no tiene tenant asignado');
-      }
-
-      const response = await fetch(buildApiUrl(`/specialists/${user.tenant_id}/specialists/${user.id}/schedule`), {
+      const response = await fetch(buildApiUrl('/specialists/my-schedule'), {
         headers: createAuthHeaders(token)
       });
 
@@ -134,22 +129,17 @@ class SpecialistService {
   }
 
   // Método para que el especialista actualice su propio horario
-  async updateMySchedule(schedules: SpecialistSchedule[]): Promise<any> {
+  async updateMySchedule(schedules: SpecialistSchedule[], breaks: SpecialistBreak[] = []): Promise<any> {
     try {
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      const user = await authService.fetchUserData();
-      if (!user?.tenant_id) {
-        throw new Error('Usuario no tiene tenant asignado');
-      }
-
-      const response = await fetch(buildApiUrl(`/specialists/${user.tenant_id}/specialists/${user.id}/schedule`), {
+      const response = await fetch(buildApiUrl('/specialists/my-schedule'), {
         method: 'PUT',
         headers: createAuthHeaders(token),
-        body: JSON.stringify(schedules)
+        body: JSON.stringify({ schedules, breaks })
       });
 
       if (!response.ok) {

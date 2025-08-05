@@ -44,7 +44,12 @@ import {
   ChevronRight,
   CalendarDays,
   FileText as FileTextIcon,
-  TestTube
+  TestTube,
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  SkipBack,
+  SkipForward
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -252,6 +257,9 @@ export default function SpecialistPatientsPage() {
   const [showDeleteExamModal, setShowDeleteExamModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ id: number; type: 'appointment' | 'record' | 'exam'; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
     if (user?.id) {
@@ -382,6 +390,27 @@ export default function SpecialistPatientsPage() {
     
     return filtered;
   }, [patients, searchTerm, sortBy, sortOrder, selectedFilter]);
+
+  // Paginación
+  const totalPages = Math.ceil(filteredPatients.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentPatients = filteredPatients.slice(startIndex, endIndex);
+
+  // Resetear página cuando cambian los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortBy, sortOrder, selectedFilter]);
+
+  // Funciones de paginación
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  const goToFirstPage = () => goToPage(1);
+  const goToLastPage = () => goToPage(totalPages);
+  const goToPreviousPage = () => goToPage(currentPage - 1);
+  const goToNextPage = () => goToPage(currentPage + 1);
 
   // Funciones para manejar modales
   const handleViewProfile = (patientData: PatientData) => {
@@ -764,7 +793,7 @@ export default function SpecialistPatientsPage() {
     <DashboardShell>
       <DashboardHeader
         heading="Mis Pacientes"
-        text={`Gestiona y revisa la información de tus ${patients.length} pacientes`}
+        text={`Gestiona y revisa la información de tus pacientes. Mostrando ${currentPatients.length} de ${filteredPatients.length} pacientes (página ${currentPage} de ${totalPages})`}
       />
 
       {/* Filtros y búsqueda */}
@@ -897,8 +926,8 @@ export default function SpecialistPatientsPage() {
 
       {/* Lista de pacientes */}
       <div className="grid gap-3">
-        {filteredPatients.length > 0 ? (
-          filteredPatients.map((patientData) => (
+        {currentPatients.length > 0 ? (
+          currentPatients.map((patientData) => (
             <PatientCard
               key={patientData.patient.id}
               patientData={patientData}
@@ -931,6 +960,84 @@ export default function SpecialistPatientsPage() {
           </Card>
         )}
       </div>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <Card className="mt-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Mostrando {startIndex + 1} a {Math.min(endIndex, filteredPatients.length)} de {filteredPatients.length} pacientes
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToFirstPage}
+                  disabled={currentPage === 1}
+                >
+                  <SkipBack className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => goToPage(pageNum)}
+                        className="w-8 h-8"
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToLastPage}
+                  disabled={currentPage === totalPages}
+                >
+                  <SkipForward className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Modal de Ficha del Paciente */}
       <Dialog open={showProfileModal} onOpenChange={setShowProfileModal}>
