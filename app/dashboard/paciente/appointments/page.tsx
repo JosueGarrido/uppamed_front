@@ -91,7 +91,8 @@ export default function PatientAppointmentsPage() {
     title: `${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`,
     start: appointment.date,
     end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
-    color: getStatusColor(appointment.status),
+    backgroundColor: getStatusColor(appointment.status),
+    borderColor: getStatusColor(appointment.status),
     textColor: '#ffffff',
     extendedProps: {
       status: appointment.status,
@@ -259,6 +260,25 @@ export default function PatientAppointmentsPage() {
                   overflow: hidden;
                   text-overflow: ellipsis;
                 }
+                
+                /* Colores específicos por estado */
+                .calendar-responsive :global(.fc-event[data-status="confirmada"]) {
+                  background-color: #10b981 !important;
+                  border-color: #10b981 !important;
+                }
+                .calendar-responsive :global(.fc-event[data-status="cancelada"]) {
+                  background-color: #ef4444 !important;
+                  border-color: #ef4444 !important;
+                }
+                .calendar-responsive :global(.fc-event[data-status="pendiente"]) {
+                  background-color: #f59e0b !important;
+                  border-color: #f59e0b !important;
+                }
+                .calendar-responsive :global(.fc-event[data-status="completada"]) {
+                  background-color: #3b82f6 !important;
+                  border-color: #3b82f6 !important;
+                }
+                
                 @media (max-width: 768px) {
                   .calendar-responsive :global(.fc) {
                     min-width: 280px;
@@ -323,7 +343,10 @@ export default function PatientAppointmentsPage() {
                   }
                 }}
                 eventContent={(arg) => (
-                  <div className="p-1 text-xs">
+                  <div 
+                    className="p-1 text-xs"
+                    data-status={arg.event.extendedProps.status}
+                  >
                     <div className="font-medium truncate">{arg.event.title}</div>
                     <div className="text-xs opacity-75">
                       {new Date(arg.event.start!).toLocaleTimeString('es-ES', {
