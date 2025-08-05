@@ -28,8 +28,29 @@ export const authService = {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Error en la autenticación');
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Manejar diferentes códigos de error HTTP
+        switch (response.status) {
+          case 400:
+            throw new Error(errorData.message || 'Datos de entrada inválidos');
+          case 401:
+            throw new Error('Credenciales incorrectas. Verifica tu email y contraseña');
+          case 403:
+            throw new Error('Tu cuenta ha sido bloqueada. Contacta al administrador');
+          case 404:
+            throw new Error('Usuario no encontrado');
+          case 429:
+            throw new Error('Demasiados intentos de login. Intenta de nuevo en unos minutos');
+          case 500:
+            throw new Error('Error interno del servidor. Intenta de nuevo más tarde');
+          case 502:
+          case 503:
+          case 504:
+            throw new Error('Servidor no disponible. Intenta de nuevo más tarde');
+          default:
+            throw new Error(errorData.message || 'Error en la autenticación');
+        }
       }
 
       const data = await response.json();
@@ -40,7 +61,19 @@ export const authService = {
       return data;
     } catch (error) {
       console.error('❌ Error en login:', error);
-      throw error;
+      
+      // Manejar errores de red
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('No se puede conectar al servidor. Verifica tu conexión a internet');
+      }
+      
+      // Re-lanzar errores que ya tienen mensajes específicos
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      // Error genérico para casos no manejados
+      throw new Error('Error inesperado al iniciar sesión');
     }
   },
 

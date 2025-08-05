@@ -11,7 +11,9 @@ import {
   Eye, 
   EyeOff, 
   Shield,
-  Key
+  Key,
+  AlertCircle,
+  XCircle
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -20,6 +22,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const { login, isLoading } = useAuth();
 
   // Detectar si es desktop
@@ -34,14 +39,65 @@ export default function LoginPage() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
+  // Limpiar errores cuando cambian los campos
+  useEffect(() => {
+    if (email) setEmailError('');
+    if (password) setPasswordError('');
+    if (email || password) setError('');
+  }, [email, password]);
+
+  const validateForm = () => {
+    let isValid = true;
+    
+    // Validar email
+    if (!email) {
+      setEmailError('El correo electrónico es requerido');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Ingresa un correo electrónico válido');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }
+    
+    // Validar contraseña
+    if (!password) {
+      setPasswordError('La contraseña es requerida');
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError('La contraseña debe tener al menos 6 caracteres');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+    
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+    setPasswordError('');
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
     
     try {
       await login({ email, password });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+      const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      setError(errorMessage);
+      
+      // Auto-limpiar el error después de 5 segundos
+      setTimeout(() => {
+        setError('');
+      }, 5000);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -438,25 +494,29 @@ export default function LoginPage() {
                       width: '100%',
                       height: '44px',
                       padding: '0 14px 0 40px',
-                      border: '1px solid #d1d5db',
+                      border: emailError ? '1px solid #ef4444' : '1px solid #d1d5db',
                       borderRadius: '8px',
                       color: '#1f2937',
                       fontSize: '15px',
                       outline: 'none',
                       transition: 'all 0.2s ease',
-                      background: 'white'
+                      background: 'white',
+                      boxShadow: emailError ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : 'none'
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = '#6366f1';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+                      e.target.style.borderColor = emailError ? '#ef4444' : '#6366f1';
+                      e.target.style.boxShadow = emailError ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(99, 102, 241, 0.1)';
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = '#d1d5db';
-                      e.target.style.boxShadow = 'none';
+                      e.target.style.borderColor = emailError ? '#ef4444' : '#d1d5db';
+                      e.target.style.boxShadow = emailError ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : 'none';
                     }}
                     required
                   />
                 </div>
+                {emailError && (
+                  <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{emailError}</p>
+                )}
               </div>
 
               {/* Campo Contraseña */}
@@ -489,21 +549,22 @@ export default function LoginPage() {
                       height: '44px',
                       padding: '0 14px 0 40px',
                       paddingRight: '44px',
-                      border: '1px solid #d1d5db',
+                      border: passwordError ? '1px solid #ef4444' : '1px solid #d1d5db',
                       borderRadius: '8px',
                       color: '#1f2937',
                       fontSize: '15px',
                       outline: 'none',
                       transition: 'all 0.2s ease',
-                      background: 'white'
+                      background: 'white',
+                      boxShadow: passwordError ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : 'none'
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = '#6366f1';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+                      e.target.style.borderColor = passwordError ? '#ef4444' : '#6366f1';
+                      e.target.style.boxShadow = passwordError ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : '0 0 0 3px rgba(99, 102, 241, 0.1)';
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = '#d1d5db';
-                      e.target.style.boxShadow = 'none';
+                      e.target.style.borderColor = passwordError ? '#ef4444' : '#d1d5db';
+                      e.target.style.boxShadow = passwordError ? '0 0 0 3px rgba(239, 68, 68, 0.1)' : 'none';
                     }}
                     required
                   />
@@ -528,9 +589,12 @@ export default function LoginPage() {
                     }
                   </button>
                 </div>
+                {passwordError && (
+                  <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{passwordError}</p>
+                )}
               </div>
 
-              {/* Error */}
+              {/* Error general */}
               {error && (
                 <div style={{
                   padding: '12px',
@@ -538,8 +602,12 @@ export default function LoginPage() {
                   borderRadius: '8px',
                   color: '#dc2626',
                   fontSize: '14px',
-                  background: '#fef2f2'
+                  background: '#fef2f2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
                 }}>
+                  <AlertCircle style={{ width: '18px', height: '18px', color: '#dc2626' }} />
                   {error}
                 </div>
               )}
@@ -573,9 +641,9 @@ export default function LoginPage() {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(99, 102, 241, 0.3)';
                 }}
-                disabled={isLoading}
+                disabled={isLoading || isSubmitting}
               >
-                {isLoading ? (
+                {isLoading || isSubmitting ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{
                       width: '18px',
@@ -586,7 +654,7 @@ export default function LoginPage() {
                       animation: 'spin 1s linear infinite',
                       marginRight: '8px'
                     }}></div>
-                    Iniciando sesión...
+                    {isLoading ? 'Iniciando sesión...' : 'Iniciando sesión...'}
                   </div>
                 ) : (
                   <>
@@ -599,22 +667,35 @@ export default function LoginPage() {
 
             {/* Información de ayuda */}
             <div style={{
-              textAlign: 'center',
-              marginTop: '24px'
+              marginTop: '24px',
+              padding: '16px',
+              background: '#f8fafc',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0'
             }}>
-              <p style={{
-                fontSize: '13px',
-                color: '#6b7280',
-                marginBottom: '6px'
+              <h4 style={{
+                fontSize: '14px',
+                fontWeight: '600',
+                color: '#374151',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
               }}>
-                ¿Necesitas ayuda? Contacta al administrador del sistema
-              </p>
-              <p style={{
+                <Shield style={{ width: '16px', height: '16px', color: '#6366f1' }} />
+                ¿Necesitas ayuda?
+              </h4>
+              <ul style={{
                 fontSize: '13px',
-                color: '#6b7280'
+                color: '#64748b',
+                lineHeight: '1.5',
+                paddingLeft: '16px'
               }}>
-                Tus datos están protegidos con encriptación de nivel bancario
-              </p>
+                <li>Verifica que tu correo electrónico esté escrito correctamente</li>
+                <li>Asegúrate de que tu contraseña tenga al menos 6 caracteres</li>
+                <li>Si olvidaste tu contraseña, contacta al administrador</li>
+                <li>Si tienes problemas de conexión, verifica tu internet</li>
+              </ul>
             </div>
           </div>
         </div>
