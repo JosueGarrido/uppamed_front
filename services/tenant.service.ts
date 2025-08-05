@@ -14,14 +14,8 @@ class TenantService {
         throw new Error('No hay token de autenticación');
       }
 
-      // Obtener el tenant_id del usuario si no se proporciona
-      let targetTenantId = tenantId;
-      if (!targetTenantId) {
-        const userData = await authService.fetchUserData();
-        targetTenantId = userData.tenant_id || undefined;
-      }
-
-      const endpoint = `/tenants/${targetTenantId}/config`;
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}/config` : '/tenants/my/config';
       const response = await fetch(buildApiUrl(endpoint), {
         headers: createAuthHeaders(token)
       });
@@ -46,14 +40,8 @@ class TenantService {
         throw new Error('No hay token de autenticación');
       }
 
-      // Obtener el tenant_id del usuario si no se proporciona
-      let targetTenantId = tenantId;
-      if (!targetTenantId) {
-        const userData = await authService.fetchUserData();
-        targetTenantId = userData.tenant_id || undefined;
-      }
-
-      const endpoint = `/tenants/${targetTenantId}/config`;
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}/config` : '/tenants/my/config';
       const response = await fetch(buildApiUrl(endpoint), {
         method: 'PUT',
         headers: {
@@ -83,14 +71,8 @@ class TenantService {
         throw new Error('No hay token de autenticación');
       }
 
-      // Obtener el tenant_id del usuario si no se proporciona
-      let targetTenantId = tenantId;
-      if (!targetTenantId) {
-        const userData = await authService.fetchUserData();
-        targetTenantId = userData.tenant_id || undefined;
-      }
-
-      const endpoint = `/tenants/${targetTenantId}`;
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}` : '/tenants/my/tenant';
       const response = await fetch(buildApiUrl(endpoint), {
         headers: createAuthHeaders(token)
       });
@@ -115,14 +97,8 @@ class TenantService {
         throw new Error('No hay token de autenticación');
       }
 
-      // Obtener el tenant_id del usuario si no se proporciona
-      let targetTenantId = tenantId;
-      if (!targetTenantId) {
-        const userData = await authService.fetchUserData();
-        targetTenantId = userData.tenant_id || undefined;
-      }
-
-      const endpoint = `/tenants/${targetTenantId}`;
+      // Si no se proporciona tenantId, usar la ruta para el tenant propio
+      const endpoint = tenantId ? `/tenants/${tenantId}` : '/tenants/my/tenant';
       const response = await fetch(buildApiUrl(endpoint), {
         method: 'PUT',
         headers: {

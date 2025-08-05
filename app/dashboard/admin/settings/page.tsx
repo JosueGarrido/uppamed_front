@@ -118,18 +118,15 @@ export default function AdminSettings() {
   const loadConfig = async () => {
     setLoading(true);
     try {
-      const userData = await authService.fetchUserData();
-      if (!userData.tenant_id) throw new Error('No se encontró tenant_id');
-
-      // Cargar información básica del tenant
-      const tenantData = await tenantService.getTenantById(userData.tenant_id);
+      // Cargar información básica del tenant (sin pasar tenantId)
+      const tenantData = await tenantService.getTenantById();
       setTenantInfo({
         name: tenantData.name || '',
         address: tenantData.address || ''
       });
 
-      // Cargar configuración del tenant
-      const configData = await tenantService.getTenantConfig(userData.tenant_id);
+      // Cargar configuración del tenant (sin pasar tenantId)
+      const configData = await tenantService.getTenantConfig();
       
       // Convertir array de configuraciones a objeto
       const configObj: any = {};
@@ -174,11 +171,8 @@ export default function AdminSettings() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const userData = await authService.fetchUserData();
-      if (!userData.tenant_id) throw new Error('No se encontró tenant_id');
-
-      // Actualizar información básica del tenant
-      await tenantService.updateTenant(userData.tenant_id, {
+      // Actualizar información básica del tenant (sin pasar tenantId)
+      await tenantService.updateTenant(undefined, {
         name: tenantInfo.name,
         address: tenantInfo.address
       });
@@ -189,8 +183,8 @@ export default function AdminSettings() {
         value: value.toString()
       }));
 
-      // Actualizar configuración del tenant
-      await tenantService.updateTenantConfig(userData.tenant_id, configArray);
+      // Actualizar configuración del tenant (sin pasar tenantId)
+      await tenantService.updateTenantConfig(undefined, configArray);
 
       setMessage({ type: 'success', text: 'Configuración guardada exitosamente' });
     } catch (error) {
