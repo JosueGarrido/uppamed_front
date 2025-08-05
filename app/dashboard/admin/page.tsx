@@ -67,7 +67,8 @@ import {
   UsersIcon,
   CalendarIcon,
   FileTextIcon,
-  MicroscopeIcon
+  MicroscopeIcon,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { User } from '@/types/auth';
@@ -162,6 +163,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month'>('month');
+  const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
 
   useEffect(() => {
     if (!isLoading && user && user.role !== 'Administrador') {
@@ -887,18 +890,22 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
-            <Link href="/dashboard/admin/users/new">
-              <Button className="w-full h-auto p-4 flex flex-col items-center space-y-2" variant="outline">
-                <UserPlus className="h-6 w-6" />
-                <span className="text-sm">Crear Usuario</span>
-              </Button>
-            </Link>
-            <Link href="/dashboard/admin/appointments/new">
-              <Button className="w-full h-auto p-4 flex flex-col items-center space-y-2" variant="outline">
-                <CalendarPlus className="h-6 w-6" />
-                <span className="text-sm">Nueva Cita</span>
-              </Button>
-            </Link>
+            <Button 
+              className="w-full h-auto p-4 flex flex-col items-center space-y-2" 
+              variant="outline"
+              onClick={() => setShowNewUserModal(true)}
+            >
+              <UserPlus className="h-6 w-6" />
+              <span className="text-sm">Crear Usuario</span>
+            </Button>
+            <Button 
+              className="w-full h-auto p-4 flex flex-col items-center space-y-2" 
+              variant="outline"
+              onClick={() => setShowNewAppointmentModal(true)}
+            >
+              <CalendarPlus className="h-6 w-6" />
+              <span className="text-sm">Nueva Cita</span>
+            </Button>
             <Link href="/dashboard/admin/users">
               <Button className="w-full h-auto p-4 flex flex-col items-center space-y-2" variant="outline">
                 <Users className="h-6 w-6" />
@@ -926,6 +933,72 @@ export default function AdminDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal Nueva Cita */}
+      {showNewAppointmentModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Nueva Cita</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowNewAppointmentModal(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                Esta funcionalidad abrirá el modal de creación de citas similar al usado en "Mis Citas".
+                Por ahora, este es un placeholder para la funcionalidad.
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowNewAppointmentModal(false)}>
+                  Cancelar
+                </Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Cita
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Crear Usuario */}
+      {showNewUserModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Crear Nuevo Usuario</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowNewUserModal(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                Esta funcionalidad abrirá el modal de creación de usuarios similar al usado en el módulo "Usuarios".
+                Por ahora, este es un placeholder para la funcionalidad.
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowNewUserModal(false)}>
+                  Cancelar
+                </Button>
+                <Button>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Crear Usuario
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardShell>
   );
 } 

@@ -76,6 +76,8 @@ const SidebarWrapper = () => {
       { name: 'Especialistas', href: '/dashboard/admin/specialists', icon: <UserCheck className="h-5 w-5" /> },
       { name: 'Pacientes', href: '/dashboard/admin/patients', icon: <UserIcon className="h-5 w-5" /> },
       { name: 'Citas', href: '/dashboard/admin/appointments', icon: <Calendar className="h-5 w-5" /> },
+      { name: 'Reportes', href: '/dashboard/admin/reports', icon: <BarChart3 className="h-5 w-5" /> },
+      { name: 'Configuración', href: '/dashboard/admin/settings', icon: <Settings className="h-5 w-5" /> },
     ],
     'Especialista': [
       { name: 'Dashboard', href: '/dashboard/specialist', icon: <BarChart3 className="h-5 w-5" /> },
