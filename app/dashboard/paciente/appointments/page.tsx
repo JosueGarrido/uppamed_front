@@ -32,6 +32,13 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 
+const STATUS_OPTIONS = [
+  { value: 'pendiente', label: 'Pendiente', color: '#F59E0B' },
+  { value: 'confirmada', label: 'Confirmada', color: '#10B981' },
+  { value: 'completada', label: 'Completada', color: '#3B82F6' },
+  { value: 'cancelada', label: 'Cancelada', color: '#EF4444' },
+];
+
 export default function PatientAppointmentsPage() {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -86,19 +93,28 @@ export default function PatientAppointmentsPage() {
   console.log('🔍 Filtro actual:', filter);
   console.log('🔍 Término de búsqueda:', searchTerm);
 
-  const calendarEvents = filteredAppointments.map(appointment => ({
-    id: appointment.id.toString(),
-    title: `${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`,
-    start: appointment.date,
-    end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
-    color: getStatusColor(appointment.status),
-    textColor: '#ffffff',
-    extendedProps: {
-      status: appointment.status,
-      specialist: appointment.appointmentSpecialist?.username,
-      notes: appointment.notes
-    }
-  }));
+  const calendarEvents = filteredAppointments.map(appointment => {
+    const status = STATUS_OPTIONS.find(s => s.value === appointment.status);
+    const specialistName = appointment.appointmentSpecialist?.username || 'Especialista';
+    const eventColor = status?.color || '#6B7280';
+    
+    return {
+      id: appointment.id.toString(),
+      title: `${specialistName} - ${appointment.status}`,
+      start: appointment.date,
+      end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
+      backgroundColor: eventColor,
+      borderColor: eventColor,
+      textColor: '#FFFFFF',
+      classNames: ['custom-event'],
+      'data-status': appointment.status,
+      extendedProps: {
+        status: appointment.status,
+        specialist: appointment.appointmentSpecialist?.username,
+        notes: appointment.notes
+      }
+    };
+  });
 
   const getStatusIcon = (status: string) => {
     switch (status) {
