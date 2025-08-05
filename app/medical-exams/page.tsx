@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
+import { ConfirmModal } from '@/components/ui/confirm-modal';
 import { medicalExamService } from '@/services/medicalExam.service';
 import { useAuth } from '@/context/AuthContext';
 import { MedicalExam } from '@/types/medicalExam';
@@ -25,7 +26,8 @@ import {
   ChevronLeft,
   ChevronRight,
   SkipBack,
-  SkipForward
+  SkipForward,
+  Trash2
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -35,6 +37,9 @@ export default function MedicalExamsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [examToDelete, setExamToDelete] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { user } = useAuth();
 
   const ITEMS_PER_PAGE = 5;
@@ -44,7 +49,8 @@ export default function MedicalExamsPage() {
       try {
         setLoading(true);
         const data = await medicalExamService.getMyMedicalExams();
-        setExams(data);
+        // El backend devuelve { exams: [], pagination: {} }
+        setExams(data.exams || []);
         setLoading(false);
       } catch (err: unknown) {
         console.error('Error fetching exams:', err);
@@ -109,6 +115,32 @@ export default function MedicalExamsPage() {
   const goToLastPage = () => goToPage(totalPages);
   const goToPreviousPage = () => goToPage(currentPage - 1);
   const goToNextPage = () => goToPage(currentPage + 1);
+
+  const handleDeleteExam = async (examId: number) => {
+    setExamToDelete(examId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!examToDelete) return;
+
+    setDeleting(true);
+    try {
+      await medicalExamService.deleteMedicalExam(examToDelete);
+      toast.success('Examen médico eliminado exitosamente');
+      
+      // Recargar la lista de exámenes
+      const data = await medicalExamService.getMyMedicalExams();
+      setExams(data.exams || []);
+    } catch (error) {
+      console.error('Error deleting exam:', error);
+      toast.error('Error al eliminar el examen médico');
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+      setExamToDelete(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -218,19 +250,79 @@ export default function MedicalExamsPage() {
                           <div>
                             <strong className="text-sm text-gray-700 flex items-center">
                               <FileText className="h-4 w-4 mr-1 text-orange-500" />
-                              Tipo de Examen:
+                              Título:
                             </strong>
+                            <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-orange-200">
+                              {exam.title || 'Sin título'}
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <strong className="text-sm text-gray-700">Tipo:</strong>
                             <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-orange-200">
                               {exam.type}
                             </p>
                           </div>
+
+                          {exam.category && (
+                            <div>
+                              <strong className="text-sm text-gray-700">Categoría:</strong>
+                              <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-orange-200">
+                                {exam.category.charAt(0).toUpperCase() + exam.category.slice(1)}
+                              </p>
+                            </div>
+                          )}
+
+                          {exam.status && (
+                            <div>
+                              <strong className="text-sm text-gray-700">Estado:</strong>
+                              <Badge className={`mt-1 ${
+                                exam.status === 'completado' ? 'bg-green-100 text-green-800' :
+                                exam.status === 'en_proceso' ? 'bg-blue-100 text-blue-800' :
+                                exam.status === 'cancelado' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {exam.status.charAt(0).toUpperCase() + exam.status.slice(1).replace('_', ' ')}
+                              </Badge>
+                            </div>
+                          )}
+
+                          {exam.priority && (
+                            <div>
+                              <strong className="text-sm text-gray-700">Prioridad:</strong>
+                              <Badge className={`mt-1 ${
+                                exam.priority === 'urgente' ? 'bg-red-100 text-red-800' :
+                                exam.priority === 'alta' ? 'bg-orange-100 text-orange-800' :
+                                exam.priority === 'normal' ? 'bg-blue-100 text-blue-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {exam.priority.charAt(0).toUpperCase() + exam.priority.slice(1)}
+                              </Badge>
+                            </div>
+                          )}
                           
                           {exam.results && (
                             <div>
                               <strong className="text-sm text-gray-700">Resultado:</strong>
                               <p className="text-sm text-gray-600 mt-1 bg-blue-50 p-2 rounded border-l-2 border-blue-200">
-                                {exam.results}
+                                {exam.results.length > 100 ? `${exam.results.substring(0, 100)}...` : exam.results}
                               </p>
+                            </div>
+                          )}
+
+                          {exam.is_abnormal && (
+                            <div>
+                              <Badge className="bg-red-100 text-red-800">
+                                Resultados Anormales
+                              </Badge>
+                            </div>
+                          )}
+
+                          {exam.requires_followup && (
+                            <div>
+                              <Badge className="bg-orange-100 text-orange-800">
+                                Requiere Seguimiento
+                              </Badge>
                             </div>
                           )}
                         </div>
@@ -253,6 +345,15 @@ export default function MedicalExamsPage() {
                           Editar
                         </Button>
                       </Link>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDeleteExam(exam.id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Eliminar
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -282,6 +383,22 @@ export default function MedicalExamsPage() {
           </Card>
         )}
       </div>
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setExamToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Eliminar Examen Médico"
+        description="¿Estás seguro de que quieres eliminar este examen médico? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        loading={deleting}
+      />
 
       {/* Paginación */}
       {totalPages > 1 && (

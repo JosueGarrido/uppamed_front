@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,23 +10,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { medicalExamService } from '@/services/medicalExam.service';
-import { userService } from '@/services/user.service';
-import { User } from '@/types/auth';
 import { useAuth } from '@/context/AuthContext';
+import { MedicalExam } from '@/types/medicalExam';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
-import { ArrowLeft, Save, Upload, Microscope } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Microscope, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
-export default function NewMedicalExam() {
+export default function EditMedicalExamPage() {
+  const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const [patients, setPatients] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [exam, setExam] = useState<MedicalExam | null>(null);
   const [formData, setFormData] = useState({
-    patient_id: '',
     title: '',
     type: '',
     category: 'otros',
@@ -49,31 +49,59 @@ export default function NewMedicalExam() {
   });
   const [attachments, setAttachments] = useState<File[]>([]);
 
+  const examId = params.id as string;
+
   useEffect(() => {
-    const loadPatients = async () => {
+    const fetchExam = async () => {
       try {
-        if (!user?.tenant_id) return;
-        const allUsers = await userService.getUsersByTenant(user.tenant_id);
-        const patientsOnly = allUsers.filter(u => u.role === 'Paciente');
-        setPatients(patientsOnly);
-      } catch (error) {
-        setError('Error al cargar pacientes');
-        toast.error('Error al cargar la lista de pacientes');
+        setLoading(true);
+        const data = await medicalExamService.getMedicalExamById(parseInt(examId));
+        setExam(data);
+        
+        // Llenar el formulario con los datos existentes
+        setFormData({
+          title: data.title || '',
+          type: data.type || '',
+          category: data.category || 'otros',
+          description: data.description || '',
+          results: data.results || '',
+          status: data.status || 'pendiente',
+          priority: data.priority || 'normal',
+          scheduled_date: data.scheduled_date ? new Date(data.scheduled_date).toISOString().slice(0, 16) : '',
+          performed_date: data.performed_date ? new Date(data.performed_date).toISOString().slice(0, 16) : '',
+          report_date: data.report_date ? new Date(data.report_date).toISOString().slice(0, 16) : '',
+          cost: data.cost ? (typeof data.cost === 'string' ? data.cost : data.cost.toString()) : '',
+          insurance_coverage: data.insurance_coverage || false,
+          insurance_provider: data.insurance_provider || '',
+          notes: data.notes || '',
+          is_abnormal: data.is_abnormal || false,
+          requires_followup: data.requires_followup || false,
+          followup_date: data.followup_date ? new Date(data.followup_date).toISOString().slice(0, 16) : '',
+          lab_reference: data.lab_reference || '',
+          technician: data.technician || ''
+        });
+      } catch (err) {
+        console.error('Error fetching exam:', err);
+        setError('Error al obtener los detalles del examen');
+        toast.error('Error al cargar el examen médico');
+      } finally {
+        setLoading(false);
       }
     };
-    void loadPatients();
-  }, [user?.tenant_id]);
+
+    if (examId) {
+      fetchExam();
+    }
+  }, [examId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    if (!exam) return;
 
+    setSaving(true);
     try {
       const examData = {
         ...formData,
-        patient_id: parseInt(formData.patient_id),
-        specialist_id: user?.id || 0,
         category: formData.category as 'laboratorio' | 'imagenologia' | 'cardiologia' | 'neurologia' | 'gastroenterologia' | 'otorrinolaringologia' | 'oftalmologia' | 'dermatologia' | 'otros',
         status: formData.status as 'pendiente' | 'en_proceso' | 'completado' | 'cancelado',
         priority: formData.priority as 'baja' | 'normal' | 'alta' | 'urgente',
@@ -84,15 +112,15 @@ export default function NewMedicalExam() {
         followup_date: formData.followup_date || undefined
       };
 
-      await medicalExamService.createMedicalExam(examData, attachments);
-      toast.success('Examen médico creado exitosamente');
-      router.push('/medical-exams');
+      await medicalExamService.updateMedicalExam(exam.id, examData, attachments);
+      toast.success('Examen médico actualizado exitosamente');
+      router.push(`/medical-exams/${exam.id}`);
     } catch (error) {
-      console.error('Error creating exam:', error);
-      setError('Error al crear el examen médico');
-      toast.error('Error al crear el examen médico');
+      console.error('Error updating exam:', error);
+      setError('Error al actualizar el examen médico');
+      toast.error('Error al actualizar el examen médico');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -127,18 +155,51 @@ export default function NewMedicalExam() {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
+  if (loading) {
+    return (
+      <DashboardShell>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Cargando examen...</p>
+          </div>
+        </div>
+      </DashboardShell>
+    );
+  }
+
+  if (error || !exam) {
+    return (
+      <DashboardShell>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">{error || 'Examen no encontrado'}</p>
+            <Link href="/medical-exams">
+              <Button>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Volver a Exámenes
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </DashboardShell>
+    );
+  }
+
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="Nuevo Examen Médico"
-        text="Crear un nuevo examen médico para un paciente"
+        heading={`Editar Examen: ${exam.title}`}
+        text="Modificar los detalles del examen médico"
       >
-        <Link href="/medical-exams">
-          <Button variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver
-          </Button>
-        </Link>
+        <div className="flex space-x-2">
+          <Link href={`/medical-exams/${exam.id}`}>
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Volver
+            </Button>
+          </Link>
+        </div>
       </DashboardHeader>
 
       <Card className="p-6">
@@ -153,22 +214,6 @@ export default function NewMedicalExam() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="patient_id">Paciente *</Label>
-                  <Select value={formData.patient_id} onValueChange={(value) => handleSelectChange('patient_id', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar paciente" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {patients.map(patient => (
-                        <SelectItem key={patient.id} value={patient.id.toString()}>
-                          {patient.username} - {patient.email}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 <div>
                   <Label htmlFor="title">Título del Examen *</Label>
                   <Input
@@ -434,7 +479,7 @@ export default function NewMedicalExam() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="attachments">Adjuntar Archivos</Label>
+                <Label htmlFor="attachments">Adjuntar Nuevos Archivos</Label>
                 <Input
                   type="file"
                   multiple
@@ -445,7 +490,7 @@ export default function NewMedicalExam() {
 
               {attachments.length > 0 && (
                 <div>
-                  <Label>Archivos Seleccionados:</Label>
+                  <Label>Nuevos Archivos Seleccionados:</Label>
                   <div className="mt-2 space-y-2">
                     {attachments.map((file, index) => (
                       <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
@@ -456,8 +501,27 @@ export default function NewMedicalExam() {
                           size="sm"
                           onClick={() => removeFile(index)}
                         >
-                          Eliminar
+                          <Trash2 className="h-4 w-4" />
                         </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {exam.attachments && exam.attachments.length > 0 && (
+                <div>
+                  <Label>Archivos Existentes:</Label>
+                  <div className="mt-2 space-y-2">
+                    {exam.attachments.map((attachment, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-blue-50 rounded">
+                        <span className="text-sm">{attachment.originalname}</span>
+                        <span className="text-xs text-gray-500">
+                          {(() => {
+                            const size = typeof attachment.size === 'string' ? parseInt(attachment.size) : attachment.size;
+                            return isNaN(size) ? '0.00' : (size / 1024 / 1024).toFixed(2);
+                          })()} MB
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -468,16 +532,16 @@ export default function NewMedicalExam() {
 
           {/* Botones */}
           <div className="flex justify-end space-x-4">
-            <Link href="/medical-exams">
+            <Link href={`/medical-exams/${exam.id}`}>
               <Button type="button" variant="outline">
                 Cancelar
               </Button>
             </Link>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creando...' : (
+            <Button type="submit" disabled={saving}>
+              {saving ? 'Guardando...' : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  Crear Examen
+                  Guardar Cambios
                 </>
               )}
             </Button>

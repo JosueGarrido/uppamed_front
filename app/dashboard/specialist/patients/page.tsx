@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
+import { ConfirmModal } from '@/components/ui/confirm-modal';
 import { appointmentService } from '@/services/appointment.service';
 import { medicalRecordService } from '@/services/medicalRecord.service';
 import { medicalExamService } from '@/services/medicalExam.service';
@@ -243,9 +244,24 @@ export default function SpecialistPatientsPage() {
 
   const [newExam, setNewExam] = useState({
     title: '',
-    description: '',
     type: '',
-    status: 'pendiente'
+    category: 'otros',
+    description: '',
+    results: '',
+    status: 'pendiente',
+    priority: 'normal',
+    scheduled_date: '',
+    performed_date: '',
+    report_date: '',
+    cost: '',
+    insurance_coverage: false,
+    insurance_provider: '',
+    notes: '',
+    is_abnormal: false,
+    requires_followup: false,
+    followup_date: '',
+    lab_reference: '',
+    technician: ''
   });
   const [creating, setCreating] = useState(false);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
@@ -280,7 +296,8 @@ export default function SpecialistPatientsPage() {
       const records = await medicalRecordService.getMyMedicalRecords('Especialista');
       
       // Obtener exámenes
-      const exams = await medicalExamService.getMyMedicalExams();
+      const examsData = await medicalExamService.getMyMedicalExams();
+      const exams = examsData.exams || [];
       
       // Agrupar datos por paciente
       const patientMap = new Map<number, PatientData>();
@@ -705,15 +722,50 @@ export default function SpecialistPatientsPage() {
         patient_id: selectedPatient.patient.id,
         specialist_id: user.id,
         title: newExam.title,
-        description: newExam.description,
         type: newExam.type,
-        status: newExam.status,
+        category: newExam.category as 'laboratorio' | 'imagenologia' | 'cardiologia' | 'neurologia' | 'gastroenterologia' | 'otorrinolaringologia' | 'oftalmologia' | 'dermatologia' | 'otros',
+        description: newExam.description,
+        results: newExam.results,
+        status: newExam.status as 'pendiente' | 'en_proceso' | 'completado' | 'cancelado',
+        priority: newExam.priority as 'baja' | 'normal' | 'alta' | 'urgente',
+        scheduled_date: newExam.scheduled_date || undefined,
+        performed_date: newExam.performed_date || undefined,
+        report_date: newExam.report_date || undefined,
+        cost: newExam.cost ? parseFloat(newExam.cost) : undefined,
+        insurance_coverage: newExam.insurance_coverage,
+        insurance_provider: newExam.insurance_provider,
+        notes: newExam.notes,
+        is_abnormal: newExam.is_abnormal,
+        requires_followup: newExam.requires_followup,
+        followup_date: newExam.followup_date || undefined,
+        lab_reference: newExam.lab_reference,
+        technician: newExam.technician
       };
 
       const response = await medicalExamService.createMedicalExam(examData);
       toast.success('Examen médico creado exitosamente');
       setShowCreateExamModal(false);
-      setNewExam({ title: '', description: '', type: '', status: 'pendiente' });
+      setNewExam({
+        title: '',
+        type: '',
+        category: 'otros',
+        description: '',
+        results: '',
+        status: 'pendiente',
+        priority: 'normal',
+        scheduled_date: '',
+        performed_date: '',
+        report_date: '',
+        cost: '',
+        insurance_coverage: false,
+        insurance_provider: '',
+        notes: '',
+        is_abnormal: false,
+        requires_followup: false,
+        followup_date: '',
+        lab_reference: '',
+        technician: ''
+      });
       
       // Actualizar el estado local inmediatamente
       if (response && selectedPatient) {
@@ -1426,7 +1478,7 @@ export default function SpecialistPatientsPage() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <Microscope className="h-5 w-5 text-orange-600" />
-                              <h3 className="font-medium">{exam.title}</h3>
+                              <h3 className="font-medium">{exam.title || 'Sin título'}</h3>
                             </div>
                             <div className="flex items-center space-x-2">
                               <span className="text-sm text-gray-500">
@@ -1443,23 +1495,83 @@ export default function SpecialistPatientsPage() {
                               </button>
                             </div>
                           </div>
-                                                     {(exam.results || exam.description) && (
-                             <p className="text-gray-600">{exam.results || exam.description}</p>
-                           )}
-                                                     {(exam.results || exam.description) && (
-                             <div className="bg-orange-50 p-3 rounded-lg">
-                               <p className="text-sm font-medium text-orange-800 mb-1">Resultados:</p>
-                               <p className="text-sm text-orange-700">{exam.results || exam.description}</p>
-                             </div>
-                           )}
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <span className="font-medium text-gray-700">Tipo:</span>
+                              <span className="text-gray-600 ml-1">{exam.type}</span>
+                            </div>
+                            {exam.category && (
+                              <div>
+                                <span className="font-medium text-gray-700">Categoría:</span>
+                                <span className="text-gray-600 ml-1 capitalize">{exam.category}</span>
+                              </div>
+                            )}
+                            {exam.priority && (
+                              <div>
+                                <span className="font-medium text-gray-700">Prioridad:</span>
+                                <Badge className={`ml-1 ${
+                                  exam.priority === 'urgente' ? 'bg-red-100 text-red-800' :
+                                  exam.priority === 'alta' ? 'bg-orange-100 text-orange-800' :
+                                  exam.priority === 'normal' ? 'bg-blue-100 text-blue-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {exam.priority.charAt(0).toUpperCase() + exam.priority.slice(1)}
+                                </Badge>
+                              </div>
+                            )}
+                            {exam.cost && (
+                              <div>
+                                <span className="font-medium text-gray-700">Costo:</span>
+                                <span className="text-gray-600 ml-1">${typeof exam.cost === 'number' ? exam.cost.toFixed(2) : exam.cost}</span>
+                              </div>
+                            )}
+                          </div>
+
                           {exam.status && (
-                            <Badge className={`${
-                              exam.status === 'completado' ? 'bg-green-100 text-green-800' :
-                              exam.status === 'en_proceso' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {exam.status}
-                            </Badge>
+                            <div className="flex items-center space-x-2">
+                              <Badge className={`${
+                                exam.status === 'completado' ? 'bg-green-100 text-green-800' :
+                                exam.status === 'en_proceso' ? 'bg-blue-100 text-blue-800' :
+                                exam.status === 'cancelado' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {exam.status.charAt(0).toUpperCase() + exam.status.slice(1).replace('_', ' ')}
+                              </Badge>
+                              {exam.is_abnormal && (
+                                <Badge className="bg-red-100 text-red-800">
+                                  Anormal
+                                </Badge>
+                              )}
+                              {exam.requires_followup && (
+                                <Badge className="bg-orange-100 text-orange-800">
+                                  Seguimiento
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+
+                          {exam.description && (
+                            <div>
+                              <p className="text-sm font-medium text-gray-700 mb-1">Descripción:</p>
+                              <p className="text-sm text-gray-600">{exam.description}</p>
+                            </div>
+                          )}
+
+                          {exam.results && (
+                            <div className="bg-orange-50 p-3 rounded-lg">
+                              <p className="text-sm font-medium text-orange-800 mb-1">Resultados:</p>
+                              <p className="text-sm text-orange-700">
+                                {exam.results.length > 200 ? `${exam.results.substring(0, 200)}...` : exam.results}
+                              </p>
+                            </div>
+                          )}
+
+                          {exam.notes && (
+                            <div>
+                              <p className="text-sm font-medium text-gray-700 mb-1">Notas:</p>
+                              <p className="text-sm text-gray-600">{exam.notes}</p>
+                            </div>
                           )}
                   </div>
                 </CardContent>
@@ -1702,7 +1814,7 @@ export default function SpecialistPatientsPage() {
 
       {/* Modal de Nuevo Examen */}
       <Dialog open={showCreateExamModal} onOpenChange={setShowCreateExamModal}>
-        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Microscope className="mr-2 h-5 w-5" />
@@ -1714,7 +1826,8 @@ export default function SpecialistPatientsPage() {
           </DialogHeader>
           
           {selectedPatient && (
-            <form onSubmit={handleCreateExam} className="space-y-4">
+            <form onSubmit={handleCreateExam} className="space-y-6">
+              {/* Información del Paciente */}
               <div className="p-4 bg-orange-50 rounded-lg">
                 <p className="text-sm text-orange-800">
                   <strong>Paciente:</strong> {selectedPatient.patient.username}
@@ -1723,60 +1836,281 @@ export default function SpecialistPatientsPage() {
                   <strong>Email:</strong> {selectedPatient.patient.email}
                 </p>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Título del examen *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ej: Análisis de sangre, Radiografía, Ecografía..."
-                  value={newExam.title}
-                  onChange={(e) => setNewExam({ ...newExam, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
+
+              {/* Información Básica */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Título del examen *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej: Análisis de sangre completo"
+                    value={newExam.title}
+                    onChange={(e) => setNewExam({ ...newExam, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo de examen *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej: Análisis de sangre, Rayos X, etc."
+                    value={newExam.type}
+                    onChange={(e) => setNewExam({ ...newExam, type: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Categoría
+                  </label>
+                  <select
+                    value={newExam.category}
+                    onChange={(e) => setNewExam({ ...newExam, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="laboratorio">Laboratorio</option>
+                    <option value="imagenologia">Imagenología</option>
+                    <option value="cardiologia">Cardiología</option>
+                    <option value="neurologia">Neurología</option>
+                    <option value="gastroenterologia">Gastroenterología</option>
+                    <option value="otorrinolaringologia">Otorrinolaringología</option>
+                    <option value="oftalmologia">Oftalmología</option>
+                    <option value="dermatologia">Dermatología</option>
+                    <option value="otros">Otros</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Estado
+                  </label>
+                  <select
+                    value={newExam.status}
+                    onChange={(e) => setNewExam({ ...newExam, status: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_proceso">En Proceso</option>
+                    <option value="completado">Completado</option>
+                    <option value="cancelado">Cancelado</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Prioridad
+                  </label>
+                  <select
+                    value={newExam.priority}
+                    onChange={(e) => setNewExam({ ...newExam, priority: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="baja">Baja</option>
+                    <option value="normal">Normal</option>
+                    <option value="alta">Alta</option>
+                    <option value="urgente">Urgente</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Costo
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={newExam.cost}
+                    onChange={(e) => setNewExam({ ...newExam, cost: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tipo de examen
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ej: Laboratorio, Imagenología, Funcional..."
-                  value={newExam.type}
-                  onChange={(e) => setNewExam({ ...newExam, type: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
+
+              {/* Fechas */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha Programada
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={newExam.scheduled_date}
+                    onChange={(e) => setNewExam({ ...newExam, scheduled_date: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha Realizada
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={newExam.performed_date}
+                    onChange={(e) => setNewExam({ ...newExam, performed_date: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha de Reporte
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={newExam.report_date}
+                    onChange={(e) => setNewExam({ ...newExam, report_date: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha de Seguimiento
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={newExam.followup_date}
+                    onChange={(e) => setNewExam({ ...newExam, followup_date: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
               </div>
-              
+
+              {/* Descripción y Resultados */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción
+                  </label>
+                  <textarea
+                    placeholder="Descripción detallada del examen"
+                    value={newExam.description}
+                    onChange={(e) => setNewExam({ ...newExam, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Resultados
+                  </label>
+                  <textarea
+                    placeholder="Resultados del examen"
+                    value={newExam.results}
+                    onChange={(e) => setNewExam({ ...newExam, results: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              </div>
+
+              {/* Información Adicional */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Referencia del Laboratorio
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ref. del laboratorio"
+                    value={newExam.lab_reference}
+                    onChange={(e) => setNewExam({ ...newExam, lab_reference: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Técnico Responsable
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Nombre del técnico"
+                    value={newExam.technician}
+                    onChange={(e) => setNewExam({ ...newExam, technician: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Proveedor de Seguro
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Nombre del seguro"
+                    value={newExam.insurance_provider}
+                    onChange={(e) => setNewExam({ ...newExam, insurance_provider: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+              </div>
+
+              {/* Checkboxes */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="insurance_coverage"
+                    checked={newExam.insurance_coverage}
+                    onChange={(e) => setNewExam({ ...newExam, insurance_coverage: e.target.checked })}
+                    className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="insurance_coverage" className="text-sm font-medium text-gray-700">
+                    Cobertura de Seguro
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="is_abnormal"
+                    checked={newExam.is_abnormal}
+                    onChange={(e) => setNewExam({ ...newExam, is_abnormal: e.target.checked })}
+                    className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="is_abnormal" className="text-sm font-medium text-gray-700">
+                    Resultados Anormales
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="requires_followup"
+                    checked={newExam.requires_followup}
+                    onChange={(e) => setNewExam({ ...newExam, requires_followup: e.target.checked })}
+                    className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="requires_followup" className="text-sm font-medium text-gray-700">
+                    Requiere Seguimiento
+                  </label>
+                </div>
+              </div>
+
+              {/* Notas */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Descripción
+                  Notas Adicionales
                 </label>
                 <textarea
-                  placeholder="Descripción del examen a realizar..."
-                  value={newExam.description}
-                  onChange={(e) => setNewExam({ ...newExam, description: e.target.value })}
+                  placeholder="Notas adicionales sobre el examen"
+                  value={newExam.notes}
+                  onChange={(e) => setNewExam({ ...newExam, notes: e.target.value })}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Estado
-                </label>
-                <select
-                  value={newExam.status}
-                  onChange={(e) => setNewExam({ ...newExam, status: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                >
-                  <option value="pendiente">Pendiente</option>
-                  <option value="en_proceso">En Proceso</option>
-                  <option value="completado">Completado</option>
-                </select>
               </div>
               
               <div className="flex justify-end space-x-3 pt-4">
@@ -1800,104 +2134,23 @@ export default function SpecialistPatientsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Confirmación de Eliminación de Cita */}
-      <Dialog open={showDeleteAppointmentModal} onOpenChange={setShowDeleteAppointmentModal}>
-        <DialogContent className="w-[95vw] max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center text-red-600">
-              <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              Confirmar Eliminación
-            </DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que quieres eliminar la cita "{itemToDelete?.name}"? Esta acción no se puede deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteAppointmentModal(false)}
-              disabled={deleting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteItem}
-              disabled={deleting}
-            >
-              {deleting ? 'Eliminando...' : 'Eliminar Cita'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal de Confirmación de Eliminación de Registro */}
-      <Dialog open={showDeleteRecordModal} onOpenChange={setShowDeleteRecordModal}>
-        <DialogContent className="w-[95vw] max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center text-red-600">
-              <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              Confirmar Eliminación
-            </DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que quieres eliminar el registro "{itemToDelete?.name}"? Esta acción no se puede deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteRecordModal(false)}
-              disabled={deleting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteItem}
-              disabled={deleting}
-            >
-              {deleting ? 'Eliminando...' : 'Eliminar Registro'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal de Confirmación de Eliminación de Examen */}
-      <Dialog open={showDeleteExamModal} onOpenChange={setShowDeleteExamModal}>
-        <DialogContent className="w-[95vw] max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center text-red-600">
-              <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              Confirmar Eliminación
-            </DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que quieres eliminar el examen "{itemToDelete?.name}"? Esta acción no se puede deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteExamModal(false)}
-              disabled={deleting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteItem}
-              disabled={deleting}
-            >
-              {deleting ? 'Eliminando...' : 'Eliminar Examen'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Modal de Confirmación de Eliminación */}
+      <ConfirmModal
+        isOpen={showDeleteAppointmentModal || showDeleteRecordModal || showDeleteExamModal}
+        onClose={() => {
+          setShowDeleteAppointmentModal(false);
+          setShowDeleteRecordModal(false);
+          setShowDeleteExamModal(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={handleDeleteItem}
+        title={`Eliminar ${itemToDelete?.type === 'appointment' ? 'Cita' : itemToDelete?.type === 'record' ? 'Registro Médico' : 'Examen Médico'}`}
+        description={`¿Estás seguro de que quieres eliminar ${itemToDelete?.type === 'appointment' ? 'la cita' : itemToDelete?.type === 'record' ? 'el registro' : 'el examen'} "${itemToDelete?.name}"? Esta acción no se puede deshacer.`}
+        confirmText={`Eliminar ${itemToDelete?.type === 'appointment' ? 'Cita' : itemToDelete?.type === 'record' ? 'Registro' : 'Examen'}`}
+        cancelText="Cancelar"
+        variant="danger"
+        loading={deleting}
+      />
     </DashboardShell>
   );
 } 

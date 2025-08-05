@@ -87,7 +87,8 @@ export default function SpecialistDashboard() {
         }
 
         try {
-          exams = await medicalExamService.getMyMedicalExams();
+          const examsData = await medicalExamService.getMyMedicalExams();
+          exams = examsData.exams || [];
         } catch (error) {
           console.error('Error cargando exámenes médicos:', error);
           exams = [];

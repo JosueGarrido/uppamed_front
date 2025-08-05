@@ -40,7 +40,7 @@ export default function PacienteDashboard() {
 
         setAppointments(appointmentsData);
         setMedicalRecords(recordsData);
-        setMedicalExams(examsData);
+        setMedicalExams(examsData.exams || []);
         setLoading(false);
       } catch (error) {
         setError('Error al cargar los datos');
