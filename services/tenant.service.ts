@@ -120,6 +120,81 @@ class TenantService {
       throw error;
     }
   }
+
+  async getAllTenants(): Promise<any[]> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/tenants'), {
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al obtener los tenants');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error obteniendo tenants:', error);
+      throw error;
+    }
+  }
+
+  async createTenant(tenantData: { name: string; address?: string }): Promise<any> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/tenants'), {
+        method: 'POST',
+        headers: {
+          ...createAuthHeaders(token),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tenantData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al crear el tenant');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error creando tenant:', error);
+      throw error;
+    }
+  }
+
+  async deleteTenant(tenantId: number): Promise<void> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/tenants/${tenantId}`), {
+        method: 'DELETE',
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al eliminar el tenant');
+      }
+    } catch (error) {
+      console.error('Error eliminando tenant:', error);
+      throw error;
+    }
+  }
 }
 
 export const tenantService = new TenantService(); 
