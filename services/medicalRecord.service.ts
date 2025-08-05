@@ -11,9 +11,14 @@ class MedicalRecordService {
       }
 
       // El backend tiene endpoints específicos por rol
-      const endpoint = userRole === 'Especialista'
-        ? '/medical-records/specialist'
-        : '/medical-records';
+      let endpoint;
+      if (userRole === 'Administrador') {
+        endpoint = '/medical-records/admin';
+      } else if (userRole === 'Especialista') {
+        endpoint = '/medical-records/specialist';
+      } else {
+        endpoint = '/medical-records';
+      }
       
       const response = await fetch(buildApiUrl(endpoint), {
         headers: createAuthHeaders(token)
@@ -25,7 +30,7 @@ class MedicalRecordService {
       }
 
       const data = await response.json();
-      return Array.isArray(data) ? data : data.records || [];
+      return Array.isArray(data) ? data : data.medicalRecords || data.records || [];
     } catch (error) {
       console.error('Error obteniendo registros médicos:', error);
       throw error;

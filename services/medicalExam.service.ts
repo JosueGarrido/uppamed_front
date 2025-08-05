@@ -3,7 +3,7 @@ import { buildApiUrl, createAuthHeaders } from '@/lib/config';
 import { MedicalExam, ExamStatistics, ExamFilters, ExamListResponse } from '@/types/medicalExam';
 
 class MedicalExamService {
-  async getMyMedicalExams(filters?: ExamFilters): Promise<ExamListResponse> {
+  async getMyMedicalExams(filters?: ExamFilters, userRole?: string): Promise<ExamListResponse> {
     try {
       const token = authService.getToken();
       if (!token) {
@@ -20,7 +20,9 @@ class MedicalExamService {
         });
       }
 
-      const url = filters ? `${buildApiUrl('/medical-exams')}?${params.toString()}` : buildApiUrl('/medical-exams');
+      // Determinar el endpoint basado en el rol del usuario
+      const baseEndpoint = userRole === 'Administrador' ? '/medical-exams/admin' : '/medical-exams';
+      const url = filters ? `${buildApiUrl(baseEndpoint)}?${params.toString()}` : buildApiUrl(baseEndpoint);
       
       const response = await fetch(url, {
         headers: createAuthHeaders(token)
