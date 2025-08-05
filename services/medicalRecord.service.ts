@@ -47,7 +47,8 @@ class MedicalRecordService {
         throw new Error('Error al crear el registro médico');
       }
 
-      return response.json();
+      const data = await response.json();
+      return data.medicalRecord;
     } catch (error) {
       console.error('Error creando registro médico:', error);
       throw error;
@@ -96,6 +97,27 @@ class MedicalRecordService {
       return response.json();
     } catch (error) {
       console.error('Error obteniendo registro médico:', error);
+      throw error;
+    }
+  }
+
+  async deleteMedicalRecord(id: number): Promise<void> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/medical-records/${id}`), {
+        method: 'DELETE',
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar el registro médico');
+      }
+    } catch (error) {
+      console.error('Error eliminando registro médico:', error);
       throw error;
     }
   }

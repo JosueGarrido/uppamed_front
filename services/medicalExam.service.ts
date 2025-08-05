@@ -43,9 +43,31 @@ class MedicalExamService {
         throw new Error('Error al crear el examen médico');
       }
 
-      return response.json();
+      const data = await response.json();
+      return data.medicalExam;
     } catch (error) {
       console.error('Error creando examen médico:', error);
+      throw error;
+    }
+  }
+
+  async deleteMedicalExam(id: number): Promise<void> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl(`/medical-exams/${id}`), {
+        method: 'DELETE',
+        headers: createAuthHeaders(token)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar el examen médico');
+      }
+    } catch (error) {
+      console.error('Error eliminando examen médico:', error);
       throw error;
     }
   }

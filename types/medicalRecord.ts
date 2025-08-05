@@ -9,6 +9,4 @@ export interface MedicalRecord {
   date: string;
   createdAt: string;
   updatedAt: string;
-  title?: string;
-  description?: string;
 } 

@@ -246,11 +246,22 @@ export default function Sidebar() {
       
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
-          // Mejorar la detección de elemento activo con más opciones
-          const active = (item.href === '/dashboard/specialist' && pathname === '/dashboard/specialist') ||
-                        (item.href !== '/dashboard/specialist' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+          // Lógica mejorada para detectar elemento activo para todos los roles
+          let active = false;
           
-
+          if (user?.role === 'Super Admin') {
+            active = (item.href === '/dashboard/super-admin' && pathname === '/dashboard/super-admin') ||
+                    (item.href !== '/dashboard/super-admin' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+          } else if (user?.role === 'Administrador') {
+            active = (item.href === '/dashboard/admin' && pathname === '/dashboard/admin') ||
+                    (item.href !== '/dashboard/admin' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+          } else if (user?.role === 'Especialista') {
+            active = (item.href === '/dashboard/specialist' && pathname === '/dashboard/specialist') ||
+                    (item.href !== '/dashboard/specialist' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+          } else if (user?.role === 'Paciente') {
+            active = (item.href === '/dashboard/paciente' && pathname === '/dashboard/paciente') ||
+                    (item.href !== '/dashboard/paciente' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+          }
           
           return (
             <Link

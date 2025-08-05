@@ -149,8 +149,25 @@ const SidebarWrapper = () => {
               <Link
                 href={item.href}
                 className={`flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 ${
-                  (item.href === '/dashboard/specialist' && pathname === '/dashboard/specialist') ||
-                  (item.href !== '/dashboard/specialist' && (pathname === item.href || pathname.startsWith(item.href + '/')))
+                  (() => {
+                    let active = false;
+                    
+                    if (user.role === 'Super Admin') {
+                      active = (item.href === '/dashboard/super-admin' && pathname === '/dashboard/super-admin') ||
+                              (item.href !== '/dashboard/super-admin' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+                    } else if (user.role === 'Administrador') {
+                      active = (item.href === '/dashboard/admin' && pathname === '/dashboard/admin') ||
+                              (item.href !== '/dashboard/admin' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+                    } else if (user.role === 'Especialista') {
+                      active = (item.href === '/dashboard/specialist' && pathname === '/dashboard/specialist') ||
+                              (item.href !== '/dashboard/specialist' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+                    } else if (user.role === 'Paciente') {
+                      active = (item.href === '/dashboard/paciente' && pathname === '/dashboard/paciente') ||
+                              (item.href !== '/dashboard/paciente' && (pathname === item.href || pathname.startsWith(item.href + '/')));
+                    }
+                    
+                    return active;
+                  })()
                     ? 'bg-blue-600 text-white shadow-lg border-l-4 border-blue-800 font-semibold'
                     : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 hover:shadow-md'
                 }`}
