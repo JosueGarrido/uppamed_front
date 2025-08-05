@@ -20,7 +20,8 @@ import {
   AlertCircle,
   Plus,
   Filter,
-  Search
+  Search,
+  Eye
 } from 'lucide-react';
 import { Appointment } from '@/types/appointment';
 import FullCalendar from '@fullcalendar/react';
@@ -38,6 +39,7 @@ export default function PatientAppointmentsPage() {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
   useEffect(() => {
     loadAppointments();
@@ -136,6 +138,26 @@ export default function PatientAppointmentsPage() {
     );
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const showAppointmentDetails = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+  };
+
   if (loading) {
     return (
       <DashboardShell>
@@ -215,6 +237,37 @@ export default function PatientAppointmentsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="calendar-responsive">
+              <style jsx>{`
+                .calendar-responsive {
+                  overflow-x: auto;
+                }
+                .calendar-responsive :global(.fc) {
+                  min-width: 600px;
+                }
+                .calendar-responsive :global(.fc-event) {
+                  cursor: pointer;
+                  border-radius: 4px;
+                  padding: 2px 4px;
+                  font-size: 12px;
+                  font-weight: 500;
+                }
+                .calendar-responsive :global(.fc-event:hover) {
+                  opacity: 0.8;
+                }
+                @media (max-width: 768px) {
+                  .calendar-responsive :global(.fc-event) {
+                    font-size: 10px;
+                    padding: 1px 2px;
+                  }
+                  .calendar-responsive :global(.fc-toolbar-title) {
+                    font-size: 16px !important;
+                  }
+                  .calendar-responsive :global(.fc-button) {
+                    font-size: 12px !important;
+                    padding: 4px 8px !important;
+                  }
+                }
+              `}</style>
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -242,8 +295,7 @@ export default function PatientAppointmentsPage() {
                 eventClick={(info) => {
                   const appointment = appointments.find(a => a.id.toString() === info.event.id);
                   if (appointment) {
-                    // Aquí podrías abrir un modal con detalles de la cita
-                    toast.info(`Cita con ${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`);
+                    showAppointmentDetails(appointment);
                   }
                 }}
                 eventContent={(arg) => (
@@ -325,6 +377,17 @@ export default function PatientAppointmentsPage() {
                       )}
                     </div>
                   </div>
+                  
+                  <div className="flex-shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => showAppointmentDetails(appointment)}
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      Ver Detalle
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))
@@ -405,6 +468,87 @@ export default function PatientAppointmentsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de detalles de la cita */}
+      {selectedAppointment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Detalles de la Cita</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedAppointment(null)}
+                >
+                  ×
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold text-gray-700">Especialista</h3>
+                  <p className="text-gray-600">
+                    Dr. {selectedAppointment.appointmentSpecialist?.username || 'No especificado'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {selectedAppointment.appointmentSpecialist?.email}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {selectedAppointment.appointmentSpecialist?.specialty || 'Especialidad no especificada'}
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold text-gray-700">Estado</h3>
+                  <div className="flex items-center space-x-2 mt-1">
+                    {getStatusIcon(selectedAppointment.status)}
+                    {getStatusBadge(selectedAppointment.status)}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold text-gray-700">Fecha</h3>
+                  <p className="text-gray-600">{formatDate(selectedAppointment.date)}</p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold text-gray-700">Hora</h3>
+                  <p className="text-gray-600">{formatTime(selectedAppointment.date)}</p>
+                </div>
+              </div>
+              
+              {selectedAppointment.reason && (
+                <div>
+                  <h3 className="font-semibold text-gray-700">Motivo</h3>
+                  <p className="text-gray-600">{selectedAppointment.reason}</p>
+                </div>
+              )}
+              
+              {selectedAppointment.notes && (
+                <div>
+                  <h3 className="font-semibold text-gray-700">Notas</h3>
+                  <p className="text-gray-600">{selectedAppointment.notes}</p>
+                </div>
+              )}
+              
+              <div className="pt-4 border-t">
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedAppointment(null)}
+                  >
+                    Cerrar
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </DashboardShell>
   );
 } 
