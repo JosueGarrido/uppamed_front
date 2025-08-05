@@ -47,6 +47,8 @@ export default function PatientAppointmentsPage() {
     try {
       setLoading(true);
       const data = await appointmentService.getPatientAppointments();
+      console.log('📅 Citas cargadas en el componente:', data);
+      console.log('📅 Número de citas:', data.length);
       setAppointments(data);
     } catch (error) {
       console.error('Error loading appointments:', error);
@@ -55,28 +57,6 @@ export default function PatientAppointmentsPage() {
       setLoading(false);
     }
   };
-
-  const filteredAppointments = appointments.filter(appointment => {
-    const matchesFilter = filter === 'all' || appointment.status === filter;
-    const matchesSearch = appointment.appointmentSpecialist?.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         appointment.appointmentSpecialist?.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-  const calendarEvents = filteredAppointments.map(appointment => ({
-    id: appointment.id.toString(),
-    title: `${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`,
-    start: appointment.date,
-    end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
-    backgroundColor: getStatusColor(appointment.status),
-    borderColor: getStatusColor(appointment.status),
-    textColor: '#ffffff',
-    extendedProps: {
-      status: appointment.status,
-      specialist: appointment.appointmentSpecialist?.username,
-      notes: appointment.notes
-    }
-  }));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -92,6 +72,32 @@ export default function PatientAppointmentsPage() {
         return '#6b7280';
     }
   };
+
+  const filteredAppointments = appointments.filter(appointment => {
+    const matchesFilter = filter === 'all' || appointment.status === filter;
+    const matchesSearch = appointment.appointmentSpecialist?.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         appointment.appointmentSpecialist?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  console.log('🔍 Citas filtradas:', filteredAppointments.length);
+  console.log('🔍 Filtro actual:', filter);
+  console.log('🔍 Término de búsqueda:', searchTerm);
+
+  const calendarEvents = filteredAppointments.map(appointment => ({
+    id: appointment.id.toString(),
+    title: `${appointment.appointmentSpecialist?.username || 'Especialista'} - ${appointment.status}`,
+    start: appointment.date,
+    end: new Date(new Date(appointment.date).getTime() + 60 * 60 * 1000), // 1 hora
+    backgroundColor: getStatusColor(appointment.status),
+    borderColor: getStatusColor(appointment.status),
+    textColor: '#ffffff',
+    extendedProps: {
+      status: appointment.status,
+      specialist: appointment.appointmentSpecialist?.username,
+      notes: appointment.notes
+    }
+  }));
 
   const getStatusIcon = (status: string) => {
     switch (status) {
