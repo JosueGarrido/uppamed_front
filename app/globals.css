@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Eliminar bordes de FullCalendar en toda la aplicación */
+.fc-event {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.fc-daygrid-event {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.fc-event-main {
+  border: none !important;
+}
+
+.fc-timegrid-event {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.fc-list-event {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Asegurar que no haya bordes en ningún tipo de evento */
+.fc-event,
+.fc-daygrid-event,
+.fc-timegrid-event,
+.fc-list-event,
+.fc-event-main,
+.fc-event-main-frame,
+.fc-event-main-body {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 /* Estilos responsivos para FullCalendar */
 @layer components {
 .calendar-container {

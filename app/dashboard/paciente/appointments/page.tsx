@@ -254,19 +254,23 @@ export default function PatientAppointmentsPage() {
             <div className="calendar-responsive">
               <style jsx>{`
                 .calendar-responsive {
-                  overflow-x: auto;
-                }
-                .calendar-responsive :global(.fc) {
                   min-width: 300px;
                 }
+                
                 .calendar-responsive :global(.fc-event) {
-                  cursor: pointer;
-                  border-radius: 4px;
-                  padding: 2px 4px;
-                  font-size: 11px;
-                  font-weight: 500;
-                  margin: 1px 0;
+                  border: none !important;
+                  box-shadow: none !important;
                 }
+                
+                .calendar-responsive :global(.fc-daygrid-event) {
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+                
+                .calendar-responsive :global(.fc-event-main) {
+                  border: none !important;
+                }
+                
                 .calendar-responsive :global(.fc-event:hover) {
                   opacity: 0.8;
                 }

@@ -501,6 +501,21 @@ const AdminAppointmentsPage = () => {
         </CardHeader>
         <CardContent className="p-2 sm:p-6">
           <div className="calendar-container overflow-x-auto">
+            <style jsx>{`
+              .calendar-container :global(.fc-event) {
+                border: none !important;
+                box-shadow: none !important;
+              }
+              
+              .calendar-container :global(.fc-daygrid-event) {
+                border: none !important;
+                box-shadow: none !important;
+              }
+              
+              .calendar-container :global(.fc-event-main) {
+                border: none !important;
+              }
+            `}</style>
             <div className="min-w-[280px] sm:min-w-[320px]">
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
