@@ -75,15 +75,71 @@ export const authService = {
     }
   },
 
-  logout(): void {
-    if (!isClient()) return;
-    
-    const originalToken = localStorage.getItem('original_token') || Cookies.get('original_token');
-    Cookies.remove('token', { path: '/' });
-    localStorage.clear();
-    if (originalToken) {
-      localStorage.setItem('original_token', originalToken);
-      Cookies.set('original_token', originalToken, { expires: 1, path: '/' });
+  async logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  },
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/auth/change-password'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al cambiar la contraseña');
+      }
+    } catch (error) {
+      console.error('Error cambiando contraseña:', error);
+      throw error;
+    }
+  },
+
+  async updateProfile(profileData: {
+    username: string;
+    email: string;
+    area?: string;
+    specialty?: string;
+  }): Promise<User> {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(buildApiUrl('/auth/profile'), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(profileData)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al actualizar el perfil');
+      }
+
+      const data = await response.json();
+      return data.user;
+    } catch (error) {
+      console.error('Error actualizando perfil:', error);
+      throw error;
     }
   },
 

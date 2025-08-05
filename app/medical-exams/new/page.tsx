@@ -15,7 +15,7 @@ import { User } from '@/types/auth';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
-import { ArrowLeft, Save, Upload, Microscope } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Microscope, Trash2, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -128,7 +128,7 @@ export default function NewMedicalExam() {
   };
 
   return (
-    <DashboardShell>
+    <DashboardShell className="medical-exams-responsive">
       <DashboardHeader
         heading="Nuevo Examen Médico"
         text="Crear un nuevo examen médico para un paciente"
@@ -446,18 +446,55 @@ export default function NewMedicalExam() {
               {attachments.length > 0 && (
                 <div>
                   <Label>Archivos Seleccionados:</Label>
-                  <div className="mt-2 space-y-2">
+                  <div className="mt-2 space-y-3">
                     {attachments.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm">{file.name}</span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeFile(index)}
-                        >
-                          Eliminar
-                        </Button>
+                      <div key={index} className="medical-exam-file-container">
+                        {/* Layout móvil: vertical */}
+                        <div className="medical-exam-file-mobile">
+                          <div className="medical-exam-file-info-mobile mb-3">
+                            <FileText className="h-5 w-5 text-gray-500 medical-exam-file-icon medical-exam-file-icon-mobile" />
+                            <div className="medical-exam-file-details">
+                              <p className="text-sm medical-exam-file-name-mobile" title={file.name}>
+                                {file.name}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="medical-exam-file-actions-mobile">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeFile(index)}
+                              className="medical-exam-file-button-mobile"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Layout desktop: horizontal */}
+                        <div className="medical-exam-file-desktop items-center justify-between">
+                          <div className="medical-exam-file-info-desktop">
+                            <FileText className="h-5 w-5 text-gray-500 medical-exam-file-icon" />
+                            <div className="medical-exam-file-details">
+                              <p className="text-sm medical-exam-file-name-desktop" title={file.name}>
+                                {file.name}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="medical-exam-file-actions-desktop">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeFile(index)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

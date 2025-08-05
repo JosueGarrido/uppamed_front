@@ -8,6 +8,11 @@
     @apply w-full;
   }
 
+  /* Estilos específicos para el módulo de Registros Médicos */
+  .medical-records-responsive {
+    @apply w-full;
+  }
+
   /* Responsive para móviles */
   @media (max-width: 767px) {
     /* Para móviles muy pequeños */
@@ -20,6 +25,190 @@
       .fc-toolbar-chunk:has(.fc-toolbar-title) {
         max-width: 65px !important;
       }
+    }
+
+    /* Estilos para tarjetas de registros médicos en móvil */
+    .medical-record-card {
+      @apply p-3;
+    }
+
+    .medical-record-actions {
+      @apply flex-row gap-2;
+    }
+
+    .medical-record-actions button {
+      @apply flex-1 text-xs;
+    }
+
+    .medical-record-info {
+      @apply flex-col gap-3;
+    }
+
+    .medical-record-header {
+      @apply flex-col gap-2;
+    }
+
+    .medical-record-badge {
+      @apply w-fit;
+    }
+
+    .medical-record-text {
+      @apply text-sm break-words;
+    }
+
+    /* Estilos para filtros en móvil */
+    .medical-records-filters {
+      @apply space-y-4;
+    }
+
+    .medical-records-sort-buttons {
+      @apply flex-wrap gap-2;
+    }
+
+    .medical-records-sort-buttons button {
+      @apply flex-1 sm:flex-none;
+    }
+
+    /* Estilos para paginación en móvil */
+    .medical-records-pagination {
+      @apply flex-col gap-4;
+    }
+
+    .medical-records-pagination-info {
+      @apply text-center sm:text-left;
+    }
+
+    .medical-records-pagination-controls {
+      @apply gap-1 sm:gap-2;
+    }
+
+    .medical-records-pagination-controls button {
+      @apply w-8 h-8 text-xs sm:text-sm;
+    }
+
+    /* Ocultar botones de primera/última página en móvil */
+    .medical-records-pagination-controls .pagination-first,
+    .medical-records-pagination-controls .pagination-last {
+      @apply hidden sm:flex;
+    }
+
+    /* Estilos específicos para el módulo de Exámenes Médicos */
+    .medical-exams-responsive {
+      @apply w-full;
+    }
+
+    /* Estilos directos para archivos adjuntos - Solución definitiva */
+    .medical-exam-attachment-item {
+      @apply bg-gray-50 rounded-lg p-4;
+    }
+
+    .medical-exam-attachment-item-mobile {
+      @apply block sm:hidden;
+    }
+
+    .medical-exam-attachment-item-desktop {
+      @apply hidden sm:flex;
+    }
+
+    .medical-exam-attachment-info-mobile {
+      @apply flex items-start space-x-3 mb-4;
+    }
+
+    .medical-exam-attachment-info-desktop {
+      @apply flex items-center space-x-3 flex-1 min-w-0;
+    }
+
+    .medical-exam-attachment-icon {
+      @apply h-5 w-5 text-gray-500 flex-shrink-0;
+    }
+
+    .medical-exam-attachment-icon-mobile {
+      @apply mt-0.5;
+    }
+
+    .medical-exam-attachment-details {
+      @apply flex-1 min-w-0;
+    }
+
+    .medical-exam-attachment-name-mobile {
+      @apply font-medium text-gray-900 break-words text-sm;
+    }
+
+    .medical-exam-attachment-name-desktop {
+      @apply font-medium text-gray-900 truncate text-sm;
+    }
+
+    .medical-exam-attachment-actions-mobile {
+      @apply flex justify-center;
+    }
+
+    .medical-exam-attachment-actions-desktop {
+      @apply flex-shrink-0 ml-4;
+    }
+
+    .medical-exam-attachment-button-mobile {
+      @apply w-full max-w-xs;
+    }
+
+    /* Estilos para archivos en formularios */
+    .medical-exam-file-item {
+      @apply bg-gray-50 rounded p-4;
+    }
+
+    .medical-exam-file-existing {
+      @apply bg-blue-50;
+    }
+
+    .medical-exam-file-item-mobile {
+      @apply block sm:hidden;
+    }
+
+    .medical-exam-file-item-desktop {
+      @apply hidden sm:flex;
+    }
+
+    .medical-exam-file-info-mobile {
+      @apply flex items-start space-x-3 mb-4;
+    }
+
+    .medical-exam-file-info-desktop {
+      @apply flex items-center space-x-3 flex-1 min-w-0;
+    }
+
+    .medical-exam-file-icon {
+      @apply h-5 w-5 text-gray-500 flex-shrink-0;
+    }
+
+    .medical-exam-file-icon-blue {
+      @apply text-blue-500;
+    }
+
+    .medical-exam-file-icon-mobile {
+      @apply mt-0.5;
+    }
+
+    .medical-exam-file-details {
+      @apply flex-1 min-w-0;
+    }
+
+    .medical-exam-file-name-mobile {
+      @apply text-sm break-words;
+    }
+
+    .medical-exam-file-name-desktop {
+      @apply text-sm truncate;
+    }
+
+    .medical-exam-file-actions-mobile {
+      @apply flex justify-center;
+    }
+
+    .medical-exam-file-actions-desktop {
+      @apply flex-shrink-0 ml-4;
+    }
+
+    .medical-exam-file-button-mobile {
+      @apply w-full max-w-xs;
     }
     /* Estilos específicos para cada estado de cita en móvil */
     .fc-event[data-status="pendiente"] {
@@ -316,5 +505,51 @@
   .fc-event[data-status="cancelada"] .fc-daygrid-event-dot {
     background-color: #EF4444 !important;
     border-color: #EF4444 !important;
+  }
+
+  /* Estilos específicos para móviles muy pequeños */
+  @media (max-width: 480px) {
+    .medical-exam-attachment-item,
+    .medical-exam-file-item {
+      @apply p-3;
+    }
+    
+    .medical-exam-attachment-name-mobile,
+    .medical-exam-file-name-mobile {
+      @apply text-xs;
+    }
+    
+    .medical-exam-attachment-button-mobile,
+    .medical-exam-file-button-mobile {
+      @apply text-xs;
+    }
+  }
+
+  /* Estilos específicos para archivos con nombres largos */
+  .medical-exam-file-long-name {
+    @apply break-words leading-tight;
+    word-break: break-all;
+    hyphens: auto;
+  }
+
+  .medical-exam-file-long-name-mobile {
+    @apply text-sm leading-tight;
+    word-break: break-all;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  .medical-exam-file-long-name-desktop {
+    @apply text-sm truncate;
+    max-width: 100%;
+  }
+
+  /* Estilos para botones de eliminación */
+  .medical-exam-delete-button {
+    @apply text-red-600 hover:text-red-700 hover:bg-red-50;
+  }
+
+  .medical-exam-delete-button-mobile {
+    @apply w-full max-w-xs text-red-600 hover:text-red-700 hover:bg-red-50;
   }
 }

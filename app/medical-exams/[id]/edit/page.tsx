@@ -14,7 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 import { MedicalExam } from '@/types/medicalExam';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
-import { ArrowLeft, Save, Upload, Microscope, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Microscope, Trash2, Edit, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -48,6 +48,8 @@ export default function EditMedicalExamPage() {
     technician: ''
   });
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [attachmentsToDelete, setAttachmentsToDelete] = useState<string[]>([]);
+  const [deletingAttachment, setDeletingAttachment] = useState(false);
 
   const examId = params.id as string;
 
@@ -109,7 +111,8 @@ export default function EditMedicalExamPage() {
         scheduled_date: formData.scheduled_date || undefined,
         performed_date: formData.performed_date || undefined,
         report_date: formData.report_date || undefined,
-        followup_date: formData.followup_date || undefined
+        followup_date: formData.followup_date || undefined,
+        attachmentsToDelete: attachmentsToDelete // Agregar archivos a eliminar
       };
 
       await medicalExamService.updateMedicalExam(exam.id, examData, attachments);
@@ -155,6 +158,32 @@ export default function EditMedicalExamPage() {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleDeleteExistingAttachment = async (filename: string) => {
+    if (!exam) return;
+    
+    setDeletingAttachment(true);
+    try {
+      // Agregar el filename a la lista de archivos a eliminar
+      setAttachmentsToDelete(prev => [...prev, filename as any]);
+      
+      // Actualizar el estado local para remover el archivo de la vista
+      setExam(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          attachments: prev.attachments?.filter(att => att.filename !== filename) || []
+        };
+      });
+      
+      toast.success('Archivo marcado para eliminación');
+    } catch (error) {
+      console.error('Error marking attachment for deletion:', error);
+      toast.error('Error al marcar el archivo para eliminación');
+    } finally {
+      setDeletingAttachment(false);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardShell>
@@ -187,7 +216,7 @@ export default function EditMedicalExamPage() {
   }
 
   return (
-    <DashboardShell>
+    <DashboardShell className="medical-exams-responsive">
       <DashboardHeader
         heading={`Editar Examen: ${exam.title}`}
         text="Modificar los detalles del examen médico"
@@ -491,18 +520,55 @@ export default function EditMedicalExamPage() {
               {attachments.length > 0 && (
                 <div>
                   <Label>Nuevos Archivos Seleccionados:</Label>
-                  <div className="mt-2 space-y-2">
+                  <div className="mt-2 space-y-4">
                     {attachments.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm">{file.name}</span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeFile(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <div key={index} className="bg-gray-50 rounded p-4">
+                        {/* Layout móvil: vertical */}
+                        <div className="block sm:hidden">
+                          <div className="flex items-start space-x-3 mb-4">
+                            <FileText className="h-5 w-5 text-gray-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1 min-w-0">
+                              <p className="medical-exam-file-long-name-mobile" title={file.name}>
+                                {file.name}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex justify-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeFile(index)}
+                              className="w-full max-w-xs"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Layout desktop: horizontal */}
+                        <div className="hidden sm:flex items-center justify-between">
+                          <div className="flex items-center space-x-3 flex-1 min-w-0">
+                            <FileText className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <p className="medical-exam-file-long-name-desktop" title={file.name}>
+                                {file.name}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0 ml-4">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeFile(index)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -512,16 +578,70 @@ export default function EditMedicalExamPage() {
               {exam.attachments && exam.attachments.length > 0 && (
                 <div>
                   <Label>Archivos Existentes:</Label>
-                  <div className="mt-2 space-y-2">
+                  <div className="mt-2 space-y-4">
                     {exam.attachments.map((attachment, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-blue-50 rounded">
-                        <span className="text-sm">{attachment.originalname}</span>
-                        <span className="text-xs text-gray-500">
-                          {(() => {
-                            const size = typeof attachment.size === 'string' ? parseInt(attachment.size) : attachment.size;
-                            return isNaN(size) ? '0.00' : (size / 1024 / 1024).toFixed(2);
-                          })()} MB
-                        </span>
+                      <div key={index} className="bg-blue-50 rounded p-4">
+                        {/* Layout móvil: vertical */}
+                        <div className="block sm:hidden">
+                          <div className="flex items-start space-x-3 mb-4">
+                            <FileText className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1 min-w-0">
+                              <p className="medical-exam-file-long-name-mobile" title={attachment.originalname}>
+                                {attachment.originalname}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {(() => {
+                                  const size = typeof attachment.size === 'string' ? parseInt(attachment.size) : attachment.size;
+                                  return isNaN(size) ? '0.00' : (size / 1024 / 1024).toFixed(2);
+                                })()} MB
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex justify-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteExistingAttachment(attachment.filename)}
+                              disabled={deletingAttachment}
+                              className="medical-exam-delete-button-mobile"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {deletingAttachment ? 'Eliminando...' : 'Eliminar'}
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Layout desktop: horizontal */}
+                        <div className="hidden sm:flex items-center justify-between">
+                          <div className="flex items-center space-x-3 flex-1 min-w-0">
+                            <FileText className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <p className="medical-exam-file-long-name-desktop" title={attachment.originalname}>
+                                {attachment.originalname}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {(() => {
+                                  const size = typeof attachment.size === 'string' ? parseInt(attachment.size) : attachment.size;
+                                  return isNaN(size) ? '0.00' : (size / 1024 / 1024).toFixed(2);
+                                })()} MB
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0 ml-4">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteExistingAttachment(attachment.filename)}
+                              disabled={deletingAttachment}
+                              className="medical-exam-delete-button"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {deletingAttachment ? 'Eliminando...' : 'Eliminar'}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

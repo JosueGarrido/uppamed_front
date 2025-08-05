@@ -332,15 +332,16 @@ export default function MedicalRecordsPage() {
   }
 
   return (
-    <DashboardShell>
+    <DashboardShell className="medical-records-responsive">
       <DashboardHeader
         heading="Registros Médicos"
         text={`Historial de registros médicos. Mostrando ${currentRecords.length} de ${filteredAndSortedRecords.length} registros (página ${currentPage} de ${totalPages})`}
       >
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button onClick={openCreateModal} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
-            Nuevo Registro
+            <span className="hidden sm:inline">Nuevo Registro</span>
+            <span className="sm:hidden">Nuevo</span>
           </Button>
         </div>
       </DashboardHeader>
@@ -353,7 +354,7 @@ export default function MedicalRecordsPage() {
             Filtros y Búsqueda
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="medical-records-filters">
           {/* Búsqueda */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -367,7 +368,7 @@ export default function MedicalRecordsPage() {
           </div>
 
           {/* Filtros adicionales */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             {/* Filtro por paciente */}
             <div>
               <Label htmlFor="patient-filter">Filtrar por Paciente</Label>
@@ -389,12 +390,12 @@ export default function MedicalRecordsPage() {
             {/* Ordenamiento */}
             <div>
               <Label>Ordenar por</Label>
-              <div className="flex gap-2 mt-1">
+              <div className="medical-records-sort-buttons">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => toggleSort('date')}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 flex-1 sm:flex-none"
                 >
                   Fecha
                   {sortField === 'date' ? (
@@ -405,7 +406,7 @@ export default function MedicalRecordsPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => toggleSort('diagnosis')}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 flex-1 sm:flex-none"
                 >
                   Diagnóstico
                   {sortField === 'diagnosis' ? (
@@ -422,12 +423,12 @@ export default function MedicalRecordsPage() {
       <div className="grid gap-4">
         {currentRecords.length > 0 ? (
           currentRecords.map((record) => (
-            <Card key={record.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-purple-500">
-              <CardContent className="p-6">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
+            <Card key={record.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-purple-500 medical-record-card">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   {/* Información principal */}
-                  <div className="flex-1">
-                    <div className="flex items-start space-x-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4 medical-record-info">
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                           <FileText className="h-6 w-6 text-white" />
@@ -435,11 +436,11 @@ export default function MedicalRecordsPage() {
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3 medical-record-header">
                           <h3 className="text-lg font-semibold text-gray-900">
                             Registro #{record.id}
                           </h3>
-                          <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100">
+                          <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100 w-fit medical-record-badge">
                             <Stethoscope className="h-3 w-3 mr-1" />
                             Consulta
                           </Badge>
@@ -447,16 +448,16 @@ export default function MedicalRecordsPage() {
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-600 mb-3">
                           <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2 text-purple-500" />
-                            <span>{formatDate(record.date)}</span>
+                            <Calendar className="h-4 w-4 mr-2 text-purple-500 flex-shrink-0" />
+                            <span className="truncate">{formatDate(record.date)}</span>
                           </div>
                           <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-2 text-purple-500" />
+                            <Clock className="h-4 w-4 mr-2 text-purple-500 flex-shrink-0" />
                             <span>{formatTime(record.date)}</span>
                           </div>
                           {user?.role !== 'Paciente' && (
                             <div className="flex items-center sm:col-span-2">
-                              <UserIcon className="h-4 w-4 mr-2 text-purple-500" />
+                              <UserIcon className="h-4 w-4 mr-2 text-purple-500 flex-shrink-0" />
                               <span className="truncate">{getPatientName(record.patient_id)}</span>
                             </div>
                           )}
@@ -465,10 +466,10 @@ export default function MedicalRecordsPage() {
                         <div className="space-y-3">
                           <div>
                             <strong className="text-sm text-gray-700 flex items-center">
-                              <ClipboardList className="h-4 w-4 mr-1 text-purple-500" />
+                              <ClipboardList className="h-4 w-4 mr-1 text-purple-500 flex-shrink-0" />
                               Diagnóstico:
                             </strong>
-                            <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-purple-200">
+                            <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-purple-200 break-words medical-record-text">
                               {record.diagnosis}
                             </p>
                           </div>
@@ -476,7 +477,7 @@ export default function MedicalRecordsPage() {
                           {record.treatment && (
                             <div>
                               <strong className="text-sm text-gray-700">Tratamiento:</strong>
-                              <p className="text-sm text-gray-600 mt-1 bg-blue-50 p-2 rounded border-l-2 border-blue-200">
+                              <p className="text-sm text-gray-600 mt-1 bg-blue-50 p-2 rounded border-l-2 border-blue-200 break-words medical-record-text">
                                 {record.treatment}
                               </p>
                             </div>
@@ -485,7 +486,7 @@ export default function MedicalRecordsPage() {
                           {record.observations && (
                             <div>
                               <strong className="text-sm text-gray-700">Observaciones:</strong>
-                              <p className="text-sm text-gray-600 mt-1 bg-yellow-50 p-2 rounded border-l-2 border-yellow-200 line-clamp-2">
+                              <p className="text-sm text-gray-600 mt-1 bg-yellow-50 p-2 rounded border-l-2 border-yellow-200 break-words line-clamp-2 medical-record-text">
                                 {record.observations}
                               </p>
                             </div>
@@ -496,36 +497,37 @@ export default function MedicalRecordsPage() {
                   </div>
 
                   {/* Acciones */}
-                  <div className="mt-4 lg:mt-0 lg:ml-6">
-                    <div className="flex flex-col space-y-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => openViewModal(record)}
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        Ver Detalles
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => openEditModal(record)}
-                      >
-                        <Edit className="mr-2 h-4 w-4" />
-                        Editar
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => openDeleteModal(record)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Eliminar
-                      </Button>
-                    </div>
+                  <div className="flex flex-row lg:flex-col gap-2 lg:gap-2 lg:ml-6 medical-record-actions">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 lg:flex-none lg:w-full"
+                      onClick={() => openViewModal(record)}
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      <span className="hidden sm:inline">Ver Detalles</span>
+                      <span className="sm:hidden">Ver</span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 lg:flex-none lg:w-full"
+                      onClick={() => openEditModal(record)}
+                    >
+                      <Edit className="mr-2 h-4 w-4" />
+                      <span className="hidden sm:inline">Editar</span>
+                      <span className="sm:hidden">Editar</span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 lg:flex-none lg:w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => openDeleteModal(record)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      <span className="hidden sm:inline">Eliminar</span>
+                      <span className="sm:hidden">Eliminar</span>
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -557,17 +559,18 @@ export default function MedicalRecordsPage() {
       {totalPages > 1 && (
         <Card className="mt-6">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 medical-records-pagination">
+              <div className="text-sm text-gray-600 text-center sm:text-left medical-records-pagination-info">
                 Mostrando {startIndex + 1} a {Math.min(endIndex, filteredAndSortedRecords.length)} de {filteredAndSortedRecords.length} registros
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-1 sm:gap-2 medical-records-pagination-controls">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={goToFirstPage}
                   disabled={currentPage === 1}
+                  className="hidden sm:flex pagination-first"
                 >
                   <SkipBack className="h-4 w-4" />
                 </Button>
@@ -581,7 +584,7 @@ export default function MedicalRecordsPage() {
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center gap-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
                     if (totalPages <= 5) {
@@ -600,7 +603,7 @@ export default function MedicalRecordsPage() {
                         variant={currentPage === pageNum ? "default" : "outline"}
                         size="sm"
                         onClick={() => goToPage(pageNum)}
-                        className="w-8 h-8"
+                        className="w-8 h-8 text-xs sm:text-sm"
                       >
                         {pageNum}
                       </Button>
@@ -622,6 +625,7 @@ export default function MedicalRecordsPage() {
                   size="sm"
                   onClick={goToLastPage}
                   disabled={currentPage === totalPages}
+                  className="hidden sm:flex pagination-last"
                 >
                   <SkipForward className="h-4 w-4" />
                 </Button>

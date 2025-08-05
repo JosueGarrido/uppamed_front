@@ -10,6 +10,7 @@ interface AuthContextType extends AuthState {
   logout: () => void;
   isImpersonating: boolean;
   refreshAuth: () => Promise<void>;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -196,8 +197,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
 
+  const updateUser = (user: User) => {
+    setState(prev => ({ ...prev, user }));
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, isImpersonating, refreshAuth }}>
+    <AuthContext.Provider value={{ ...state, login, logout, isImpersonating, refreshAuth, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

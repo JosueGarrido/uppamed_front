@@ -173,7 +173,7 @@ export default function MedicalExamDetailPage() {
   }
 
   return (
-    <DashboardShell>
+    <DashboardShell className="medical-exams-responsive">
       <DashboardHeader
         heading={`Examen: ${exam.title}`}
         text="Detalles completos del examen médico"
@@ -387,22 +387,50 @@ export default function MedicalExamDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {exam.attachments.map((attachment, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <FileText className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="font-medium text-gray-900">{attachment.originalname}</p>
-                        <p className="text-sm text-gray-500">
-                          {formatFileSize(attachment.size)} MB
-                        </p>
+                  <div key={index} className="bg-gray-50 rounded-lg p-4">
+                    {/* Layout móvil: vertical */}
+                    <div className="block sm:hidden">
+                      <div className="flex items-start space-x-3 mb-4">
+                        <FileText className="h-5 w-5 text-gray-500 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 medical-exam-file-long-name-mobile" title={attachment.originalname}>
+                            {attachment.originalname}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {formatFileSize(attachment.size)} MB
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex justify-center">
+                        <Button variant="outline" size="sm" className="w-full max-w-xs">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver Archivo
+                        </Button>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
-                      Ver
-                    </Button>
+                    
+                    {/* Layout desktop: horizontal */}
+                    <div className="hidden sm:flex items-center justify-between">
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        <FileText className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-gray-900 medical-exam-file-long-name-desktop" title={attachment.originalname}>
+                            {attachment.originalname}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {formatFileSize(attachment.size)} MB
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 ml-4">
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
