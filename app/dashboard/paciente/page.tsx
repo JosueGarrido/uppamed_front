@@ -325,7 +325,7 @@ export default function PacienteDashboard() {
                       Dr. {record.specialist?.username || 'Especialista'}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {formatDate(record.date)}
+                      {formatDate(record.consultation_date)}
                   </p>
                 </div>
               ))}

@@ -671,11 +671,11 @@ export default function ClinicalHistoryPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-600 mb-3">
                           <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-2 text-purple-500 flex-shrink-0" />
-                            <span className="truncate">{formatDate(record.date)}</span>
+                            <span className="truncate">{formatDate(record.consultation_date)}</span>
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-2 text-purple-500 flex-shrink-0" />
-                            <span>{formatTime(record.date)}</span>
+                            <span>{formatTime(record.consultation_time)}</span>
                           </div>
                           {user?.role !== 'Paciente' && (
                             <div className="flex items-center sm:col-span-2">
@@ -1287,11 +1287,11 @@ export default function ClinicalHistoryPage() {
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Fecha</Label>
-                  <p className="text-sm text-gray-900">{formatDate(selectedRecord.date)}</p>
+                  <p className="text-sm text-gray-900">{formatDate(selectedRecord.consultation_date)}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Hora</Label>
-                  <p className="text-sm text-gray-900">{formatTime(selectedRecord.date)}</p>
+                  <p className="text-sm text-gray-900">{formatTime(selectedRecord.consultation_time)}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-700">Paciente</Label>

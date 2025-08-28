@@ -239,7 +239,7 @@ export default function SpecialistDashboard() {
     // Métricas de Productividad
     const totalRecords = records.length;
     const recordsThisMonth = records.filter(record => 
-      new Date(record.date) >= thisMonth
+              new Date(record.consultation_date) >= thisMonth
     ).length;
     const totalExams = exams.length;
     const examsThisMonth = exams.filter(exam => 

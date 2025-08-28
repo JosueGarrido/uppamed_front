@@ -172,7 +172,7 @@ export default function PatientMedicalRecordsPage() {
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-600">
-                          {formatDate(record.date)}
+                          {formatDate(record.consultation_date)}
                         </span>
                       </div>
                       
@@ -344,7 +344,7 @@ export default function PatientMedicalRecordsPage() {
               
               <div>
                 <h3 className="font-semibold">Fecha</h3>
-                <p className="text-gray-600">{formatDate(selectedRecord.date)}</p>
+                <p className="text-gray-600">{formatDate(selectedRecord.consultation_date)}</p>
               </div>
               
               {selectedRecord.observations && (
