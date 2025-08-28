@@ -530,7 +530,7 @@ export default function ClinicalHistoryPage() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Cargando registros médicos...</p>
+                            <p className="text-gray-600">Cargando historias clínicas...</p>
           </div>
         </div>
       </DashboardShell>
@@ -556,8 +556,8 @@ export default function ClinicalHistoryPage() {
   return (
     <DashboardShell className="medical-records-responsive">
       <DashboardHeader
-        heading="Registros Médicos"
-        text={`Historial de registros médicos. Mostrando ${currentRecords.length} de ${filteredAndSortedRecords.length} registros (página ${currentPage} de ${totalPages})`}
+        heading="Historia Clínica"
+        text={`Historial de historias clínicas. Mostrando ${currentRecords.length} de ${filteredAndSortedRecords.length} historias (página ${currentPage} de ${totalPages})`}
       >
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button onClick={openCreateModal} className="w-full sm:w-auto">
@@ -760,7 +760,7 @@ export default function ClinicalHistoryPage() {
             <CardContent className="p-8 text-center">
               <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {searchTerm || selectedPatientFilter ? 'No se encontraron registros' : 'No hay registros médicos'}
+                {searchTerm || selectedPatientFilter ? 'No se encontraron historias' : 'No hay historias clínicas'}
               </h3>
               <p className="text-gray-500 mb-4">
                 {searchTerm || selectedPatientFilter 
@@ -857,74 +857,314 @@ export default function ClinicalHistoryPage() {
         </Card>
       )}
 
-      {/* Modal de Crear Registro */}
+      {/* Modal de Crear Historia Clínica */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Plus className="mr-2 h-5 w-5" />
-              Nuevo Registro Médico
+              Nueva Historia Clínica
             </DialogTitle>
             <DialogDescription>
-              Crear un nuevo registro médico para un paciente
+              Crear una nueva historia clínica completa para un paciente
             </DialogDescription>
           </DialogHeader>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="patient_id">Paciente *</Label>
-              <select
-                id="patient_id"
-                name="patient_id"
-                value={formData.patient_id}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-md mt-1"
-                required
-              >
-                <option value="">Seleccionar paciente</option>
-                {patients.map(patient => (
-                  <option key={patient.id} value={patient.id}>
-                    {patient.username} - {patient.identification_number}
-                  </option>
-                ))}
-              </select>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Sección 1: Datos del Paciente */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                <UserIcon className="mr-2 h-5 w-5" />
+                Datos del Paciente
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="patient_id">Paciente *</Label>
+                  <select
+                    id="patient_id"
+                    name="patient_id"
+                    value={formData.patient_id}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded-md mt-1"
+                    required
+                  >
+                    <option value="">Seleccionar paciente</option>
+                    {patients.map(patient => (
+                      <option key={patient.id} value={patient.id}>
+                        {patient.username} - {patient.identification_number}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="clinical_history_number">N° Historia Clínica *</Label>
+                  <Input
+                    id="clinical_history_number"
+                    name="clinical_history_number"
+                    value={formData.clinical_history_number}
+                    onChange={handleChange}
+                    placeholder="Número de historia clínica"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="current_illness">Enfermedad Actual (CIE-10) *</Label>
-              <CIE10Search
-                onSelect={handleDiagnosisSelect}
-                placeholder="Buscar enfermedad en CIE-10 (mínimo 3 caracteres)..."
-                className="w-full"
-              />
-              <input type="hidden" required value={formData.current_illness} onChange={() => {}} />
+            {/* Sección 2: Motivo de Consulta */}
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center">
+                <ClipboardList className="mr-2 h-5 w-5" />
+                Motivo de Consulta
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="consultation_reason_a">A. Motivo Principal *</Label>
+                  <Textarea
+                    id="consultation_reason_a"
+                    name="consultation_reason_a"
+                    value={formData.consultation_reason_a}
+                    onChange={handleChange}
+                    placeholder="Motivo principal de la consulta"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="consultation_reason_b">B. Motivo Secundario</Label>
+                  <Textarea
+                    id="consultation_reason_b"
+                    name="consultation_reason_b"
+                    value={formData.consultation_reason_b}
+                    onChange={handleChange}
+                    placeholder="Motivo secundario (opcional)"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="consultation_reason_c">C. Motivo Adicional</Label>
+                  <Textarea
+                    id="consultation_reason_c"
+                    name="consultation_reason_c"
+                    value={formData.consultation_reason_c}
+                    onChange={handleChange}
+                    placeholder="Motivo adicional (opcional)"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="consultation_reason_d">D. Motivo Adicional</Label>
+                  <Textarea
+                    id="consultation_reason_d"
+                    name="consultation_reason_d"
+                    value={formData.consultation_reason_d}
+                    onChange={handleChange}
+                    placeholder="Otro motivo (opcional)"
+                    rows={2}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="treatment_plans">Planes de Tratamiento *</Label>
-              <Textarea
-                id="treatment_plans"
-                name="treatment_plans"
-                value={formData.treatment_plans}
-                onChange={handleChange}
-                placeholder="Describa los planes de tratamiento, terapéuticos y educacionales"
-                required
-                rows={4}
-                className="mt-1"
-              />
+            {/* Sección 3: Antecedentes */}
+            <div className="bg-yellow-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center">
+                <FileText className="mr-2 h-5 w-5" />
+                Antecedentes
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="family_history">Antecedentes Familiares</Label>
+                  <Textarea
+                    id="family_history"
+                    name="family_history"
+                    value={formData.family_history}
+                    onChange={handleChange}
+                    placeholder="Historia familiar relevante"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="clinical_history">Antecedentes Clínicos</Label>
+                  <Textarea
+                    id="clinical_history"
+                    name="clinical_history"
+                    value={formData.clinical_history}
+                    onChange={handleChange}
+                    placeholder="Historia clínica previa"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="surgical_history">Antecedentes Quirúrgicos</Label>
+                  <Textarea
+                    id="surgical_history"
+                    name="surgical_history"
+                    value={formData.surgical_history}
+                    onChange={handleChange}
+                    placeholder="Cirugías previas"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="gynecological_history">Antecedentes Gineco-Obstétricos</Label>
+                  <Textarea
+                    id="gynecological_history"
+                    name="gynecological_history"
+                    value={formData.gynecological_history}
+                    onChange={handleChange}
+                    placeholder="Historia gineco-obstétrica (si aplica)"
+                    rows={3}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label htmlFor="habits">Hábitos</Label>
+                  <Textarea
+                    id="habits"
+                    name="habits"
+                    value={formData.habits}
+                    onChange={handleChange}
+                    placeholder="Hábitos del paciente (alimentación, ejercicio, tabaco, alcohol, etc.)"
+                    rows={3}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="current_illness">Enfermedad Actual</Label>
-              <Textarea
-                id="current_illness"
-                name="current_illness"
-                value={formData.current_illness}
-                onChange={handleChange}
-                placeholder="Describa la enfermedad o problema actual del paciente"
-                rows={3}
-                className="mt-1"
-              />
+            {/* Sección 4: Enfermedad Actual */}
+            <div className="bg-red-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-red-800 mb-3 flex items-center">
+                <Stethoscope className="mr-2 h-5 w-5" />
+                Enfermedad o Problema Actual
+              </h3>
+              <div>
+                <Label htmlFor="current_illness">Descripción de la Enfermedad Actual *</Label>
+                <Textarea
+                  id="current_illness"
+                  name="current_illness"
+                  value={formData.current_illness}
+                  onChange={handleChange}
+                  placeholder="Describa detalladamente la enfermedad o problema actual del paciente"
+                  rows={4}
+                  required
+                />
+                <div className="mt-2">
+                  <Label>Buscar Código CIE-10</Label>
+                  <CIE10Search
+                    onSelect={handleDiagnosisSelect}
+                    placeholder="Buscar enfermedad en CIE-10 (mínimo 3 caracteres)..."
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 5: Signos Vitales */}
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-purple-800 mb-3 flex items-center">
+                <Activity className="mr-2 h-5 w-5" />
+                Signos Vitales y Mediciones
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <Label htmlFor="blood_pressure">Presión Arterial</Label>
+                  <Input
+                    id="blood_pressure"
+                    name="blood_pressure"
+                    value={formData.blood_pressure}
+                    onChange={handleChange}
+                    placeholder="120/80"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="oxygen_saturation">Sat. O2</Label>
+                  <Input
+                    id="oxygen_saturation"
+                    name="oxygen_saturation"
+                    value={formData.oxygen_saturation}
+                    onChange={handleChange}
+                    placeholder="98%"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="heart_rate">Frec. Cardíaca</Label>
+                  <Input
+                    id="heart_rate"
+                    name="heart_rate"
+                    value={formData.heart_rate}
+                    onChange={handleChange}
+                    placeholder="72 bpm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="respiratory_rate">Frec. Respiratoria</Label>
+                  <Input
+                    id="respiratory_rate"
+                    name="respiratory_rate"
+                    value={formData.respiratory_rate}
+                    onChange={handleChange}
+                    placeholder="16 rpm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="temperature">Temperatura</Label>
+                  <Input
+                    id="temperature"
+                    name="temperature"
+                    value={formData.temperature}
+                    onChange={handleChange}
+                    placeholder="36.5°C"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="weight">Peso</Label>
+                  <Input
+                    id="weight"
+                    name="weight"
+                    value={formData.weight}
+                    onChange={handleChange}
+                    placeholder="70 kg"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="height">Talla</Label>
+                  <Input
+                    id="height"
+                    name="height"
+                    value={formData.height}
+                    onChange={handleChange}
+                    placeholder="170 cm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="head_circumference">Perímetro Cefálico</Label>
+                  <Input
+                    id="head_circumference"
+                    name="head_circumference"
+                    value={formData.head_circumference}
+                    onChange={handleChange}
+                    placeholder="55 cm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sección 6: Planes de Tratamiento */}
+            <div className="bg-indigo-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-indigo-800 mb-3 flex items-center">
+                <ClipboardList className="mr-2 h-5 w-5" />
+                Planes de Tratamiento
+              </h3>
+              <div>
+                <Label htmlFor="treatment_plans">Planes de Tratamiento, Terapéuticos y Educacionales *</Label>
+                <Textarea
+                  id="treatment_plans"
+                  name="treatment_plans"
+                  value={formData.treatment_plans}
+                  onChange={handleChange}
+                  placeholder="Describa detalladamente los planes de tratamiento, terapéuticos y educacionales"
+                  rows={4}
+                  required
+                />
+              </div>
             </div>
 
             <DialogFooter>
@@ -934,7 +1174,7 @@ export default function ClinicalHistoryPage() {
               </Button>
               <Button type="submit" disabled={submitting}>
                 <Save className="mr-2 h-4 w-4" />
-                {submitting ? 'Guardando...' : 'Guardar Registro'}
+                {submitting ? 'Guardando...' : 'Guardar Historia Clínica'}
               </Button>
             </DialogFooter>
           </form>
