@@ -684,7 +684,7 @@ export default function SpecialistDashboard() {
                           }
                         </p>
                         <p className="text-sm text-gray-600">
-                          {'date' in item ? formatDate(item.date) : 'Urgente'}
+                          {'date' in item && item.date ? formatDate(item.date) : 'Urgente'}
                         </p>
                       </div>
                     </div>

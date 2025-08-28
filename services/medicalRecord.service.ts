@@ -62,7 +62,8 @@ class MedicalRecordService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Error al crear la historia clínica');
+        console.error('Backend error response:', response.status, errorData);
+        throw new Error(errorData.message || `Error al crear la historia clínica (${response.status})`);
       }
 
       const data = await response.json();

@@ -386,6 +386,12 @@ export default function ClinicalHistoryPage() {
         });
         toast.success('Historia clínica actualizada correctamente');
       } else {
+        console.log('Enviando datos al backend:', {
+          ...formData,
+          patient_id: formData.patient_id,
+          specialist_id: formData.specialist_id
+        });
+        
         await medicalRecordService.createMedicalRecord({
           ...formData,
           patient_id: formData.patient_id,
