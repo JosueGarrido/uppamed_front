@@ -16,6 +16,8 @@ import { useAuth } from '@/context/AuthContext';
 import { ClinicalHistory, ClinicalHistoryFormData, SystemsReview, PhysicalExamination } from '@/types/medicalRecord';
 import { User } from '@/types/auth';
 import { toast } from 'sonner';
+import CIE10Search from '@/components/CIE10Search';
+import { CIE10Result } from '@/services/cie10.service';
 import { 
   FileText, 
   Calendar, 
@@ -167,9 +169,9 @@ export default function ClinicalHistoryPage() {
   const filteredAndSortedRecords = useMemo(() => {
     let filtered = records.filter(record => {
       const matchesSearch = 
-        record.diagnosis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.observations?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.treatment?.toLowerCase().includes(searchTerm.toLowerCase());
+        record.current_illness?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record.treatment_plans?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record.clinical_history_number?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesPatient = !selectedPatientFilter || 
         record.patient_id?.toString() === selectedPatientFilter;
@@ -614,22 +616,22 @@ export default function ClinicalHistoryPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => toggleSort('date')}
+                  onClick={() => toggleSort('consultation_date')}
                   className="flex items-center gap-1 flex-1 sm:flex-none"
                 >
                   Fecha
-                  {sortField === 'date' ? (
+                  {sortField === 'consultation_date' ? (
                     sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
                   ) : <SortAsc className="h-3 w-3" />}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => toggleSort('diagnosis')}
+                  onClick={() => toggleSort('clinical_history_number')}
                   className="flex items-center gap-1 flex-1 sm:flex-none"
                 >
                   Diagnóstico
-                  {sortField === 'diagnosis' ? (
+                  {sortField === 'clinical_history_number' ? (
                     sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
                   ) : <SortAsc className="h-3 w-3" />}
                 </Button>
@@ -687,7 +689,7 @@ export default function ClinicalHistoryPage() {
                           <div>
                             <strong className="text-sm text-gray-700 flex items-center">
                               <ClipboardList className="h-4 w-4 mr-1 text-purple-500 flex-shrink-0" />
-                              Diagnóstico:
+                              N° Historia:
                             </strong>
                             <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-purple-200 break-words medical-record-text">
                               {record.diagnosis}
@@ -889,23 +891,23 @@ export default function ClinicalHistoryPage() {
             </div>
 
             <div>
-              <Label htmlFor="diagnosis">Diagnóstico (CIE-10) *</Label>
+              <Label htmlFor="current_illness">Enfermedad Actual (CIE-10) *</Label>
               <CIE10Search
                 onSelect={handleDiagnosisSelect}
-                placeholder="Buscar diagnóstico en CIE-10 (mínimo 3 caracteres)..."
+                placeholder="Buscar enfermedad en CIE-10 (mínimo 3 caracteres)..."
                 className="w-full"
               />
-              <input type="hidden" required value={formData.diagnosis} onChange={() => {}} />
+              <input type="hidden" required value={formData.current_illness} onChange={() => {}} />
             </div>
 
             <div>
-              <Label htmlFor="treatment">Tratamiento *</Label>
+              <Label htmlFor="treatment_plans">Planes de Tratamiento *</Label>
               <Textarea
-                id="treatment"
-                name="treatment"
-                value={formData.treatment}
+                id="treatment_plans"
+                name="treatment_plans"
+                value={formData.treatment_plans}
                 onChange={handleChange}
-                placeholder="Ingrese el tratamiento prescrito"
+                placeholder="Describa los planes de tratamiento, terapéuticos y educacionales"
                 required
                 rows={4}
                 className="mt-1"
@@ -913,13 +915,13 @@ export default function ClinicalHistoryPage() {
             </div>
 
             <div>
-              <Label htmlFor="observations">Observaciones</Label>
+              <Label htmlFor="current_illness">Enfermedad Actual</Label>
               <Textarea
-                id="observations"
-                name="observations"
-                value={formData.observations}
+                id="current_illness"
+                name="current_illness"
+                value={formData.current_illness}
                 onChange={handleChange}
-                placeholder="Observaciones adicionales"
+                placeholder="Describa la enfermedad o problema actual del paciente"
                 rows={3}
                 className="mt-1"
               />
@@ -973,23 +975,23 @@ export default function ClinicalHistoryPage() {
             </div>
 
             <div>
-              <Label htmlFor="edit_diagnosis">Diagnóstico (CIE-10) *</Label>
+              <Label htmlFor="edit_current_illness">Enfermedad Actual (CIE-10) *</Label>
               <CIE10Search
                 onSelect={handleDiagnosisSelect}
-                placeholder="Buscar diagnóstico en CIE-10 (mínimo 3 caracteres)..."
+                placeholder="Buscar enfermedad en CIE-10 (mínimo 3 caracteres)..."
                 className="w-full"
               />
-              <input type="hidden" required value={formData.diagnosis} onChange={() => {}} />
+              <input type="hidden" required value={formData.current_illness} onChange={() => {}} />
             </div>
 
             <div>
-              <Label htmlFor="edit_treatment">Tratamiento *</Label>
+              <Label htmlFor="edit_treatment_plans">Planes de Tratamiento *</Label>
               <Textarea
-                id="edit_treatment"
-                name="treatment"
-                value={formData.treatment}
+                id="edit_treatment_plans"
+                name="treatment_plans"
+                value={formData.treatment_plans}
                 onChange={handleChange}
-                placeholder="Ingrese el tratamiento prescrito"
+                placeholder="Describa los planes de tratamiento, terapéuticos y educacionales"
                 required
                 rows={4}
                 className="mt-1"
@@ -997,13 +999,13 @@ export default function ClinicalHistoryPage() {
             </div>
 
             <div>
-              <Label htmlFor="edit_observations">Observaciones</Label>
+              <Label htmlFor="edit_current_illness">Enfermedad Actual</Label>
               <Textarea
-                id="edit_observations"
-                name="observations"
-                value={formData.observations}
+                id="edit_current_illness"
+                name="current_illness"
+                value={formData.current_illness}
                 onChange={handleChange}
-                placeholder="Observaciones adicionales"
+                placeholder="Describa la enfermedad o problema actual del paciente"
                 rows={3}
                 className="mt-1"
               />
