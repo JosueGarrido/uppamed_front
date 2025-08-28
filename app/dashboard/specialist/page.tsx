@@ -179,7 +179,7 @@ export default function SpecialistDashboard() {
 
         const urgentCases = [
           ...appointments.filter(app => app.status === 'pendiente' && new Date(app.date) <= new Date(Date.now() + 24 * 60 * 60 * 1000)),
-          ...records.filter(record => record.diagnosis?.toLowerCase().includes('urgente') || record.diagnosis?.toLowerCase().includes('crítico'))
+          ...records.filter(record => record.current_illness?.toLowerCase().includes('urgente') || record.current_illness?.toLowerCase().includes('crítico'))
         ].slice(0, 3);
 
         setDashboardData({
@@ -204,7 +204,7 @@ export default function SpecialistDashboard() {
     if (!isLoading && user?.role === 'Especialista') {
       loadDashboardData();
     }
-  }, [user, isLoading, timeRange]);
+  }, [user, isLoading]); // Removido timeRange para evitar recargas constantes
 
   const calculateMetrics = (appointments: Appointment[], records: MedicalRecord[], exams: MedicalExam[]): SpecialistMetrics => {
     const today = new Date();

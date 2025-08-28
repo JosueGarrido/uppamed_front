@@ -313,8 +313,8 @@ export default function ClinicalHistoryPage() {
   const openEditModal = (record: ClinicalHistory) => {
     setSelectedRecord(record);
     setFormData({
-      patient_id: record.patient_id || 0,
-      specialist_id: record.specialist_id || 0,
+      patient_id: record.patient_id,
+      specialist_id: record.specialist_id,
       clinical_history_number: record.clinical_history_number || '',
       consultation_reason_a: record.consultation_reason_a || '',
       consultation_reason_b: record.consultation_reason_b || '',
@@ -356,16 +356,23 @@ export default function ClinicalHistoryPage() {
         oropharynx: 'SP',
         neck: 'SP',
         axillae_breasts: 'SP',
-        thoracic: 'SP',
+        thorax: 'SP',
         abdomen: 'SP',
         vertebral_column: 'SP',
         groin_perineum: 'SP',
         upper_limbs: 'SP',
         lower_limbs: 'SP'
       },
-      diagnoses: record.diagnoses || [],
+      diagnoses: record.diagnoses ? record.diagnoses.map(d => ({
+        code: d.cie_code || '',
+        description: d.diagnosis || ''
+      })) : [],
       treatment_plans: record.treatment_plans || '',
-      evolution_entries: record.evolution_entries || [],
+      evolution_entries: record.evolution_entries ? record.evolution_entries.map(e => ({
+        date: e.date || '',
+        time: e.time || '',
+        description: e.evolution_note || ''
+      })) : [],
       consultation_date: record.consultation_date ? new Date(record.consultation_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       consultation_time: record.consultation_time || new Date().toTimeString().split(' ')[0],
       status: record.status || 'borrador'
@@ -388,24 +395,40 @@ export default function ClinicalHistoryPage() {
     setSubmitting(true);
 
     try {
+      // Convertir diagnósticos del formulario al formato del backend
+      const backendDiagnoses = formData.diagnoses?.map(d => ({
+        cie_code: d.code,
+        diagnosis: d.description,
+        type: 'presuntivo' as const,
+        date: new Date().toISOString(),
+        specialist_id: formData.specialist_id
+      })) || [];
+
+      // Convertir evolución del formulario al formato del backend
+      const backendEvolution = formData.evolution_entries?.map(e => ({
+        evolution_note: e.description,
+        date: e.date,
+        time: e.time,
+        specialist_id: formData.specialist_id,
+        specialist_name: user?.username || ''
+      })) || [];
+
       if (isEditModalOpen && selectedRecord) {
         await medicalRecordService.updateMedicalRecord(selectedRecord.id, {
           ...formData,
           patient_id: formData.patient_id,
-          specialist_id: formData.specialist_id
+          specialist_id: formData.specialist_id,
+          diagnoses: backendDiagnoses,
+          evolution_entries: backendEvolution
         });
         toast.success('Historia clínica actualizada correctamente');
       } else {
-        console.log('Enviando datos al backend:', {
-          ...formData,
-          patient_id: formData.patient_id,
-          specialist_id: formData.specialist_id
-        });
-        
         await medicalRecordService.createMedicalRecord({
           ...formData,
           patient_id: formData.patient_id,
-          specialist_id: formData.specialist_id
+          specialist_id: formData.specialist_id,
+          diagnoses: backendDiagnoses,
+          evolution_entries: backendEvolution
         });
         toast.success('Historia clínica creada correctamente');
       }
@@ -775,21 +798,21 @@ export default function ClinicalHistoryPage() {
                           <div>
                             <strong className="text-sm text-gray-700 flex items-center">
                               <ClipboardList className="h-4 w-4 mr-1 text-purple-500 flex-shrink-0" />
-                              N° Historia: {record.clinical_history_number || 'N/A'}
+                              <span className="truncate">N° Historia: {record.clinical_history_number || 'N/A'}</span>
                             </strong>
                             <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-purple-200 break-words medical-record-text">
                               {record.diagnosis}
                             </p>
                           </div>
-                          
-                          {record.treatment && (
-                            <div>
-                              <strong className="text-sm text-gray-700">Tratamiento:</strong>
-                              <p className="text-sm text-gray-600 mt-1 bg-blue-50 p-2 rounded border-l-2 border-blue-200 break-words medical-record-text">
-                                {record.treatment}
-                              </p>
-                            </div>
-                          )}
+                          <div>
+                            <strong className="text-sm text-gray-700 flex items-center">
+                              <FileText className="h-4 w-4 mr-1 text-purple-500 flex-shrink-0" />
+                              <span className="truncate">Diagnóstico: {record.current_illness || 'N/A'}</span>
+                            </strong>
+                            <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-2 rounded border-l-2 border-purple-200 break-words medical-record-text">
+                              {record.treatment}
+                            </p>
+                          </div>
                           
                           {record.observations && (
                             <div>
