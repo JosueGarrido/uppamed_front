@@ -13,11 +13,9 @@ import { DashboardShell } from '@/components/dashboard/shell';
 import { medicalRecordService } from '@/services/medicalRecord.service';
 import { userService } from '@/services/user.service';
 import { useAuth } from '@/context/AuthContext';
-import { MedicalRecord } from '@/types/medicalRecord';
+import { ClinicalHistory, ClinicalHistoryFormData, SystemsReview, PhysicalExamination } from '@/types/medicalRecord';
 import { User } from '@/types/auth';
 import { toast } from 'sonner';
-import CIE10Search from '@/components/CIE10Search';
-import { CIE10Result } from '@/services/cie10.service';
 import { 
   FileText, 
   Calendar, 
@@ -40,32 +38,96 @@ import {
   ChevronLeft,
   ChevronRight,
   SkipBack,
-  SkipForward
+  SkipForward,
+  Heart,
+  Activity,
+  Thermometer,
+  Ruler,
+  Scale,
+  Brain,
+  Eye as EyeIcon,
+  Ear,
+  UserCheck,
+  Hand,
+  Users
 } from 'lucide-react';
 
-type SortField = 'date' | 'diagnosis' | 'patient';
+type SortField = 'consultation_date' | 'clinical_history_number' | 'patient';
 type SortOrder = 'asc' | 'desc';
 
-export default function MedicalRecordsPage() {
-  const [records, setRecords] = useState<MedicalRecord[]>([]);
+export default function ClinicalHistoryPage() {
+  const [records, setRecords] = useState<ClinicalHistory[]>([]);
   const [patients, setPatients] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPatientFilter, setSelectedPatientFilter] = useState<string>('');
-  const [sortField, setSortField] = useState<SortField>('date');
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [sortField, setSortField] = useState<SortField>('consultation_date');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<MedicalRecord | null>(null);
-  const [formData, setFormData] = useState({
-    patient_id: '',
-    diagnosis: '',
-    treatment: '',
-    observations: ''
+  const [selectedRecord, setSelectedRecord] = useState<ClinicalHistory | null>(null);
+  const [formData, setFormData] = useState<ClinicalHistoryFormData>({
+    patient_id: 0,
+    specialist_id: 0,
+    clinical_history_number: '',
+    consultation_reason_a: '',
+    consultation_reason_b: '',
+    consultation_reason_c: '',
+    consultation_reason_d: '',
+    family_history: '',
+    clinical_history: '',
+    surgical_history: '',
+    gynecological_history: '',
+    habits: '',
+    current_illness: '',
+    systems_review: {
+      sense_organs: 'SP',
+      respiratory: 'SP',
+      cardiovascular: 'SP',
+      digestive: 'SP',
+      genital: 'SP',
+      urinary: 'SP',
+      musculoskeletal: 'SP',
+      endocrine: 'SP',
+      hemolymphatic: 'SP',
+      nervous: 'SP'
+    },
+    blood_pressure: '',
+    oxygen_saturation: '',
+    heart_rate: '',
+    respiratory_rate: '',
+    temperature: '',
+    weight: '',
+    height: '',
+    head_circumference: '',
+    physical_examination: {
+      skin_appendages: 'SP',
+      head: 'SP',
+      eyes: 'SP',
+      ears: 'SP',
+      nose: 'SP',
+      mouth: 'SP',
+      oropharynx: 'SP',
+      neck: 'SP',
+      axillae_breasts: 'SP',
+      thorax: 'SP',
+      abdomen: 'SP',
+      vertebral_column: 'SP',
+      groin_perineum: 'SP',
+      upper_limbs: 'SP',
+      lower_limbs: 'SP'
+    },
+    diagnoses: [],
+    treatment_plans: '',
+    evolution_entries: [],
+    consultation_date: new Date().toISOString().split('T')[0],
+    consultation_time: new Date().toTimeString().split(' ')[0],
+    status: 'borrador'
   });
   const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
@@ -120,17 +182,17 @@ export default function MedicalRecordsPage() {
       let aValue: any, bValue: any;
       
       switch (sortField) {
-        case 'date':
-          aValue = new Date(a.date).getTime();
-          bValue = new Date(b.date).getTime();
+        case 'consultation_date':
+          aValue = new Date(a.consultation_date || '').getTime();
+          bValue = new Date(b.consultation_date || '').getTime();
           break;
-        case 'diagnosis':
-          aValue = a.diagnosis?.toLowerCase() || '';
-          bValue = b.diagnosis?.toLowerCase() || '';
+        case 'clinical_history_number':
+          aValue = a.clinical_history_number || '';
+          bValue = b.clinical_history_number || '';
           break;
         case 'patient':
-          aValue = a.patient_id;
-          bValue = b.patient_id;
+          aValue = a.patient?.username || '';
+          bValue = b.patient?.username || '';
           break;
         default:
           return 0;
@@ -155,9 +217,10 @@ export default function MedicalRecordsPage() {
   // Resetear página cuando cambian los filtros
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedPatientFilter, sortField, sortOrder]);
+  }, [searchTerm, selectedPatientFilter, statusFilter, sortField, sortOrder]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('es-ES', {
       day: 'numeric',
       month: 'long',
@@ -165,8 +228,9 @@ export default function MedicalRecordsPage() {
     });
   };
 
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('es-ES', {
+  const formatTime = (timeString: string | undefined) => {
+    if (!timeString) return 'N/A';
+    return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('es-ES', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -174,31 +238,135 @@ export default function MedicalRecordsPage() {
 
   const openCreateModal = () => {
     setFormData({
-      patient_id: '',
-      diagnosis: '',
-      treatment: '',
-      observations: ''
+      patient_id: 0,
+      specialist_id: user?.id || 0,
+      clinical_history_number: `HCL-${Date.now()}`,
+      consultation_reason_a: '',
+      consultation_reason_b: '',
+      consultation_reason_c: '',
+      consultation_reason_d: '',
+      family_history: '',
+      clinical_history: '',
+      surgical_history: '',
+      gynecological_history: '',
+      habits: '',
+      current_illness: '',
+      systems_review: {
+        sense_organs: 'SP',
+        respiratory: 'SP',
+        cardiovascular: 'SP',
+        digestive: 'SP',
+        genital: 'SP',
+        urinary: 'SP',
+        musculoskeletal: 'SP',
+        endocrine: 'SP',
+        hemolymphatic: 'SP',
+        nervous: 'SP'
+      },
+      blood_pressure: '',
+      oxygen_saturation: '',
+      heart_rate: '',
+      respiratory_rate: '',
+      temperature: '',
+      weight: '',
+      height: '',
+      head_circumference: '',
+      physical_examination: {
+        skin_appendages: 'SP',
+        head: 'SP',
+        eyes: 'SP',
+        ears: 'SP',
+        nose: 'SP',
+        mouth: 'SP',
+        oropharynx: 'SP',
+        neck: 'SP',
+        axillae_breasts: 'SP',
+        thorax: 'SP',
+        abdomen: 'SP',
+        vertebral_column: 'SP',
+        groin_perineum: 'SP',
+        upper_limbs: 'SP',
+        lower_limbs: 'SP'
+      },
+      diagnoses: [],
+      treatment_plans: '',
+      evolution_entries: [],
+      consultation_date: new Date().toISOString().split('T')[0],
+      consultation_time: new Date().toTimeString().split(' ')[0],
+      status: 'borrador'
     });
     setIsCreateModalOpen(true);
   };
 
-  const openEditModal = (record: MedicalRecord) => {
+  const openEditModal = (record: ClinicalHistory) => {
     setSelectedRecord(record);
     setFormData({
-      patient_id: record.patient_id?.toString() || '',
-      diagnosis: record.diagnosis || '',
-      treatment: record.treatment || '',
-      observations: record.observations || ''
+      patient_id: record.patient_id || 0,
+      specialist_id: record.specialist_id || 0,
+      clinical_history_number: record.clinical_history_number || '',
+      consultation_reason_a: record.consultation_reason_a || '',
+      consultation_reason_b: record.consultation_reason_b || '',
+      consultation_reason_c: record.consultation_reason_c || '',
+      consultation_reason_d: record.consultation_reason_d || '',
+      family_history: record.family_history || '',
+      clinical_history: record.clinical_history || '',
+      surgical_history: record.surgical_history || '',
+      gynecological_history: record.gynecological_history || '',
+      habits: record.habits || '',
+      current_illness: record.current_illness || '',
+      systems_review: record.systems_review || {
+        sense_organs: 'SP',
+        respiratory: 'SP',
+        cardiovascular: 'SP',
+        digestive: 'SP',
+        genital: 'SP',
+        urinary: 'SP',
+        musculoskeletal: 'SP',
+        endocrine: 'SP',
+        hemolymphatic: 'SP',
+        nervous: 'SP'
+      },
+      blood_pressure: record.blood_pressure || '',
+      oxygen_saturation: record.oxygen_saturation || '',
+      heart_rate: record.heart_rate || '',
+      respiratory_rate: record.respiratory_rate || '',
+      temperature: record.temperature || '',
+      weight: record.weight || '',
+      height: record.height || '',
+      head_circumference: record.head_circumference || '',
+      physical_examination: record.physical_examination || {
+        skin_appendages: 'SP',
+        head: 'SP',
+        eyes: 'SP',
+        ears: 'SP',
+        nose: 'SP',
+        mouth: 'SP',
+        oropharynx: 'SP',
+        neck: 'SP',
+        axillae_breasts: 'SP',
+        thoracic: 'SP',
+        abdomen: 'SP',
+        vertebral_column: 'SP',
+        groin_perineum: 'SP',
+        upper_limbs: 'SP',
+        lower_limbs: 'SP'
+      },
+      diagnoses: record.diagnoses || [],
+      treatment_plans: record.treatment_plans || '',
+      evolution_entries: record.evolution_entries || [],
+      consultation_date: record.consultation_date ? new Date(record.consultation_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      consultation_time: record.consultation_time || new Date().toTimeString().split(' ')[0],
+      status: record.status || 'borrador'
     });
     setIsEditModalOpen(true);
   };
 
-  const openViewModal = (record: MedicalRecord) => {
+  const openViewModal = (record: ClinicalHistory) => {
     setSelectedRecord(record);
     setIsViewModalOpen(true);
   };
 
-  const openDeleteModal = (record: MedicalRecord) => {
+  const openDeleteModal = (record: ClinicalHistory) => {
     setSelectedRecord(record);
     setIsDeleteModalOpen(true);
   };
@@ -211,17 +379,17 @@ export default function MedicalRecordsPage() {
       if (isEditModalOpen && selectedRecord) {
         await medicalRecordService.updateMedicalRecord(selectedRecord.id, {
           ...formData,
-          patient_id: parseInt(formData.patient_id),
-          specialist_id: user?.id || 0
+          patient_id: formData.patient_id,
+          specialist_id: formData.specialist_id
         });
-        toast.success('Registro médico actualizado correctamente');
+        toast.success('Historia clínica actualizada correctamente');
       } else {
         await medicalRecordService.createMedicalRecord({
           ...formData,
-          patient_id: parseInt(formData.patient_id),
-          specialist_id: user?.id || 0
+          patient_id: formData.patient_id,
+          specialist_id: formData.specialist_id
         });
-        toast.success('Registro médico creado correctamente');
+        toast.success('Historia clínica creada correctamente');
       }
 
       // Recargar datos
@@ -232,10 +400,62 @@ export default function MedicalRecordsPage() {
       setIsCreateModalOpen(false);
       setIsEditModalOpen(false);
       setFormData({
-        patient_id: '',
-        diagnosis: '',
-        treatment: '',
-        observations: ''
+        patient_id: 0,
+        specialist_id: user?.id || 0,
+        clinical_history_number: `HCL-${Date.now()}`,
+        consultation_reason_a: '',
+        consultation_reason_b: '',
+        consultation_reason_c: '',
+        consultation_reason_d: '',
+        family_history: '',
+        clinical_history: '',
+        surgical_history: '',
+        gynecological_history: '',
+        habits: '',
+        current_illness: '',
+        systems_review: {
+          sense_organs: 'SP',
+          respiratory: 'SP',
+          cardiovascular: 'SP',
+          digestive: 'SP',
+          genital: 'SP',
+          urinary: 'SP',
+          musculoskeletal: 'SP',
+          endocrine: 'SP',
+          hemolymphatic: 'SP',
+          nervous: 'SP'
+        },
+        blood_pressure: '',
+        oxygen_saturation: '',
+        heart_rate: '',
+        respiratory_rate: '',
+        temperature: '',
+        weight: '',
+        height: '',
+        head_circumference: '',
+        physical_examination: {
+          skin_appendages: 'SP',
+          head: 'SP',
+          eyes: 'SP',
+          ears: 'SP',
+          nose: 'SP',
+          mouth: 'SP',
+          oropharynx: 'SP',
+          neck: 'SP',
+          axillae_breasts: 'SP',
+          thorax: 'SP',
+          abdomen: 'SP',
+          vertebral_column: 'SP',
+          groin_perineum: 'SP',
+          upper_limbs: 'SP',
+          lower_limbs: 'SP'
+        },
+        diagnoses: [],
+        treatment_plans: '',
+        evolution_entries: [],
+        consultation_date: new Date().toISOString().split('T')[0],
+        consultation_time: new Date().toTimeString().split(' ')[0],
+        status: 'borrador'
       });
     } catch (error) {
       toast.error('Error al guardar el registro médico');
