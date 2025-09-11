@@ -77,8 +77,8 @@ export default function MedicalCertificatesPage() {
     rest_from_date: new Date().toISOString().split('T')[0],
     rest_to_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     doctor_name: user?.username || '',
-    doctor_cedula: user?.cedula || '',
-    doctor_specialty: user?.speciality || '',
+    doctor_cedula: user?.identification_number || '',
+    doctor_specialty: user?.specialty || '',
     doctor_email: user?.email || '',
     establishment_name: 'Centro Médico UppaMed',
     establishment_address: '',
@@ -144,9 +144,9 @@ export default function MedicalCertificatesPage() {
         ...prev,
         patient_id: patientId,
         patient_name: patient.username,
-        patient_cedula: patient.cedula || '',
-        patient_phone: patient.phone || '',
-        patient_address: patient.address || ''
+        patient_cedula: patient.identification_number || '',
+        patient_phone: patient.email || '', // Usar email como alternativa ya que no hay phone
+        patient_address: '' // No hay address en User type
       }));
     }
   };
@@ -155,8 +155,8 @@ export default function MedicalCertificatesPage() {
   const handleCIESelect = (cie: CIE10Result) => {
     setFormData(prev => ({
       ...prev,
-      diagnosis: cie.description,
-      cie_code: cie.code
+      diagnosis: cie.title,
+      cie_code: cie.id
     }));
   };
 
@@ -209,8 +209,8 @@ export default function MedicalCertificatesPage() {
       rest_from_date: new Date().toISOString().split('T')[0],
       rest_to_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       doctor_name: user?.username || '',
-      doctor_cedula: user?.cedula || '',
-      doctor_specialty: user?.speciality || '',
+      doctor_cedula: user?.identification_number || '',
+      doctor_specialty: user?.specialty || '',
       doctor_email: user?.email || '',
       establishment_name: 'Centro Médico UppaMed',
       establishment_address: '',
@@ -563,7 +563,7 @@ export default function MedicalCertificatesPage() {
                       <SelectItem value="0">Seleccionar paciente...</SelectItem>
                       {patients.map(patient => (
                         <SelectItem key={patient.id} value={patient.id.toString()}>
-                          {patient.username} - {patient.cedula}
+                          {patient.username} - {patient.identification_number || 'Sin cédula'}
                         </SelectItem>
                       ))}
                     </SelectContent>
