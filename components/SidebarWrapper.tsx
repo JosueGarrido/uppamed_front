@@ -19,7 +19,8 @@ import {
   Menu,
   X,
   Clock,
-  LayoutDashboard
+  LayoutDashboard,
+  Shield
 } from 'lucide-react';
 
 interface MenuItem {
@@ -84,9 +85,10 @@ const SidebarWrapper = () => {
       { name: 'Mis Citas', href: '/dashboard/specialist/appointments', icon: <Calendar className="h-5 w-5" /> },
       { name: 'Mis Pacientes', href: '/dashboard/specialist/patients', icon: <Users className="h-5 w-5" /> },
       { name: 'Disponibilidad', href: '/dashboard/specialist/availability', icon: <Clock className="h-5 w-5" /> },
-      { name: 'Registros Médicos', href: '/medical-records', icon: <FileText className="h-5 w-5" /> },
+      { name: 'Historia Clínica', href: '/medical-records', icon: <FileText className="h-5 w-5" /> },
+      { name: 'Certificados Médicos', href: '/medical-certificates', icon: <Shield className="h-5 w-5" /> },
       { name: 'Exámenes', href: '/medical-exams', icon: <Microscope className="h-5 w-5" /> },
-              { name: 'Mi Perfil', href: '/dashboard/profile', icon: <UserCheck className="h-5 w-5" /> },
+      { name: 'Mi Perfil', href: '/dashboard/profile', icon: <UserCheck className="h-5 w-5" /> },
     ],
     'Paciente': [
       { name: 'Dashboard', href: '/dashboard/paciente', icon: <LayoutDashboard className="h-5 w-5" /> },

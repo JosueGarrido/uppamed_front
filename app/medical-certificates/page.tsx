@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -390,14 +390,15 @@ export default function MedicalCertificatesPage() {
               </div>
             </div>
             <div className="w-full sm:w-48">
-              <Select
-                value={statusFilter}
-                onValueChange={setStatusFilter}
-                placeholder="Filtrar por estado"
-              >
-                <option value="">Todos los estados</option>
-                <option value="activo">Activos</option>
-                <option value="anulado">Anulados</option>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filtrar por estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todos los estados</SelectItem>
+                  <SelectItem value="activo">Activos</SelectItem>
+                  <SelectItem value="anulado">Anulados</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -554,14 +555,18 @@ export default function MedicalCertificatesPage() {
                   <Select
                     value={formData.patient_id.toString()}
                     onValueChange={(value) => handlePatientSelect(parseInt(value))}
-                    required
                   >
-                    <option value="0">Seleccionar paciente...</option>
-                    {patients.map(patient => (
-                      <option key={patient.id} value={patient.id.toString()}>
-                        {patient.username} - {patient.cedula}
-                      </option>
-                    ))}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar paciente..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Seleccionar paciente...</SelectItem>
+                      {patients.map(patient => (
+                        <SelectItem key={patient.id} value={patient.id.toString()}>
+                          {patient.username} - {patient.cedula}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
                 
@@ -670,12 +675,16 @@ export default function MedicalCertificatesPage() {
                   <Select
                     value={formData.contingency_type}
                     onValueChange={(value) => handleInputChange('contingency_type', value)}
-                    required
                   >
-                    <option value="Enfermedad general">Enfermedad general</option>
-                    <option value="Accidente de trabajo">Accidente de trabajo</option>
-                    <option value="Enfermedad profesional">Enfermedad profesional</option>
-                    <option value="Accidente común">Accidente común</option>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar tipo de contingencia..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Enfermedad general">Enfermedad general</SelectItem>
+                      <SelectItem value="Accidente de trabajo">Accidente de trabajo</SelectItem>
+                      <SelectItem value="Enfermedad profesional">Enfermedad profesional</SelectItem>
+                      <SelectItem value="Accidente común">Accidente común</SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
                 
