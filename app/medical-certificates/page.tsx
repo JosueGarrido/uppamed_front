@@ -16,7 +16,6 @@ import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Table } from '@/components/Table';
 import CIE10Search from '@/components/CIE10Search';
 import { 
   Plus, 
@@ -305,102 +304,44 @@ export default function MedicalCertificatesPage() {
     }
   };
 
-  // Configuración de tabla
-  const tableConfig = {
-    columns: [
-      {
-        key: 'certificate_number' as keyof MedicalCertificate,
-        label: 'N° Certificado',
-        render: (certificate: MedicalCertificate) => (
-          <span className="font-mono text-sm">{certificate.certificate_number}</span>
-        )
-      },
-      {
-        key: 'patient_name' as keyof MedicalCertificate,
-        label: 'Paciente',
-        render: (certificate: MedicalCertificate) => (
-          <div>
-            <p className="font-medium">{certificate.patient_name}</p>
-            <p className="text-sm text-gray-500">{certificate.patient_cedula}</p>
-          </div>
-        )
-      },
-      {
-        key: 'diagnosis' as keyof MedicalCertificate,
-        label: 'Diagnóstico',
-        render: (certificate: MedicalCertificate) => (
-          <div>
-            <p className="text-sm">{certificate.diagnosis}</p>
-            {certificate.cie_code && (
-              <p className="text-xs text-gray-500 font-mono">{certificate.cie_code}</p>
-            )}
-          </div>
-        )
-      },
-      {
-        key: 'rest_days' as keyof MedicalCertificate,
-        label: 'Reposo',
-        render: (certificate: MedicalCertificate) => (
-          <span className="text-sm">{certificate.rest_days} días</span>
-        )
-      },
-      {
-        key: 'issue_date' as keyof MedicalCertificate,
-        label: 'Fecha Emisión',
-        render: (certificate: MedicalCertificate) => (
-          <span className="text-sm">{new Date(certificate.issue_date).toLocaleDateString()}</span>
-        )
-      },
-      {
-        key: 'status' as keyof MedicalCertificate,
-        label: 'Estado',
-        render: (certificate: MedicalCertificate) => getStatusBadge(certificate.status)
-      },
-      {
-        key: 'actions' as keyof MedicalCertificate,
-        label: 'Acciones',
-        render: (certificate: MedicalCertificate) => (
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => openViewModal(certificate)}
-            >
-              <Eye className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleDownloadPDF(certificate)}
-            >
-              <Download className="w-4 h-4" />
-            </Button>
-            {certificate.status === 'activo' && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEditModal(certificate)}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleVoidCertificate(certificate)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </>
-            )}
-          </div>
-        )
-      }
-    ],
-    data: certificates,
-    loading
-  };
+  // Función para renderizar acciones de tabla
+  const renderTableActions = (certificate: MedicalCertificate) => (
+    <div className="flex space-x-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => openViewModal(certificate)}
+      >
+        <Eye className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => handleDownloadPDF(certificate)}
+      >
+        <Download className="w-4 h-4" />
+      </Button>
+      {certificate.status === 'activo' && (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => openEditModal(certificate)}
+          >
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleVoidCertificate(certificate)}
+            className="text-red-600 hover:text-red-700"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </>
+      )}
+    </div>
+  );
 
   if (user?.role !== 'Especialista') {
     return (
@@ -472,7 +413,88 @@ export default function MedicalCertificatesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table {...tableConfig} />
+          {loading ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : certificates.length === 0 ? (
+            <div className="text-center py-8">
+              <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No hay certificados médicos</h3>
+              <p className="text-gray-600 mb-4">Comienza creando tu primer certificado médico.</p>
+              <Button onClick={openCreateModal}>
+                <Plus className="mr-2 h-4 w-4" />
+                Crear Certificado
+              </Button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      N° Certificado
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Paciente
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Diagnóstico
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Reposo
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Fecha Emisión
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Estado
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Acciones
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {certificates.map((certificate) => (
+                    <tr key={certificate.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="font-mono text-sm">{certificate.certificate_number}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <p className="font-medium text-gray-900">{certificate.patient_name}</p>
+                          <p className="text-sm text-gray-500">{certificate.patient_cedula}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="max-w-xs">
+                          <p className="text-sm text-gray-900 truncate">{certificate.diagnosis}</p>
+                          {certificate.cie_code && (
+                            <p className="text-xs text-gray-500 font-mono">{certificate.cie_code}</p>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-gray-900">{certificate.rest_days} días</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-gray-900">
+                          {new Date(certificate.issue_date).toLocaleDateString()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(certificate.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        {renderTableActions(certificate)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
           
           {/* Paginación */}
           {totalPages > 1 && (
