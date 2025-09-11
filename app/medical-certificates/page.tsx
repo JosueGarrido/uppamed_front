@@ -35,7 +35,7 @@ import {
   Save,
   X
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface ExtendedFormData extends MedicalCertificateFormData {
   patient_id: number;
