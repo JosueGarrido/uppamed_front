@@ -41,7 +41,9 @@ interface ExtendedFormData extends MedicalCertificateFormData {
 }
 
 export default function MedicalCertificatesPage() {
+  console.log('🚀 MedicalCertificatesPage renderizando...');
   const { user } = useAuth();
+  console.log('👤 Usuario actual:', user);
   const [certificates, setCertificates] = useState<MedicalCertificate[]>([]);
   const [patients, setPatients] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,14 +92,19 @@ export default function MedicalCertificatesPage() {
 
   // Cargar datos iniciales
   useEffect(() => {
+    console.log('🔍 useEffect ejecutado', { user: user?.role, currentPage, searchTerm, statusFilter });
     if (user?.role === 'Especialista') {
+      console.log('✅ Usuario es especialista, cargando datos...');
       loadData();
       loadPatients();
+    } else {
+      console.log('❌ Usuario no es especialista:', user?.role);
     }
   }, [user, currentPage, searchTerm, statusFilter]);
 
   const loadData = async () => {
     try {
+      console.log('🔄 Iniciando carga de certificados...');
       setLoading(true);
       const response = await medicalCertificateService.getSpecialistCertificates({
         page: currentPage,
@@ -106,25 +113,35 @@ export default function MedicalCertificatesPage() {
         status: statusFilter
       });
       
+      console.log('✅ Certificados cargados:', response);
       setCertificates(response.certificates);
       setTotalPages(response.pagination.totalPages);
       setTotalCertificates(response.pagination.total);
     } catch (error) {
-      console.error('Error loading certificates:', error);
+      console.error('❌ Error loading certificates:', error);
       toast.error('Error al cargar los certificados médicos');
+      // En caso de error, establecer valores por defecto para que la página no quede en blanco
+      setCertificates([]);
+      setTotalPages(1);
+      setTotalCertificates(0);
     } finally {
+      console.log('🏁 Finalizando carga de certificados...');
       setLoading(false);
     }
   };
 
   const loadPatients = async () => {
     try {
+      console.log('🔄 Iniciando carga de pacientes...');
       const allUsers = await userService.getAllUsers();
       const patientUsers = allUsers.filter(u => u.role === 'Paciente');
+      console.log('✅ Pacientes cargados:', patientUsers.length);
       setPatients(patientUsers);
     } catch (error) {
-      console.error('Error loading patients:', error);
+      console.error('❌ Error loading patients:', error);
       toast.error('Error al cargar los pacientes');
+      // En caso de error, establecer array vacío para que la página no quede en blanco
+      setPatients([]);
     }
   };
 

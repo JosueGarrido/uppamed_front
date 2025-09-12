@@ -7,8 +7,8 @@
 6 silly config load:file:/Users/josuegarrido/.nvm/versions/node/v20.19.4/etc/npmrc
 7 verbose title npm run dev
 8 verbose argv "run" "dev"
-9 verbose logfile logs-max:10 dir:/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/.npm-cache/_logs/2025-09-11T23_39_27_452Z-
-10 verbose logfile /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/.npm-cache/_logs/2025-09-11T23_39_27_452Z-debug-0.log
+9 verbose logfile logs-max:10 dir:/Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/.npm-cache/_logs/2025-09-11T23_55_18_090Z-
+10 verbose logfile /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend/.npm-cache/_logs/2025-09-11T23_55_18_090Z-debug-0.log
 11 silly logfile start cleaning logs, removing 1 files
 12 silly logfile done cleaning log files
 13 verbose cwd /Users/josuegarrido/Documents/UppaCloud/Productos/UppaMed/crm-frontend
