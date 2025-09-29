@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Appointment } from '@/types/appointment';
 import { User } from '@/types/auth';
+import { useAuth } from '@/context/AuthContext';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,6 +49,7 @@ const STATUS_OPTIONS = [
 ];
 
 const AdminAppointmentsPage = () => {
+  const { user, isLoading: authLoading } = useAuth();
   const [tenantId, setTenantId] = useState<string | number | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -158,23 +160,27 @@ const AdminAppointmentsPage = () => {
   };
 
   useEffect(() => {
-    const getTenantId = async () => {
+    if (!authLoading && user?.tenant_id) {
+      setTenantId(user.tenant_id);
       setIsLoading(true);
-      try {
-        const user = await authService.fetchUserData();
-        setTenantId(user.tenant_id ?? null);
-        if (user.tenant_id) {
+      
+      const loadData = async () => {
+        try {
           await fetchAppointments(user.tenant_id);
           await fetchPatientsAndSpecialists(user.tenant_id);
+        } catch {
+          setError('No se pudo cargar los datos');
+        } finally {
+          setIsLoading(false);
         }
-      } catch {
-        setError('No se pudo obtener el tenant');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    void getTenantId();
-  }, []);
+      };
+      
+      void loadData();
+    } else if (!authLoading && !user) {
+      setError('Usuario no autenticado');
+      setIsLoading(false);
+    }
+  }, [authLoading, user]);
 
   // Cargar horarios disponibles cuando cambie la fecha o especialista en creación
   useEffect(() => {

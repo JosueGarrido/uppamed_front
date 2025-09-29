@@ -60,7 +60,9 @@ export const authService = {
       }
       return data;
     } catch (error) {
-      console.error('❌ Error en login:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Error en login:', error);
+      }
       
       // Manejar errores de red
       if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -103,7 +105,9 @@ export const authService = {
       }
       return userData;
     } catch (error) {
-      console.error('Error al obtener datos del usuario:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error al obtener datos del usuario:', error);
+      }
       throw error;
     }
   },

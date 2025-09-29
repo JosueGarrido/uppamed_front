@@ -5,7 +5,6 @@ import { buildApiUrl, createAuthHeaders } from '@/lib/config';
 class AppointmentService {
   async getSpecialistAppointments(): Promise<Appointment[]> {
     try {
-      console.log('🚀 Iniciando getSpecialistAppointments');
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
@@ -21,10 +20,11 @@ class AppointmentService {
       }
 
       const data = await response.json();
-      console.log('✅ Citas obtenidas:', data.length);
       return data;
     } catch (error) {
-      console.error('❌ Error obteniendo citas del especialista:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Error obteniendo citas del especialista:', error);
+      }
       throw error;
     }
   }

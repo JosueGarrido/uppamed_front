@@ -154,23 +154,27 @@ const SpecialistAppointmentsPage = () => {
   };
 
   useEffect(() => {
-    const getTenantId = async () => {
+    if (!authLoading && user?.tenant_id) {
+      setTenantId(user.tenant_id);
       setIsLoading(true);
-      try {
-        const userData = await authService.fetchUserData();
-        setTenantId(userData.tenant_id ?? null);
-        if (userData.tenant_id) {
+      
+      const loadData = async () => {
+        try {
           await fetchAppointments();
-          await fetchPatients(userData.tenant_id);
+          await fetchPatients(user.tenant_id);
+        } catch {
+          setError('No se pudo cargar los datos');
+        } finally {
+          setIsLoading(false);
         }
-      } catch {
-        setError('No se pudo obtener el tenant');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    void getTenantId();
-  }, []);
+      };
+      
+      void loadData();
+    } else if (!authLoading && !user) {
+      setError('Usuario no autenticado');
+      setIsLoading(false);
+    }
+  }, [authLoading, user]);
 
   // Cargar horarios disponibles cuando cambie la fecha en creación
   useEffect(() => {

@@ -40,18 +40,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     if (!isMounted) return;
     
-    console.log('🔍 Verificando autenticación...');
     const token = authService.getToken();
     const user = authService.getCurrentUser();
 
-    console.log('🔍 Estado de autenticación:', {
-      hasToken: !!token,
-      hasUser: !!user,
-      userRole: user?.role
-    });
+    // En desarrollo, solo hacer logs mínimos
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 Auth check:', {
+        hasToken: !!token,
+        hasUser: !!user,
+        userRole: user?.role
+      });
+    }
 
     if (!token || !user) {
-      console.log('❌ No hay sesión activa');
       setState({
         user: null,
         token: null,
@@ -62,9 +63,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Si ya tenemos el usuario y token, no hacer petición innecesaria al backend
+    if (state.isAuthenticated && state.user && state.token === token) {
+      return;
+    }
+
     try {
-      // Verificar si el token es válido haciendo una petición al backend
-      await authService.fetchUserData();
+      // Solo verificar token si no estamos ya autenticados
+      if (!state.isAuthenticated) {
+        await authService.fetchUserData();
+      }
+      
       setState({
         user,
         token,
@@ -100,7 +109,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Función para refrescar la autenticación (usada después de restaurar sesión)
   const refreshAuth = async () => {
-    console.log('🔄 Refrescando estado de autenticación...');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔄 Refrescando estado de autenticación...');
+    }
     await checkAuth();
   };
 
@@ -124,22 +135,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // También escuchar cambios locales (misma pestaña)
-    const handleLocalChange = () => {
-      console.log('🔄 Cambio local detectado, refrescando autenticación...');
-      setTimeout(() => {
-        checkAuth();
-      }, 100);
-    };
-
-    // Agregar listeners solo si estamos en el cliente
-    if (typeof window !== 'undefined') {
+    // Agregar listeners solo si estamos en el cliente y NO en desarrollo para evitar loops
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
       window.addEventListener('storage', handleStorageChange);
-      window.addEventListener('focus', handleLocalChange);
 
       return () => {
         window.removeEventListener('storage', handleStorageChange);
-        window.removeEventListener('focus', handleLocalChange);
       };
     }
   }, [isMounted]);
@@ -172,7 +173,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         targetRoute = dashboardRoute;
       }
 
-      console.log('✅ Login exitoso, redirigiendo a:', targetRoute);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Login exitoso, redirigiendo a:', targetRoute);
+      }
       router.push(targetRoute);
     } catch (error) {
       console.error('❌ Error en login:', error);
@@ -190,7 +193,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    console.log('🚪 Cerrando sesión...');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚪 Cerrando sesión...');
+    }
     authService.logout();
     setState({
       user: null,
