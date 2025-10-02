@@ -15,9 +15,6 @@ api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔑 Token agregado a la petición:', config.url);
-    } else {
-      console.warn('⚠️ No hay token disponible para:', config.url);
     }
   }
   return config;
@@ -28,7 +25,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.error('🚫 Error 401 - Token inválido o expirado');
+      console.error('Error de autenticación - Token inválido o expirado');
     }
     return Promise.reject(error);
   }
