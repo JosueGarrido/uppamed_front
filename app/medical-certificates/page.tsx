@@ -233,8 +233,8 @@ export default function MedicalCertificatesPage() {
       // Validar que la fecha "hasta" sea posterior a "desde"
       if (new Date(formData.rest_to_date) < new Date(formData.rest_from_date)) {
         toast.error('La fecha "hasta" debe ser posterior a la fecha "desde"');
-        return;
-      }
+      return;
+    }
 
       // Preparar datos para enviar al backend
       const certificateData = {
@@ -299,8 +299,8 @@ export default function MedicalCertificatesPage() {
             <p className="text-gray-600">Cargando...</p>
           </CardContent>
         </Card>
-      </div>
-    );
+    </div>
+  );
   }
 
   // Verificar si el usuario es especialista
@@ -438,7 +438,7 @@ export default function MedicalCertificatesPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(certificate.issue_date).toLocaleDateString()}
+                          {new Date(certificate.issue_date).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {getStatusBadge(certificate.status)}
@@ -487,29 +487,29 @@ export default function MedicalCertificatesPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* Paginación */}
-      {totalPages > 1 && (
+          
+          {/* Paginación */}
+          {totalPages > 1 && (
         <div className="flex justify-center space-x-2">
-          <Button
-            variant="outline"
+              <Button
+                variant="outline"
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Anterior
-          </Button>
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </Button>
           <span className="flex items-center px-4 py-2 text-sm text-gray-700">
-            Página {currentPage} de {totalPages}
-          </span>
-          <Button
-            variant="outline"
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button
+                variant="outline"
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Siguiente
-          </Button>
-        </div>
-      )}
+                disabled={currentPage === totalPages}
+              >
+                Siguiente
+              </Button>
+            </div>
+          )}
 
       {/* Modal para crear/editar certificado */}
       {isModalOpen && (
@@ -536,88 +536,88 @@ export default function MedicalCertificatesPage() {
                       Seleccionar Paciente *
                     </label>
                     <Select value={formData.patient_id} onValueChange={handlePatientSelect}>
-                      <SelectTrigger>
+                    <SelectTrigger>
                         <SelectValue placeholder="Seleccionar paciente" />
-                      </SelectTrigger>
-                      <SelectContent>
+                    </SelectTrigger>
+                    <SelectContent>
                         {patients.map((patient) => (
-                          <SelectItem key={patient.id} value={patient.id.toString()}>
+                        <SelectItem key={patient.id} value={patient.id.toString()}>
                             {patient.name || patient.username} - {patient.identification_number || 'Sin DNI'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Nombres y apellidos del paciente *
                       </label>
-                      <Input
-                        value={formData.patient_name}
-                        onChange={(e) => handleInputChange('patient_name', e.target.value)}
+                  <Input
+                    value={formData.patient_name}
+                    onChange={(e) => handleInputChange('patient_name', e.target.value)}
                         placeholder="Nombre completo del paciente"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Edad *
                       </label>
-                      <Input
-                        type="number"
+                  <Input
+                    type="number"
                         min="1"
-                        max="120"
-                        value={formData.patient_age}
+                    max="120"
+                    value={formData.patient_age}
                         onChange={(e) => handleInputChange('patient_age', e.target.value)}
                         placeholder="Edad en años"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Dirección domiciliaria
                       </label>
-                      <Input
+                  <Input
                         value={formData.patient_address}
                         onChange={(e) => handleInputChange('patient_address', e.target.value)}
                         placeholder="Dirección completa"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Número telefónico de contacto
                       </label>
-                      <Input
-                        value={formData.patient_phone}
-                        onChange={(e) => handleInputChange('patient_phone', e.target.value)}
+                  <Input
+                    value={formData.patient_phone}
+                    onChange={(e) => handleInputChange('patient_phone', e.target.value)}
                         placeholder="Teléfono de contacto"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Institución
                       </label>
-                      <Input
-                        value={formData.patient_institution}
-                        onChange={(e) => handleInputChange('patient_institution', e.target.value)}
+                  <Input
+                    value={formData.patient_institution}
+                    onChange={(e) => handleInputChange('patient_institution', e.target.value)}
                         placeholder="Institución donde trabaja/estudia"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Ocupación
                       </label>
-                      <Input
-                        value={formData.patient_occupation}
-                        onChange={(e) => handleInputChange('patient_occupation', e.target.value)}
+                  <Input
+                    value={formData.patient_occupation}
+                    onChange={(e) => handleInputChange('patient_occupation', e.target.value)}
                         placeholder="Ocupación del paciente"
-                      />
-                    </div>
+                  />
+                </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Número de cédula del paciente
                       </label>
-                      <Input
+                  <Input
                         value={formData.patient_cedula}
                         onChange={(e) => handleInputChange('patient_cedula', e.target.value)}
                         placeholder="Número de cédula"
@@ -628,13 +628,13 @@ export default function MedicalCertificatesPage() {
                         Número de Historia Clínica
                       </label>
                       <Input
-                        value={formData.patient_clinical_history}
-                        onChange={(e) => handleInputChange('patient_clinical_history', e.target.value)}
+                    value={formData.patient_clinical_history}
+                    onChange={(e) => handleInputChange('patient_clinical_history', e.target.value)}
                         placeholder="Número de historia clínica"
-                      />
-                    </div>
-                  </div>
+                  />
                 </div>
+              </div>
+            </div>
 
                 {/* 2. MOTIVOS DE LA ENFERMEDAD */}
                 <div className="border-b pb-4">
@@ -653,7 +653,7 @@ export default function MedicalCertificatesPage() {
                         placeholder="Diagnóstico médico detallado"
                       />
                     </div>
-                    <div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         CIE 10
                       </label>
@@ -663,176 +663,176 @@ export default function MedicalCertificatesPage() {
                         placeholder="Código CIE-10 (ej: A099)"
                       />
                     </div>
-                    <div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Tipo de contingencia *
                       </label>
                       <Select value={formData.contingency_type} onValueChange={(value) => handleInputChange('contingency_type', value)}>
-                        <SelectTrigger>
+                    <SelectTrigger>
                           <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Enfermedad general">Enfermedad general</SelectItem>
-                          <SelectItem value="Accidente de trabajo">Accidente de trabajo</SelectItem>
-                          <SelectItem value="Enfermedad profesional">Enfermedad profesional</SelectItem>
-                          <SelectItem value="Accidente común">Accidente común</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Enfermedad general">Enfermedad general</SelectItem>
+                      <SelectItem value="Accidente de trabajo">Accidente de trabajo</SelectItem>
+                      <SelectItem value="Enfermedad profesional">Enfermedad profesional</SelectItem>
+                      <SelectItem value="Accidente común">Accidente común</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Reposo (horas) *
                       </label>
-                      <Input
-                        type="number"
+                    <Input
+                      type="number"
                         min="1"
-                        value={formData.rest_hours}
+                      value={formData.rest_hours}
                         onChange={(e) => handleInputChange('rest_hours', e.target.value)}
                         placeholder="24"
-                      />
-                    </div>
-                    <div>
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Reposo (días) *
                       </label>
-                      <Input
-                        type="number"
+                    <Input
+                      type="number"
                         min="1"
-                        value={formData.rest_days}
+                      value={formData.rest_days}
                         onChange={(e) => handleInputChange('rest_days', e.target.value)}
                         placeholder="1"
-                      />
-                    </div>
-                    <div>
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Desde *
                       </label>
-                      <Input
-                        type="date"
-                        value={formData.rest_from_date}
-                        onChange={(e) => handleInputChange('rest_from_date', e.target.value)}
-                      />
-                    </div>
-                    <div>
+                    <Input
+                      type="date"
+                      value={formData.rest_from_date}
+                      onChange={(e) => handleInputChange('rest_from_date', e.target.value)}
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Hasta *
                       </label>
-                      <Input
-                        type="date"
-                        value={formData.rest_to_date}
-                        onChange={(e) => handleInputChange('rest_to_date', e.target.value)}
-                      />
-                    </div>
-                  </div>
+                    <Input
+                      type="date"
+                      value={formData.rest_to_date}
+                      onChange={(e) => handleInputChange('rest_to_date', e.target.value)}
+                    />
                 </div>
+              </div>
+            </div>
 
                 {/* 3. FIRMA DE RESPONSABILIDAD */}
                 <div className="border-b pb-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">3.- FIRMA DE RESPONSABILIDAD</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Nombre del profesional emisor *
                       </label>
-                      <Input
-                        value={formData.doctor_name}
-                        onChange={(e) => handleInputChange('doctor_name', e.target.value)}
+                  <Input
+                    value={formData.doctor_name}
+                    onChange={(e) => handleInputChange('doctor_name', e.target.value)}
                         placeholder="Nombre completo del médico"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Número de cédula del profesional emisor *
                       </label>
-                      <Input
-                        value={formData.doctor_cedula}
-                        onChange={(e) => handleInputChange('doctor_cedula', e.target.value)}
+                  <Input
+                    value={formData.doctor_cedula}
+                    onChange={(e) => handleInputChange('doctor_cedula', e.target.value)}
                         placeholder="Cédula del médico"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Especialidad del profesional de la salud *
                       </label>
-                      <Input
-                        value={formData.doctor_specialty}
-                        onChange={(e) => handleInputChange('doctor_specialty', e.target.value)}
+                  <Input
+                    value={formData.doctor_specialty}
+                    onChange={(e) => handleInputChange('doctor_specialty', e.target.value)}
                         placeholder="Especialidad médica"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Correo electrónico
                       </label>
-                      <Input
-                        type="email"
-                        value={formData.doctor_email}
-                        onChange={(e) => handleInputChange('doctor_email', e.target.value)}
+                  <Input
+                    type="email"
+                    value={formData.doctor_email}
+                    onChange={(e) => handleInputChange('doctor_email', e.target.value)}
                         placeholder="correo@ejemplo.com"
-                      />
-                    </div>
-                  </div>
+                  />
                 </div>
+              </div>
+            </div>
 
                 {/* INFORMACIÓN DEL ESTABLECIMIENTO */}
                 <div className="border-b pb-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">INFORMACIÓN DEL ESTABLECIMIENTO</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Nombre del establecimiento *
                       </label>
-                      <Input
-                        value={formData.establishment_name}
-                        onChange={(e) => handleInputChange('establishment_name', e.target.value)}
+                  <Input
+                    value={formData.establishment_name}
+                    onChange={(e) => handleInputChange('establishment_name', e.target.value)}
                         placeholder="Nombre del centro médico"
-                      />
-                    </div>
+                  />
+                </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Dirección del establecimiento
                       </label>
-                      <Input
-                        value={formData.establishment_address}
-                        onChange={(e) => handleInputChange('establishment_address', e.target.value)}
+                  <Input
+                    value={formData.establishment_address}
+                    onChange={(e) => handleInputChange('establishment_address', e.target.value)}
                         placeholder="Dirección completa"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Teléfono del establecimiento
                       </label>
-                      <Input
-                        value={formData.establishment_phone}
-                        onChange={(e) => handleInputChange('establishment_phone', e.target.value)}
+                  <Input
+                    value={formData.establishment_phone}
+                    onChange={(e) => handleInputChange('establishment_phone', e.target.value)}
                         placeholder="Teléfono de contacto"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         RUC del establecimiento
                       </label>
-                      <Input
-                        value={formData.establishment_ruc}
-                        onChange={(e) => handleInputChange('establishment_ruc', e.target.value)}
+                  <Input
+                    value={formData.establishment_ruc}
+                    onChange={(e) => handleInputChange('establishment_ruc', e.target.value)}
                         placeholder="RUC del establecimiento"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Fecha de emisión *
                       </label>
-                      <Input
-                        type="date"
-                        value={formData.issue_date}
-                        onChange={(e) => handleInputChange('issue_date', e.target.value)}
-                      />
+                  <Input
+                    type="date"
+                    value={formData.issue_date}
+                    onChange={(e) => handleInputChange('issue_date', e.target.value)}
+                  />
                     </div>
                   </div>
                 </div>
-
+                
                 {/* Observaciones */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -845,25 +845,25 @@ export default function MedicalCertificatesPage() {
                     onChange={(e) => handleInputChange('observations', e.target.value)}
                     placeholder="Observaciones adicionales (opcional)"
                   />
-                </div>
               </div>
+            </div>
 
               {/* Botones */}
               <div className="flex justify-end space-x-3 mt-6 pt-6 border-t">
                 <Button variant="outline" onClick={closeModal}>
-                  Cancelar
-                </Button>
+                Cancelar
+              </Button>
                 <Button onClick={handleSubmit}>
                   {selectedCertificate ? 'Actualizar' : 'Crear'} Certificado
-                </Button>
+              </Button>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-          </div>
+                </div>
+              </div>
+                  )}
+                </div>
         </main>
-      </div>
+              </div>
     </div>
   );
 }
