@@ -87,6 +87,7 @@ const SidebarWrapper = () => {
       { name: 'Disponibilidad', href: '/dashboard/specialist/availability', icon: <Clock className="h-5 w-5" /> },
       { name: 'Historia Clínica', href: '/medical-records', icon: <FileText className="h-5 w-5" /> },
       { name: 'Certificados Médicos', href: '/medical-certificates', icon: <Shield className="h-5 w-5" /> },
+      { name: 'Recetas Médicas', href: '/medical-prescriptions', icon: <FileText className="h-5 w-5" /> },
       { name: 'Exámenes', href: '/medical-exams', icon: <Microscope className="h-5 w-5" /> },
       { name: 'Mi Perfil', href: '/dashboard/profile', icon: <UserCheck className="h-5 w-5" /> },
     ],
@@ -95,6 +96,7 @@ const SidebarWrapper = () => {
       { name: 'Mis Citas', href: '/dashboard/paciente/appointments', icon: <Calendar className="h-5 w-5" /> },
       { name: 'Historial Médico', href: '/dashboard/paciente/medical-records', icon: <FileText className="h-5 w-5" /> },
       { name: 'Mis Exámenes', href: '/dashboard/paciente/medical-exams', icon: <Microscope className="h-5 w-5" /> },
+      { name: 'Mis Recetas', href: '/dashboard/paciente/medical-prescriptions', icon: <FileText className="h-5 w-5" /> },
       { name: 'Mi Perfil', href: '/dashboard/profile', icon: <UserCheck className="h-5 w-5" /> },
     ],
   };

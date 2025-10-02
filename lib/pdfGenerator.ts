@@ -29,40 +29,34 @@ export class PDFGenerator {
   }
 
   private addHeader(certificate: MedicalCertificate): number {
-    let yPosition = this.margin;
-
-    // Logo placeholder (puedes agregar un logo real aquí)
+    // Círculo azul en la esquina superior izquierda (como logo)
     this.doc.setFillColor(41, 128, 185);
-    this.doc.circle(30, 30, 15, 'F');
+    this.doc.circle(30, 18, 10, 'F');
     
-    // Título del centro médico
-    this.doc.setFontSize(16);
+    // Nombre del establecimiento - alineado a la derecha del círculo
+    this.doc.setFontSize(11);
     this.doc.setFont('helvetica', 'bold');
     this.doc.setTextColor(41, 128, 185);
+    const establishmentName = certificate.establishment_name.toUpperCase();
+    this.doc.text(establishmentName, 45, 15, { maxWidth: this.pageWidth - 50 });
     
-    const centerName = certificate.establishment_name.toUpperCase();
-    this.doc.text(centerName, this.pageWidth / 2, yPosition + 10, { align: 'center' });
-    
-    yPosition += 20;
-    
-    // Ciudad y fecha
-    this.doc.setFontSize(12);
+    // Dirección - centrada debajo del nombre
+    this.doc.setFontSize(9);
     this.doc.setFont('helvetica', 'normal');
     this.doc.setTextColor(0, 0, 0);
-    
-    const location = certificate.establishment_address || 'Quito, Ecuador';
+    const location = certificate.establishment_address || 'Alejandro Callisto E4-224';
     const formattedDate = this.formatDate(certificate.issue_date);
-    this.doc.text(`${location}, ${formattedDate}`, this.pageWidth / 2, yPosition + 5, { align: 'center' });
+    this.doc.text(`${location}, ${formattedDate}`, this.pageWidth / 2, 23, { align: 'center' });
     
-    yPosition += 20;
+    let yPosition = 35;
     
     // Título del certificado
     this.doc.setFontSize(18);
     this.doc.setFont('helvetica', 'bold');
     this.doc.setTextColor(0, 0, 0);
-    this.doc.text('CERTIFICADO MÉDICO', this.pageWidth / 2, yPosition + 10, { align: 'center' });
+    this.doc.text('CERTIFICADO MÉDICO', this.pageWidth / 2, yPosition, { align: 'center' });
     
-    return yPosition + 25;
+    return yPosition + 15;
   }
 
   private addPatientData(certificate: MedicalCertificate, yPosition: number): number {
@@ -150,49 +144,69 @@ export class PDFGenerator {
   }
 
   private addSignatureSection(certificate: MedicalCertificate, yPosition: number): number {
-    // Sello del establecimiento (círculo placeholder)
-    const sealX = this.pageWidth - 60;
-    const sealY = yPosition + 20;
+    yPosition += 10; // Reducido de 30 a 10 para subir el sello
     
+    // Sello del establecimiento (círculo grande en el centro-derecha)
+    const sealX = this.pageWidth - 55;
+    const sealY = yPosition + 5; // Reducido de 10 a 5
+    const sealRadius = 28;
+    
+    // Dibujar círculo del sello con línea más gruesa
     this.doc.setDrawColor(0, 0, 0);
     this.doc.setLineWidth(2);
-    this.doc.circle(sealX, sealY, 25, 'S');
+    this.doc.circle(sealX, sealY, sealRadius, 'S');
     
+    // Texto dentro del sello
+    this.doc.setFontSize(7);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setTextColor(0, 0, 0);
+    
+    // Número de certificado (arriba)
+    const certNumber = `N° Certificado:`;
+    const certNumberValue = certificate.certificate_number;
+    this.doc.text(certNumber, sealX, sealY - 12, { align: 'center', maxWidth: sealRadius * 1.6 });
+    this.doc.text(certNumberValue, sealX, sealY - 7, { align: 'center', maxWidth: sealRadius * 1.6 });
+    
+    // Nombre del establecimiento (centro) - dividido en líneas
+    this.doc.setFont('helvetica', 'bold');
     this.doc.setFontSize(8);
+    const establishmentNameLines = this.doc.splitTextToSize(
+      certificate.establishment_name.toUpperCase(),
+      sealRadius * 1.6
+    );
+    
+    let nameY = sealY - 2;
+    if (establishmentNameLines.length === 1) {
+      this.doc.text(establishmentNameLines[0], sealX, nameY, { align: 'center' });
+    } else {
+      establishmentNameLines.forEach((line: string, index: number) => {
+        this.doc.text(line, sealX, nameY + (index * 3.5), { align: 'center' });
+      });
+    }
+    
+    // "SELLO DEL ESTABLECIMIENTO" (abajo)
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text(certificate.establishment_name.toUpperCase(), sealX, sealY - 5, { align: 'center' });
-    this.doc.text('SELLO DEL ESTABLECIMIENTO', sealX, sealY + 5, { align: 'center' });
+    this.doc.setFontSize(7);
+    this.doc.text('SELLO DEL', sealX, sealY + 10, { align: 'center' });
+    this.doc.text('ESTABLECIMIENTO', sealX, sealY + 14, { align: 'center' });
     
-    // Líneas de firma
-    const signatureY = yPosition + 60;
-    
-    // Línea firma profesional
-    this.doc.setLineWidth(0.5);
-    this.doc.line(this.margin, signatureY, this.margin + 60, signatureY);
-    this.doc.setFontSize(10);
-    this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Firma y Sello Profesional.', this.margin + 30, signatureY + 8, { align: 'center' });
-    
-    // Línea sello establecimiento
-    this.doc.line(this.pageWidth - this.margin - 60, signatureY, this.pageWidth - this.margin, signatureY);
-    this.doc.text('Sello del Establecimiento de Salud.', this.pageWidth - this.margin - 30, signatureY + 8, { align: 'center' });
-    
-    return signatureY + 20;
+    return yPosition + 50;
   }
 
   private addFooter(certificate: MedicalCertificate): void {
-    const footerY = this.pageHeight - 30;
+    // Footer con fondo azul
+    this.doc.setFillColor(41, 128, 185);
+    this.doc.rect(0, this.pageHeight - 20, this.pageWidth, 20, 'F');
     
-    this.doc.setFontSize(9);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.setTextColor(100, 100, 100);
-    
-    const footerText = `${certificate.establishment_address || ''} ${certificate.establishment_phone ? `Telf: ${certificate.establishment_phone}` : ''}`;
-    this.doc.text(footerText, this.pageWidth / 2, footerY, { align: 'center' });
-    
-    // Número de certificado
     this.doc.setFontSize(8);
-    this.doc.text(`N° Certificado: ${certificate.certificate_number}`, this.pageWidth - this.margin, footerY + 5, { align: 'right' });
+    this.doc.setTextColor(255, 255, 255);
+    
+    const address = certificate.establishment_address || 'Alejandro Callisto E4-224';
+    const phone = certificate.establishment_phone || 'Telf: 02 282 2015 – 093 937 2744';
+    const footerText = `${address} ${phone}`;
+    
+    this.doc.text(footerText, this.pageWidth / 2, this.pageHeight - 10, { align: 'center' });
   }
 
   private numberToWords(num: number): string {
