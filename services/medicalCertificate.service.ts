@@ -42,13 +42,13 @@ export class MedicalCertificateService {
     try {
       const response = await api.get<MedicalCertificateResponse>(url);
       
-      console.log('✅ Respuesta recibida:', response.data);
+      console.log('✅ Respuesta recibida:', JSON.stringify(response.data, null, 2));
       
       if (!response.data.success) {
         throw new Error(response.data.message || 'Error al obtener los certificados médicos');
       }
       
-      return response.data.data as {
+      const result = response.data.data as {
         certificates: MedicalCertificate[];
         pagination: {
           total: number;
@@ -57,6 +57,11 @@ export class MedicalCertificateService {
           totalPages: number;
         };
       };
+      
+      console.log('📊 Certificados encontrados:', result.certificates.length);
+      console.log('📄 Paginación:', result.pagination);
+      
+      return result;
     } catch (error) {
       console.error('❌ Error en getSpecialistCertificates:', error);
       throw error;
