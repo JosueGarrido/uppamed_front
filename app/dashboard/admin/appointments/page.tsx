@@ -265,7 +265,7 @@ const AdminAppointmentsPage = () => {
         status: newAppointment.status,
         ...(newAppointment.notes ? { notes: newAppointment.notes } : {}),
       };
-      await appointmentService.createAppointment(appointmentPayload);
+      await appointmentService.createAppointment(appointmentPayload, tenantId);
       toast.success('Cita creada exitosamente');
       setShowCreateModal(false);
       setNewAppointment({ patient_id: 0, specialist_id: 0, date: '', time: '09:00', reason: '', status: 'pendiente', notes: undefined });

@@ -176,17 +176,14 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const loadDashboardData = async () => {
-      if (!user || user.role !== 'Administrador') return;
+      if (!user || user.role !== 'Administrador' || !user.tenant_id) return;
       
       setLoading(true);
       try {
-        const userData = await authService.fetchUserData();
-        if (!userData.tenant_id) throw new Error('No se encontró tenant_id');
-        
         // Cargar todos los datos necesarios
         const [allUsers, allAppointments, allRecords, allExams] = await Promise.all([
-          userService.getUsersByTenant(userData.tenant_id),
-          appointmentService.getAppointmentsByTenant(userData.tenant_id),
+          userService.getUsersByTenant(user.tenant_id),
+          appointmentService.getAppointmentsByTenant(user.tenant_id),
           medicalRecordService.getMyMedicalRecords('Administrador'),
           medicalExamService.getMyMedicalExams(undefined, 'Administrador')
         ]);

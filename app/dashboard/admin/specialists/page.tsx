@@ -19,6 +19,7 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
 import { toast } from 'sonner';
 import { User, UserRole } from '@/types/auth';
+import { useAuth } from '@/context/AuthContext';
 import { 
   UserCheck, 
   UserPlus, 
@@ -36,6 +37,7 @@ import {
 import Link from 'next/link';
 
 const AdminSpecialistsPage = () => {
+  const { user, isLoading: authLoading } = useAuth();
   const [tenantId, setTenantId] = useState<string | number | null>(null);
   const [specialists, setSpecialists] = useState<User[]>([]);
   const [filteredSpecialists, setFilteredSpecialists] = useState<User[]>([]);
@@ -95,24 +97,28 @@ const AdminSpecialistsPage = () => {
   };
 
   useEffect(() => {
-    const getTenantId = async () => {
+    if (!authLoading && user?.tenant_id) {
+      setTenantId(user.tenant_id);
       setIsLoading(true);
-      try {
-        const user = await authService.fetchUserData();
-        setTenantId(user.tenant_id ?? null);
-        if (user.tenant_id) {
-          await fetchSpecialists(user.tenant_id);
+      
+      const loadData = async () => {
+        try {
+          await fetchSpecialists(user.tenant_id!);
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            setError('No se pudo cargar los especialistas');
+          }
+        } finally {
+          setIsLoading(false);
         }
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError('No se pudo obtener el tenant');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getTenantId();
-  }, []);
+      };
+      
+      void loadData();
+    } else if (!authLoading && !user) {
+      setError('Usuario no autenticado');
+      setIsLoading(false);
+    }
+  }, [authLoading, user]);
 
   // Filtrado por búsqueda
   useEffect(() => {

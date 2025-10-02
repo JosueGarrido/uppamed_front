@@ -259,7 +259,7 @@ const SpecialistAppointmentsPage = () => {
         date: `${newAppointment.date}T${newAppointment.time}:00`
       };
 
-      await appointmentService.createAppointment(appointmentData);
+      await appointmentService.createAppointment(appointmentData, tenantId);
       toast.success('Cita creada exitosamente');
       setShowCreateModal(false);
       setNewAppointment({

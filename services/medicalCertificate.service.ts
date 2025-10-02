@@ -4,7 +4,7 @@ import { MedicalCertificate, MedicalCertificateFormData, MedicalCertificateRespo
 export class MedicalCertificateService {
   // Crear certificado médico
   async createMedicalCertificate(data: MedicalCertificateFormData): Promise<MedicalCertificate> {
-    const response = await api.post<MedicalCertificateResponse>('/medicalCertificates', data);
+    const response = await api.post<MedicalCertificateResponse>('/medicalCertificates/test', data);
     
     if (!response.data.success) {
       throw new Error(response.data.message || 'Error al crear el certificado médico');
@@ -36,7 +36,7 @@ export class MedicalCertificateService {
     if (params.status) queryParams.append('status', params.status);
     
     const response = await api.get<MedicalCertificateResponse>(
-      `/medicalCertificates/specialist?${queryParams.toString()}`
+      `/medicalCertificates/test?${queryParams.toString()}`
     );
     
     if (!response.data.success) {

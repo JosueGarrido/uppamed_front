@@ -18,6 +18,7 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { DashboardShell } from '@/components/dashboard/shell';
 import { toast } from 'sonner';
 import { User, UserRole } from '@/types/auth';
+import { useAuth } from '@/context/AuthContext';
 import { 
   UserX, 
   UserPlus, 
@@ -34,6 +35,7 @@ import {
 import Link from 'next/link';
 
 const AdminPatientsPage = () => {
+  const { user, isLoading: authLoading } = useAuth();
   const [tenantId, setTenantId] = useState<string | number | null>(null);
   const [patients, setPatients] = useState<User[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<User[]>([]);
@@ -84,24 +86,28 @@ const AdminPatientsPage = () => {
   };
 
   useEffect(() => {
-    const getTenantId = async () => {
+    if (!authLoading && user?.tenant_id) {
+      setTenantId(user.tenant_id);
       setIsLoading(true);
-      try {
-        const user = await authService.fetchUserData();
-        setTenantId(user.tenant_id ?? null);
-        if (user.tenant_id) {
-          await fetchPatients(user.tenant_id);
+      
+      const loadData = async () => {
+        try {
+          await fetchPatients(user.tenant_id!);
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            setError('No se pudo cargar los pacientes');
+          }
+        } finally {
+          setIsLoading(false);
         }
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError('No se pudo obtener el tenant');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getTenantId();
-  }, []);
+      };
+      
+      void loadData();
+    } else if (!authLoading && !user) {
+      setError('Usuario no autenticado');
+      setIsLoading(false);
+    }
+  }, [authLoading, user]);
 
   // Filtrado por búsqueda
   useEffect(() => {

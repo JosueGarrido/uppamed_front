@@ -632,7 +632,7 @@ export default function SpecialistPatientsPage() {
         notes: newAppointment.notes || undefined,
       };
 
-      const newAppointmentResponse = await appointmentService.createAppointment(appointmentData);
+      const newAppointmentResponse = await appointmentService.createAppointment(appointmentData, user?.tenant_id);
       toast.success('Cita creada exitosamente');
       setShowCreateAppointmentModal(false);
       setNewAppointment({ date: '', time: '09:00', reason: '', notes: '' });

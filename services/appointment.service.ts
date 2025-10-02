@@ -99,22 +99,25 @@ class AppointmentService {
     }
   }
 
-  async createAppointment(appointmentData: Partial<Appointment>): Promise<Appointment | null> {
+  async createAppointment(appointmentData: Partial<Appointment>, tenantId?: string | number): Promise<Appointment | null> {
     try {
       const token = authService.getToken();
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      // Obtener el tenant_id del usuario actual
-      const user = await authService.fetchUserData();
-      const tenantId = user.tenant_id;
+      // Si no se proporciona tenantId, obtenerlo del usuario en localStorage
+      let finalTenantId = tenantId;
+      if (!finalTenantId) {
+        const user = authService.getCurrentUser();
+        finalTenantId = user?.tenant_id;
+      }
 
-      if (!tenantId) {
+      if (!finalTenantId) {
         throw new Error('No se pudo obtener el tenant_id');
       }
 
-      const response = await fetch(buildApiUrl(`/appointments/${tenantId}/appointments`), {
+      const response = await fetch(buildApiUrl(`/appointments/${finalTenantId}/appointments`), {
         method: 'POST',
         headers: createAuthHeaders(token),
         body: JSON.stringify(appointmentData)

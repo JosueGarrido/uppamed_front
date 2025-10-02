@@ -77,7 +77,7 @@ interface ReportData {
 }
 
 export default function AdminReports() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,21 +86,19 @@ export default function AdminReports() {
   const [expandedAreas, setExpandedAreas] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const loadReportData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+    if (!authLoading && user?.tenant_id) {
+      const loadReportData = async () => {
+        try {
+          setLoading(true);
+          setError(null);
 
-        const userData = await authService.fetchUserData();
-        if (!userData.tenant_id) throw new Error('No se encontró tenant_id');
-
-        // Cargar todos los datos necesarios
-        const [allUsers, allAppointments, allRecords, allExams] = await Promise.all([
-          userService.getUsersByTenant(userData.tenant_id),
-          appointmentService.getAppointmentsByTenant(userData.tenant_id),
-          medicalRecordService.getMyMedicalRecords('Administrador'),
-          medicalExamService.getMyMedicalExams(undefined, 'Administrador')
-        ]);
+          // Cargar todos los datos necesarios
+          const [allUsers, allAppointments, allRecords, allExams] = await Promise.all([
+            userService.getUsersByTenant(user.tenant_id!),
+            appointmentService.getAppointmentsByTenant(user.tenant_id!),
+            medicalRecordService.getMyMedicalRecords('Administrador'),
+            medicalExamService.getMyMedicalExams(undefined, 'Administrador')
+          ]);
 
         // Procesar datos para generar reportes
         const specialists = allUsers.filter(u => u.role === 'Especialista');
@@ -220,10 +218,12 @@ export default function AdminReports() {
       }
     };
 
-    if (!isLoading && user?.role === 'Administrador') {
-      loadReportData();
+      void loadReportData();
+    } else if (!authLoading && !user) {
+      setError('Usuario no autenticado');
+      setLoading(false);
     }
-  }, [user, isLoading, timeRange]);
+  }, [authLoading, user, timeRange]);
 
   const getUtilizationColor = (rate: number) => {
     if (rate >= 80) return 'text-green-600';
