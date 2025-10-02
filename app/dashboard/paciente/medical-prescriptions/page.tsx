@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import SidebarWrapper from '@/components/SidebarWrapper';
 import { 
   FileText, 
   Download, 
@@ -145,11 +144,7 @@ export default function PatientMedicalPrescriptionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <SidebarWrapper />
-      <div className="flex-1 overflow-x-hidden">
-        <main className="p-6">
-          <div className="container mx-auto space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
             {/* Header */}
             <div className="flex justify-between items-center">
               <div>
@@ -465,9 +460,6 @@ export default function PatientMedicalPrescriptionsPage() {
                 </div>
               </div>
             )}
-          </div>
-        </main>
-      </div>
     </div>
   );
 }
