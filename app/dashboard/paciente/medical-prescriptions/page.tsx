@@ -83,11 +83,19 @@ export default function PatientMedicalPrescriptionsPage() {
 
   // Función para descargar receta en PDF
   const handleDownloadPDF = async (prescription: MedicalPrescription) => {
+    // No permitir descargar recetas anuladas
+    if (prescription.status === 'anulado') {
+      toast.error('No se puede descargar una receta anulada');
+      return;
+    }
+
     try {
       toast.info('Generando PDF...');
       
-      const { generateMedicalPrescriptionPDF } = await import('@/lib/prescriptionPdfGenerator');
-      await generateMedicalPrescriptionPDF(prescription);
+      const { PrescriptionPDFGenerator } = await import('@/lib/prescriptionPdfGenerator');
+      const generator = new PrescriptionPDFGenerator();
+      generator.downloadPDF(prescription);
+      
       toast.success('PDF descargado exitosamente');
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -261,7 +269,8 @@ export default function PatientMedicalPrescriptionsPage() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => handleDownloadPDF(prescription)}
-                                  title="Descargar PDF"
+                                  disabled={prescription.status === 'anulado'}
+                                  title={prescription.status === 'anulado' ? 'No se puede descargar una receta anulada' : 'Descargar PDF'}
                                 >
                                   <Download className="w-4 h-4" />
                                 </Button>
@@ -451,7 +460,10 @@ export default function PatientMedicalPrescriptionsPage() {
                       <Button variant="outline" onClick={closeModal}>
                         Cerrar
                       </Button>
-                      <Button onClick={() => handleDownloadPDF(selectedPrescription)}>
+                      <Button 
+                        onClick={() => handleDownloadPDF(selectedPrescription)}
+                        disabled={selectedPrescription?.status === 'anulado'}
+                      >
                         <Download className="w-4 h-4 mr-2" />
                         Descargar PDF
                       </Button>
