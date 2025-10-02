@@ -131,12 +131,10 @@ export default function MedicalCertificatesPage() {
     setSelectedCertificate(null);
     const today = new Date().toISOString().split('T')[0];
     
-    // Obtener información del tenant
+    // Obtener información del tenant (sin pasar tenantId para usar /my/tenant)
     let tenantData = null;
     try {
-      if (user?.tenant_id) {
-        tenantData = await tenantService.getTenantById(user.tenant_id);
-      }
+      tenantData = await tenantService.getTenantById();
     } catch (error) {
       console.error('Error al cargar información del tenant:', error);
     }
