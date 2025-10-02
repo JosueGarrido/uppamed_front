@@ -166,10 +166,15 @@ export default function MedicalCertificatesPage() {
   };
 
   const closeModal = () => {
+    // Cerrar modales de forma secuencial para evitar conflictos de DOM
     setIsModalOpen(false);
     setIsViewModalOpen(false);
     setIsEditModalOpen(false);
-    setSelectedCertificate(null);
+    
+    // Limpiar el certificado seleccionado después de un pequeño delay
+    setTimeout(() => {
+      setSelectedCertificate(null);
+    }, 100);
   };
 
   // Función para ver certificado
@@ -186,11 +191,14 @@ export default function MedicalCertificatesPage() {
   // Función para editar certificado
   const handleEditCertificate = async (certificate: MedicalCertificate) => {
     try {
+      // Cerrar cualquier modal abierto primero
+      setIsViewModalOpen(false);
+      setIsModalOpen(false);
+      
       const fullCertificate = await medicalCertificateService.getCertificateById(certificate.id);
-      setSelectedCertificate(fullCertificate);
       
       // Llenar el formulario con los datos del certificado
-    setFormData({
+      setFormData({
         patient_id: fullCertificate.patient_id?.toString() || '',
         patient_name: fullCertificate.patient_name || '',
         patient_age: fullCertificate.patient_age || '',
@@ -214,7 +222,11 @@ export default function MedicalCertificatesPage() {
         observations: fullCertificate.observations || ''
       });
       
-    setIsEditModalOpen(true);
+      // Establecer el certificado seleccionado y abrir modal después de un pequeño delay
+      setTimeout(() => {
+        setSelectedCertificate(fullCertificate);
+        setIsEditModalOpen(true);
+      }, 100);
     } catch (error) {
       toast.error('Error al cargar los datos del certificado para editar');
     }
@@ -223,10 +235,14 @@ export default function MedicalCertificatesPage() {
   // Función para descargar certificado en PDF
   const handleDownloadPDF = async (certificate: MedicalCertificate) => {
     try {
+      // Mostrar loading
+      toast.info('Generando PDF...');
+      
       const { generateMedicalCertificatePDF } = await import('@/lib/pdfGenerator');
       await generateMedicalCertificatePDF(certificate);
       toast.success('PDF descargado exitosamente');
     } catch (error) {
+      console.error('Error generating PDF:', error);
       toast.error('Error al generar el PDF');
     }
   };
