@@ -39,6 +39,8 @@ export default function MedicalCertificatesPage() {
   
   // Estados para el modal de crear/editar
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCertificate, setSelectedCertificate] = useState<MedicalCertificate | null>(null);
   const [formData, setFormData] = useState({
     patient_id: '',
@@ -165,7 +167,85 @@ export default function MedicalCertificatesPage() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setIsViewModalOpen(false);
+    setIsEditModalOpen(false);
     setSelectedCertificate(null);
+  };
+
+  // Función para ver certificado
+  const handleViewCertificate = async (certificate: MedicalCertificate) => {
+    try {
+      const fullCertificate = await medicalCertificateService.getCertificateById(certificate.id);
+      setSelectedCertificate(fullCertificate);
+      setIsViewModalOpen(true);
+    } catch (error) {
+      toast.error('Error al cargar los detalles del certificado');
+    }
+  };
+
+  // Función para editar certificado
+  const handleEditCertificate = async (certificate: MedicalCertificate) => {
+    try {
+      const fullCertificate = await medicalCertificateService.getCertificateById(certificate.id);
+      setSelectedCertificate(fullCertificate);
+      
+      // Llenar el formulario con los datos del certificado
+    setFormData({
+        patient_id: fullCertificate.patient_id?.toString() || '',
+        patient_name: fullCertificate.patient_name || '',
+        patient_age: fullCertificate.patient_age || '',
+        patient_cedula: fullCertificate.patient_cedula || '',
+        patient_clinical_history: fullCertificate.patient_clinical_history || '',
+        diagnosis: fullCertificate.diagnosis || '',
+        contingency_type: fullCertificate.contingency_type || '',
+        rest_hours: fullCertificate.rest_hours?.toString() || '',
+        rest_days: fullCertificate.rest_days?.toString() || '',
+        rest_from_date: fullCertificate.rest_from_date || '',
+        rest_to_date: fullCertificate.rest_to_date || '',
+        doctor_name: fullCertificate.doctor_name || '',
+        doctor_cedula: fullCertificate.doctor_cedula || '',
+        doctor_specialty: fullCertificate.doctor_specialty || '',
+        doctor_email: fullCertificate.doctor_email || '',
+        establishment_name: fullCertificate.establishment_name || '',
+        establishment_address: fullCertificate.establishment_address || '',
+        establishment_phone: fullCertificate.establishment_phone || '',
+        establishment_ruc: fullCertificate.establishment_ruc || '',
+        issue_date: fullCertificate.issue_date || '',
+        observations: fullCertificate.observations || ''
+      });
+      
+    setIsEditModalOpen(true);
+    } catch (error) {
+      toast.error('Error al cargar los datos del certificado para editar');
+    }
+  };
+
+  // Función para descargar certificado en PDF
+  const handleDownloadPDF = async (certificate: MedicalCertificate) => {
+    try {
+      const { generateMedicalCertificatePDF } = await import('@/lib/pdfGenerator');
+      await generateMedicalCertificatePDF(certificate);
+      toast.success('PDF descargado exitosamente');
+    } catch (error) {
+      toast.error('Error al generar el PDF');
+    }
+  };
+
+  // Función para anular certificado
+  const handleVoidCertificate = async (certificate: MedicalCertificate) => {
+    const confirmed = window.confirm(
+      `¿Estás seguro de que deseas anular el certificado de ${certificate.patient_name}?`
+    );
+    
+    if (confirmed) {
+    try {
+      await medicalCertificateService.voidMedicalCertificate(certificate.id);
+        toast.success('Certificado anulado exitosamente');
+        loadData(); // Recargar la lista
+    } catch (error) {
+        toast.error('Error al anular el certificado');
+      }
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -266,9 +346,16 @@ export default function MedicalCertificatesPage() {
         observations: formData.observations
       };
 
-      const certificate = await medicalCertificateService.createMedicalCertificate(certificateData);
+      if (selectedCertificate) {
+        // Editar certificado existente
+        await medicalCertificateService.updateMedicalCertificate(selectedCertificate.id, certificateData);
+        toast.success('Certificado médico actualizado exitosamente');
+      } else {
+        // Crear nuevo certificado
+        await medicalCertificateService.createMedicalCertificate(certificateData);
+        toast.success('Certificado médico creado exitosamente');
+      }
       
-      toast.success('Certificado médico creado exitosamente');
       closeModal();
       loadData(); // Recargar la lista
     } catch (error) {
@@ -448,14 +535,16 @@ export default function MedicalCertificatesPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => toast.info('Funcionalidad de ver próximamente')}
+                            onClick={() => handleViewCertificate(certificate)}
+                            title="Ver detalles"
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => toast.info('Funcionalidad de descargar próximamente')}
+                            onClick={() => handleDownloadPDF(certificate)}
+                            title="Descargar PDF"
                           >
                             <Download className="w-4 h-4" />
                           </Button>
@@ -464,14 +553,17 @@ export default function MedicalCertificatesPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => toast.info('Funcionalidad de editar próximamente')}
+                                onClick={() => handleEditCertificate(certificate)}
+                                title="Editar certificado"
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => toast.info('Funcionalidad de anular próximamente')}
+                                onClick={() => handleVoidCertificate(certificate)}
+                                title="Anular certificado"
+                                className="text-red-600 hover:text-red-700"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -512,7 +604,7 @@ export default function MedicalCertificatesPage() {
           )}
 
       {/* Modal para crear/editar certificado */}
-      {isModalOpen && (
+      {(isModalOpen || isEditModalOpen) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
@@ -861,6 +953,150 @@ export default function MedicalCertificatesPage() {
                 </div>
               </div>
                   )}
+
+      {/* Modal para ver detalles del certificado */}
+      {isViewModalOpen && selectedCertificate && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Detalles del Certificado Médico
+                </h2>
+                <Button variant="outline" size="sm" onClick={closeModal}>
+                  ✕
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Información del paciente */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">Información del Paciente</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Nombre:</span> {selectedCertificate.patient_name}
+                    </div>
+                    <div>
+                      <span className="font-medium">Edad:</span> {selectedCertificate.patient_age} años
+                    </div>
+                    <div>
+                      <span className="font-medium">Cédula:</span> {selectedCertificate.patient_cedula}
+                    </div>
+                    <div>
+                      <span className="font-medium">Historia Clínica:</span> {selectedCertificate.patient_clinical_history}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Información médica */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">Información Médica</h3>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <span className="font-medium">Diagnóstico:</span> {selectedCertificate.diagnosis}
+                    </div>
+                    <div>
+                      <span className="font-medium">Tipo de Contingencia:</span> {selectedCertificate.contingency_type}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="font-medium">Horas de Reposo:</span> {selectedCertificate.rest_hours}
+                      </div>
+                      <div>
+                        <span className="font-medium">Días de Reposo:</span> {selectedCertificate.rest_days}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="font-medium">Desde:</span> {selectedCertificate.rest_from_date}
+                      </div>
+                      <div>
+                        <span className="font-medium">Hasta:</span> {selectedCertificate.rest_to_date}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Información del médico */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">Información del Médico</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Nombre:</span> {selectedCertificate.doctor_name}
+                    </div>
+                    <div>
+                      <span className="font-medium">Cédula:</span> {selectedCertificate.doctor_cedula}
+                    </div>
+                    <div>
+                      <span className="font-medium">Especialidad:</span> {selectedCertificate.doctor_specialty}
+                    </div>
+                    <div>
+                      <span className="font-medium">Email:</span> {selectedCertificate.doctor_email}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Información del establecimiento */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">Información del Establecimiento</h3>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <span className="font-medium">Nombre:</span> {selectedCertificate.establishment_name}
+                    </div>
+                    <div>
+                      <span className="font-medium">Dirección:</span> {selectedCertificate.establishment_address}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="font-medium">Teléfono:</span> {selectedCertificate.establishment_phone}
+                      </div>
+                      <div>
+                        <span className="font-medium">RUC:</span> {selectedCertificate.establishment_ruc}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Metadatos */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">Información del Certificado</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Número:</span> {selectedCertificate.certificate_number}
+                    </div>
+                    <div>
+                      <span className="font-medium">Estado:</span> {getStatusBadge(selectedCertificate.status)}
+                    </div>
+                    <div>
+                      <span className="font-medium">Fecha de Emisión:</span> {new Date(selectedCertificate.issue_date).toLocaleDateString()}
+                    </div>
+                    <div>
+                      <span className="font-medium">Fecha de Creación:</span> {new Date(selectedCertificate.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  {selectedCertificate.observations && (
+                    <div className="mt-2">
+                      <span className="font-medium">Observaciones:</span> {selectedCertificate.observations}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Botones */}
+              <div className="flex justify-end space-x-3 mt-6 pt-6 border-t">
+                <Button variant="outline" onClick={closeModal}>
+                  Cerrar
+                </Button>
+                <Button onClick={() => handleDownloadPDF(selectedCertificate)}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Descargar PDF
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
                 </div>
         </main>
               </div>

@@ -98,32 +98,51 @@ export class MedicalCertificateService {
 
   // Obtener certificado por ID
   async getCertificateById(id: number): Promise<MedicalCertificate> {
-    const response = await api.get<MedicalCertificateResponse>(`/medicalCertificates/${id}`);
-    
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Error al obtener el certificado médico');
+    try {
+      const response = await api.get<MedicalCertificateResponse>(`/medicalCertificates/${id}`);
+      
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Error al obtener el certificado médico');
+      }
+      
+      return response.data.data as MedicalCertificate;
+    } catch (error) {
+      console.error('Error al obtener certificado por ID:', error);
+      throw error;
     }
-    
-    return response.data.data as MedicalCertificate;
   }
 
   // Actualizar certificado médico
   async updateMedicalCertificate(id: number, data: Partial<MedicalCertificateFormData>): Promise<MedicalCertificate> {
-    const response = await api.put<MedicalCertificateResponse>(`/medicalCertificates/${id}`, data);
-    
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Error al actualizar el certificado médico');
+    try {
+      const response = await api.put<MedicalCertificateResponse>(`/medicalCertificates/${id}`, data);
+      
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Error al actualizar el certificado médico');
+      }
+      
+      return response.data.data as MedicalCertificate;
+    } catch (error) {
+      console.error('Error al actualizar certificado médico:', error);
+      throw error;
     }
-    
-    return response.data.data as MedicalCertificate;
   }
 
   // Anular certificado médico
-  async voidMedicalCertificate(id: number): Promise<void> {
-    const response = await api.patch<MedicalCertificateResponse>(`/medicalCertificates/${id}/void`);
-    
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Error al anular el certificado médico');
+  async voidMedicalCertificate(id: number, reason?: string): Promise<MedicalCertificate> {
+    try {
+      const response = await api.patch<MedicalCertificateResponse>(`/medicalCertificates/${id}/void`, {
+        reason: reason || 'Anulado por el especialista'
+      });
+      
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Error al anular el certificado médico');
+      }
+      
+      return response.data.data as MedicalCertificate;
+    } catch (error) {
+      console.error('Error al anular certificado médico:', error);
+      throw error;
     }
   }
 }
