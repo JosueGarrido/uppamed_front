@@ -97,6 +97,7 @@ const SidebarWrapper = () => {
       { name: 'Historial Médico', href: '/dashboard/paciente/medical-records', icon: <FileText className="h-5 w-5" /> },
       { name: 'Mis Exámenes', href: '/dashboard/paciente/medical-exams', icon: <Microscope className="h-5 w-5" /> },
       { name: 'Mis Recetas', href: '/dashboard/paciente/medical-prescriptions', icon: <FileText className="h-5 w-5" /> },
+      { name: 'Mis Certificados', href: '/dashboard/paciente/medical-certificates', icon: <FileText className="h-5 w-5" /> },
       { name: 'Mi Perfil', href: '/dashboard/profile', icon: <UserCheck className="h-5 w-5" /> },
     ],
   };
