@@ -91,8 +91,8 @@ export default function PatientMedicalCertificatesPage() {
     try {
       toast.info('Generando PDF...');
       
-      const { MedicalCertificatePDFGenerator } = await import('@/lib/pdfGenerator');
-      const generator = new MedicalCertificatePDFGenerator();
+      const { PDFGenerator } = await import('@/lib/pdfGenerator');
+      const generator = new PDFGenerator();
       generator.downloadPDF(certificate);
       
       toast.success('PDF descargado exitosamente');
