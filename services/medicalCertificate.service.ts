@@ -35,23 +35,32 @@ export class MedicalCertificateService {
     if (params.search) queryParams.append('search', params.search);
     if (params.status) queryParams.append('status', params.status);
     
-    const response = await api.get<MedicalCertificateResponse>(
-      `/medicalCertificates/specialist?${queryParams.toString()}`
-    );
+    const url = `/medicalCertificates/specialist?${queryParams.toString()}`;
+    console.log('📋 Obteniendo certificados del especialista:', url);
+    console.log('🔍 Parámetros:', params);
     
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Error al obtener los certificados médicos');
-    }
-    
-    return response.data.data as {
-      certificates: MedicalCertificate[];
-      pagination: {
-        total: number;
-        page: number;
-        limit: number;
-        totalPages: number;
+    try {
+      const response = await api.get<MedicalCertificateResponse>(url);
+      
+      console.log('✅ Respuesta recibida:', response.data);
+      
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Error al obtener los certificados médicos');
+      }
+      
+      return response.data.data as {
+        certificates: MedicalCertificate[];
+        pagination: {
+          total: number;
+          page: number;
+          limit: number;
+          totalPages: number;
+        };
       };
-    };
+    } catch (error) {
+      console.error('❌ Error en getSpecialistCertificates:', error);
+      throw error;
+    }
   }
 
   // Obtener certificados del paciente
