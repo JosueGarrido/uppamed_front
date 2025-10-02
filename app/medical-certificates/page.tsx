@@ -165,16 +165,49 @@ export default function MedicalCertificatesPage() {
     setIsModalOpen(true);
   };
 
+  // Función para resetear el formulario a valores por defecto
+  const resetFormData = () => {
+    setFormData({
+      patient_id: '',
+      patient_name: '',
+      patient_age: '',
+      patient_address: '',
+      patient_phone: '',
+      patient_institution: '',
+      patient_occupation: '',
+      patient_cedula: '',
+      patient_clinical_history: '',
+      diagnosis: '',
+      cie_code: '',
+      contingency_type: '',
+      rest_hours: '',
+      rest_days: '',
+      rest_from_date: '',
+      rest_to_date: '',
+      doctor_name: '',
+      doctor_cedula: '',
+      doctor_specialty: '',
+      doctor_email: '',
+      establishment_name: '',
+      establishment_address: '',
+      establishment_phone: '',
+      establishment_ruc: '',
+      issue_date: '',
+      observations: ''
+    });
+  };
+
   const closeModal = () => {
     // Cerrar modales de forma secuencial para evitar conflictos de DOM
     setIsModalOpen(false);
     setIsViewModalOpen(false);
     setIsEditModalOpen(false);
     
-    // Limpiar el certificado seleccionado después de un pequeño delay
+    // Limpiar el certificado seleccionado y resetear formulario después de un pequeño delay
     setTimeout(() => {
       setSelectedCertificate(null);
-    }, 100);
+      resetFormData();
+    }, 150);
   };
 
   // Función para ver certificado
@@ -197,29 +230,34 @@ export default function MedicalCertificatesPage() {
       
       const fullCertificate = await medicalCertificateService.getCertificateById(certificate.id);
       
-      // Llenar el formulario con los datos del certificado
+      // Llenar el formulario con los datos del certificado, asegurando que todos los campos tengan valores por defecto
       setFormData({
-        patient_id: fullCertificate.patient_id?.toString() || '',
-        patient_name: fullCertificate.patient_name || '',
-        patient_age: fullCertificate.patient_age || '',
-        patient_cedula: fullCertificate.patient_cedula || '',
-        patient_clinical_history: fullCertificate.patient_clinical_history || '',
-        diagnosis: fullCertificate.diagnosis || '',
-        contingency_type: fullCertificate.contingency_type || '',
-        rest_hours: fullCertificate.rest_hours?.toString() || '',
-        rest_days: fullCertificate.rest_days?.toString() || '',
-        rest_from_date: fullCertificate.rest_from_date || '',
-        rest_to_date: fullCertificate.rest_to_date || '',
-        doctor_name: fullCertificate.doctor_name || '',
-        doctor_cedula: fullCertificate.doctor_cedula || '',
-        doctor_specialty: fullCertificate.doctor_specialty || '',
-        doctor_email: fullCertificate.doctor_email || '',
-        establishment_name: fullCertificate.establishment_name || '',
-        establishment_address: fullCertificate.establishment_address || '',
-        establishment_phone: fullCertificate.establishment_phone || '',
-        establishment_ruc: fullCertificate.establishment_ruc || '',
-        issue_date: fullCertificate.issue_date || '',
-        observations: fullCertificate.observations || ''
+        patient_id: fullCertificate.patient_id?.toString() ?? '',
+        patient_name: fullCertificate.patient_name ?? '',
+        patient_age: fullCertificate.patient_age ?? '',
+        patient_address: fullCertificate.patient_address ?? '',
+        patient_phone: fullCertificate.patient_phone ?? '',
+        patient_institution: fullCertificate.patient_institution ?? '',
+        patient_occupation: fullCertificate.patient_occupation ?? '',
+        patient_cedula: fullCertificate.patient_cedula ?? '',
+        patient_clinical_history: fullCertificate.patient_clinical_history ?? '',
+        diagnosis: fullCertificate.diagnosis ?? '',
+        cie_code: fullCertificate.cie_code ?? '',
+        contingency_type: fullCertificate.contingency_type ?? '',
+        rest_hours: fullCertificate.rest_hours?.toString() ?? '',
+        rest_days: fullCertificate.rest_days?.toString() ?? '',
+        rest_from_date: fullCertificate.rest_from_date ?? '',
+        rest_to_date: fullCertificate.rest_to_date ?? '',
+        doctor_name: fullCertificate.doctor_name ?? '',
+        doctor_cedula: fullCertificate.doctor_cedula ?? '',
+        doctor_specialty: fullCertificate.doctor_specialty ?? '',
+        doctor_email: fullCertificate.doctor_email ?? '',
+        establishment_name: fullCertificate.establishment_name ?? '',
+        establishment_address: fullCertificate.establishment_address ?? '',
+        establishment_phone: fullCertificate.establishment_phone ?? '',
+        establishment_ruc: fullCertificate.establishment_ruc ?? '',
+        issue_date: fullCertificate.issue_date ?? '',
+        observations: fullCertificate.observations ?? ''
       });
       
       // Establecer el certificado seleccionado y abrir modal después de un pequeño delay

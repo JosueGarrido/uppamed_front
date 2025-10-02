@@ -241,3 +241,9 @@ export class PDFGenerator {
 }
 
 export const pdfGenerator = new PDFGenerator();
+
+// Función de conveniencia para generar y descargar un certificado médico
+export const generateMedicalCertificatePDF = async (certificate: MedicalCertificate): Promise<void> => {
+  const generator = new PDFGenerator();
+  generator.downloadPDF(certificate);
+};
