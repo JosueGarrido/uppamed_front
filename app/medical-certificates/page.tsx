@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { medicalCertificateService } from '@/services/medicalCertificate.service';
 import { userService } from '@/services/user.service';
+import { tenantService } from '@/services/tenant.service';
 import { MedicalCertificate } from '@/types/medicalCertificate';
 import { User } from '@/types/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -126,9 +127,20 @@ export default function MedicalCertificatesPage() {
   };
 
   // Funciones para manejar el modal
-  const openCreateModal = () => {
+  const openCreateModal = async () => {
     setSelectedCertificate(null);
     const today = new Date().toISOString().split('T')[0];
+    
+    // Obtener información del tenant
+    let tenantData = null;
+    try {
+      if (user?.tenant_id) {
+        tenantData = await tenantService.getTenantById(user.tenant_id);
+      }
+    } catch (error) {
+      console.error('Error al cargar información del tenant:', error);
+    }
+    
     setFormData({
       patient_id: '',
       // Datos del paciente
@@ -153,11 +165,11 @@ export default function MedicalCertificatesPage() {
       doctor_cedula: user?.identification_number || '',
       doctor_specialty: user?.specialty || user?.especialidad || '',
       doctor_email: user?.email || '',
-      // Información del establecimiento (se puede prellenar con datos del tenant)
-      establishment_name: 'CENTRO DE ESPECIALIDADES MÉDICAS Y ODONTOLÓGICAS',
-      establishment_address: '',
-      establishment_phone: '',
-      establishment_ruc: '',
+      // Información del establecimiento (autorellenado con datos del tenant)
+      establishment_name: tenantData?.name || 'CENTRO DE ESPECIALIDADES MÉDICAS Y ODONTOLÓGICAS',
+      establishment_address: tenantData?.address || '',
+      establishment_phone: tenantData?.phone || '',
+      establishment_ruc: tenantData?.ruc || '',
       // Metadatos
       issue_date: today,
       observations: ''

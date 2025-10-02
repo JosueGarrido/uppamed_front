@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { medicalPrescriptionService } from '@/services/medicalPrescription.service';
 import { userService } from '@/services/user.service';
+import { tenantService } from '@/services/tenant.service';
 import { MedicalPrescription, Medication, Instruction } from '@/types/medicalPrescription';
 import { User } from '@/types/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -127,9 +128,20 @@ export default function MedicalPrescriptionsPage() {
   };
 
   // Funciones para manejar el modal
-  const openCreateModal = () => {
+  const openCreateModal = async () => {
     setSelectedPrescription(null);
     const today = new Date().toISOString().split('T')[0];
+    
+    // Obtener información del tenant
+    let tenantData = null;
+    try {
+      if (user?.tenant_id) {
+        tenantData = await tenantService.getTenantById(user.tenant_id);
+      }
+    } catch (error) {
+      console.error('Error al cargar información del tenant:', error);
+    }
+    
     setFormData({
       patient_id: '',
       patient_name: '',
@@ -148,10 +160,10 @@ export default function MedicalPrescriptionsPage() {
       doctor_cedula: user?.identification_number || '',
       doctor_specialty: user?.specialty || user?.especialidad || '',
       doctor_email: user?.email || '',
-      establishment_name: 'CENTRO DE ESPECIALIDADES MÉDICAS Y ODONTOLÓGICAS SAN FRANCISCO',
-      establishment_address: 'Gabriel García Moreno N4-333 y Pasaje Loja, (Diagonal a Rapifrenos)',
-      establishment_phone: '02 282 2015 – 093 937 2744',
-      establishment_ruc: '',
+      establishment_name: tenantData?.name || 'CENTRO DE ESPECIALIDADES MÉDICAS Y ODONTOLÓGICAS SAN FRANCISCO',
+      establishment_address: tenantData?.address || '',
+      establishment_phone: tenantData?.phone || '',
+      establishment_ruc: tenantData?.ruc || '',
       issue_date: today,
       observations: ''
     });
